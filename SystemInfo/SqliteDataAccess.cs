@@ -258,7 +258,7 @@ namespace SystemInfo
 
 
 
-        public static Report reportGenerator()
+        public static Report reportGenerator(String account)
         {
             Report myReport = new Report();
 
@@ -303,7 +303,7 @@ namespace SystemInfo
                         IdleActivity = false,//r.ItemArray[7].ToString(),
                         IpAddress = r.ItemArray[8].ToString(),
                         MacAddress = r.ItemArray[9].ToString(),
-                        UserID = "x.vasquez"
+                        UserID = account//"x.vasquez"
                     };
 
                     activity = loadReportMetrics(ActivityId, activity);

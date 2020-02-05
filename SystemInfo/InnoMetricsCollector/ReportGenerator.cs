@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
 using InnoMetricsCollector.classes;
+using Microsoft.VisualBasic;
 
 namespace InnoMetricsCollector
 {
@@ -15,19 +18,21 @@ namespace InnoMetricsCollector
             log.Info("Generation process report...");
             CollectorReport myReport = new CollectorReport();
 
-            IDictionary<IntPtr, Object[]> currentWindows = OpenWindowGetter.GetOpenWindows();
+            //IDictionary<IntPtr, Object[]> currentWindows = OpenWindowGetter.GetOpenWindows();
+            IDictionary<IntPtr, Object[]> currentWindows = OpenWindowGetter.GetProcessInfo();
             IDictionary<String, Object> batteryStatus = OpenWindowGetter.GetBatteryStatus();
 
             // get IP address of host computer
-            string hostName = Dns.GetHostName(); // Retrive the Name of HOST  
-            string myIP = Dns.GetHostByName(hostName).AddressList[0].ToString();
+            //string hostName = Dns.GetHostName(); // Retrive the Name of HOST  
+            string myIP = getIpAddress();// Dns.GetHostByName(hostName).AddressList[0].ToString();
 
             // get mac address of host machine
-            String firstMacAddress = NetworkInterface
+            String firstMacAddress = getMACAddress();
+                /*= NetworkInterface
             .GetAllNetworkInterfaces()
             .Where(nic => nic.OperationalStatus == OperationalStatus.Up && nic.NetworkInterfaceType != NetworkInterfaceType.Loopback)
             .Select(nic => nic.GetPhysicalAddress().ToString())
-            .FirstOrDefault();
+            .FirstOrDefault();*/
 
             DateTime meausureTime = DateTime.Now;
 
@@ -57,7 +62,8 @@ namespace InnoMetricsCollector
                     EndTime = meausureTime,
                     UserName = "",
                     Description = w.Value[3].ToString(),
-                    Status = "0"
+                    Status = "0",
+                    mainAppPath = w.Value[12].ToString(),
                 };
 
                 //myAppActivity.Measurements = new List<MeasurementReport>();
@@ -69,31 +75,31 @@ namespace InnoMetricsCollector
 
                 myAppActivity.Measurements.Add(new Metrics
                 {
-                    MeasurementType = "EstimatedChargeRemaining",
+                    MeasurementType = "1",// "EstimatedChargeRemaining",
                     Value = ChangingStatus== "2" ? "-1" : EstimatedChargeRemaining.ToString()
                 });
 
                 myAppActivity.Measurements.Add(new Metrics
                 {
-                    MeasurementType = "BatteryStatus",
+                    MeasurementType = "2",// "BatteryStatus",
                     Value = batteryStatus["BatteryStatus"].ToString()
                 });
 
                 myAppActivity.Measurements.Add(new Metrics
                 {
-                    MeasurementType = "RAM",
+                    MeasurementType = "3",// "RAM",
                     Value = w.Value[9].ToString()
                 });
 
                 myAppActivity.Measurements.Add(new Metrics
                 {
-                    MeasurementType = "vRAM",
+                    MeasurementType = "4",// "vRAM",
                     Value = w.Value[10].ToString()
                 });
 
                 myAppActivity.Measurements.Add(new Metrics
                 {
-                    MeasurementType = "CPU",
+                    MeasurementType = "5",// "CPU",
                     Value = w.Value[11].ToString()
                 });
 
@@ -101,6 +107,41 @@ namespace InnoMetricsCollector
             }
 
             return myReport;
+        }
+
+        public String getIpAddress()
+        {
+            string hostName = Dns.GetHostName(); // Retrive the Name of HOST  
+            string myIP = Dns.GetHostByName(hostName).AddressList[0].ToString();
+            return myIP;
+        }
+
+        public String getMACAddress()
+        {
+            String firstMacAddress = NetworkInterface
+            .GetAllNetworkInterfaces()
+            .Where(nic => nic.OperationalStatus == OperationalStatus.Up && nic.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+            .Select(nic => nic.GetPhysicalAddress().ToString())
+            .FirstOrDefault();
+
+            var regex = "(.{2})(.{2})(.{2})(.{2})(.{2})(.{2})";
+            var replace = "$1:$2:$3:$4:$5:$6";
+            var newformat = Regex.Replace(firstMacAddress, regex, replace);
+
+
+            return newformat;
+        }
+
+        public String getOSVersion()
+        {
+            return (string)(from x in new ManagementObjectSearcher(
+                "SELECT Caption FROM Win32_OperatingSystem").Get().Cast<ManagementObject>()
+                            select x.GetPropertyValue("Caption")).FirstOrDefault();
+        }
+        
+        public String getCurrentUser()
+        {
+            return System.Environment.UserName;
         }
     }
 }

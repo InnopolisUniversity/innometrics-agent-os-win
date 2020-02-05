@@ -30,27 +30,30 @@ namespace DataCollectorUI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DataAccess.saveMyConfig(myConfig);
-
+            DataAccess da = new DataAccess();
             myConfig["COLLECTION_INTERVAL"] = nudCollectionInterval.Value.ToString();
             myConfig["SENDING_INTERVAL"] = nudSendingInterval.Value.ToString();
             myConfig["STARTONLOGIN"] = chkStart.Checked ? "Y" : "N";
             myConfig["CHKUPDATE"] = chkUpdate.Checked ? "Y" : "N";
 
+            da.saveMyConfig(myConfig);
 
-
+            /*
             if (srvController.Status != System.ServiceProcess.ServiceControllerStatus.Running)
             {
                 srvController.Start();
                 showNotification("The sync service is runnning now", ToolTipIcon.Info);
             }
+            */
 
             MessageBox.Show("The configuration was saved", "InnoMetrics data collector", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void frmSettings_Load(object sender, EventArgs e)
         {
-            myConfig = DataAccess.loadInitialConfig();
+            //textBox1.Text = Application.ExecutablePath;
+            DataAccess da = new DataAccess();
+            myConfig = da.loadInitialConfig();
 
             lblUserName.Text = "User name: " + myConfig["USERNAME"];
 
@@ -87,10 +90,12 @@ namespace DataCollectorUI
                 btnSesionControl.Text = "Log&in";
             }
         }
+        /*
         public void showNotification(String message, ToolTipIcon icon)
         {
             notifyIcon1.Visible = false;
             notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", message, icon);
         }
+        */
     }
 }

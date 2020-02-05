@@ -537,9 +537,9 @@ public void sendToServer(string token)
 
         private void syncData()
         {
-            Report records = SqliteDataAccess.reportGenerator();
+            //Report records = SqliteDataAccess.reportGenerator();
 
-            APIClient.Client.SaveReport(records, myConfig["TOKEN"]);
+            //APIClient.Client.SaveReport(records, myConfig["TOKEN"]);
         }
     }
 }

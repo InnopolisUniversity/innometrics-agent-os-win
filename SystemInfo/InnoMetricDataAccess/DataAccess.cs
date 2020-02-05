@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,14 +28,44 @@ namespace InnoMetricDataAccess
             Error = -1
         };
 
-        private static string LoadConnectionString(string id = "Default")
+        public void CheckDB()
         {
+
+            String dbDirectory = @"C:\TMP\InnoMetrics\db\";
+            if (!System.IO.File.Exists(dbDirectory + "CollectorDB.db"))
+            {
+                string sourceFile = AppDomain.CurrentDomain.BaseDirectory + @"CollectorDB.db";
+                //var myApp = AppDomain.CurrentDomain.BaseDirectory;
+
+                string destinationFile = dbDirectory + @"CollectorDB.db";
+                try
+                {
+                    bool exists = System.IO.Directory.Exists(dbDirectory);
+
+                    if (!exists)
+                        System.IO.Directory.CreateDirectory(dbDirectory);
+
+                    File.Copy(sourceFile, destinationFile, true);
+                }
+                catch (IOException iox)
+                {
+                    MessageBox.Show(iox.Message);
+                }
+            }
+
+            
+        }
+
+        private string LoadConnectionString(string id = "Default")
+        {
+            
+            
             //return Configs.getConnectionString().Replace("%AppData%", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)); // ConfigurationManager.ConnectionStrings[id].ConnectionString;
             return Configs.getConnectionString().Replace("%AppData%", Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Temp"));
             
         }
 
-        public static Dictionary<String, String> loadInitialConfig()
+        public Dictionary<String, String> loadInitialConfig()
         {
             Dictionary<String, String> myConfig = new Dictionary<String, String>();
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -56,7 +87,7 @@ namespace InnoMetricDataAccess
 
         }
 
-        public static Boolean saveMyConfig(Dictionary<String, String> myconfig)
+        public Boolean saveMyConfig(Dictionary<String, String> myconfig)
         {
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -76,7 +107,7 @@ namespace InnoMetricDataAccess
             }
         }
 
-        public static void SaveMyActivity(CollectorActivity activity)
+        public void SaveMyActivity(CollectorActivity activity)
         {
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -121,7 +152,7 @@ namespace InnoMetricDataAccess
             }
         }
 
-        private static void SaveMyMeasurement(Metrics metric, SQLiteConnection cnn, string ActivityId)
+        private void SaveMyMeasurement(Metrics metric, SQLiteConnection cnn, string ActivityId)
         {
             try
             {
@@ -145,7 +176,7 @@ namespace InnoMetricDataAccess
             }
         }
 
-        private static int getNextActivityId(SQLiteConnection cnn)
+        private int getNextActivityId(SQLiteConnection cnn)
         {
 
             if (cnn.State != ConnectionState.Open)
@@ -164,7 +195,7 @@ namespace InnoMetricDataAccess
 
         }
 
-        public static List<String> loadProcessHistory()
+        public List<String> loadProcessHistory()
         {
             List<String> myHistory = new List<string>();
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -199,7 +230,7 @@ namespace InnoMetricDataAccess
             return myHistory;
         }
 
-        public static List<String> loadMetricsHistory(String ActivityId)
+        public List<String> loadMetricsHistory(String ActivityId)
         {
             List<String> myHistory = new List<string>();
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -228,7 +259,7 @@ namespace InnoMetricDataAccess
             return myHistory;
         }
 
-        public static Report reportGenerator()
+        public Report reportGenerator(String account)
         {
             Report myReport = new Report();
 
@@ -273,7 +304,7 @@ namespace InnoMetricDataAccess
                         IdleActivity = false,//r.ItemArray[7].ToString(),
                         IpAddress = r.ItemArray[8].ToString(),
                         MacAddress = r.ItemArray[9].ToString(),
-                        UserID = "x.vasquez"
+                        UserID = account//"x.vasquez"
                     };
 
                     activity = loadReportMetrics(ActivityId, activity);
@@ -285,7 +316,7 @@ namespace InnoMetricDataAccess
             return myReport;
         }
 
-        private static ActivityReport loadReportMetrics(String ActivityId, ActivityReport myActivity)
+        private ActivityReport loadReportMetrics(String ActivityId, ActivityReport myActivity)
         {
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -313,7 +344,7 @@ namespace InnoMetricDataAccess
             return myActivity;
         }
 
-        public static void updateActivityStatus(ActivityStatus oldStatus, ActivityStatus newStatus)
+        public void updateActivityStatus(ActivityStatus oldStatus, ActivityStatus newStatus)
         {
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {

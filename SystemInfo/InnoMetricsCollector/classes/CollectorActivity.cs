@@ -23,6 +23,7 @@ namespace InnoMetricsCollector.classes
         public string UserName { get; set; }
         public String Description { get; set; }
         public String Status { get; set; }
+        public String mainAppPath { get; set; }
 
         public CollectorActivity()
         {

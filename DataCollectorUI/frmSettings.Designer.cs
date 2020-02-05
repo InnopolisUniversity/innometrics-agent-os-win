@@ -44,6 +44,7 @@
             this.btnSave = new System.Windows.Forms.Button();
             this.srvController = new System.ServiceProcess.ServiceController();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.nudCollectionInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudSendingInterval)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -66,9 +67,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(16, 285);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(242, 20);
+            this.label1.Size = new System.Drawing.Size(238, 20);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Data collection interval (seconds)";
+            this.label1.Text = "Data collection interval (minutes)";
             // 
             // label2
             // 
@@ -181,11 +182,20 @@
             this.notifyIcon1.Text = "InnoMetrics Collector";
             this.notifyIcon1.Visible = true;
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(20, 414);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 26);
+            this.textBox1.TabIndex = 9;
+            this.textBox1.Visible = false;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(451, 403);
+            this.ClientSize = new System.Drawing.Size(451, 461);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.chkStart);
@@ -227,5 +237,6 @@
         private System.Windows.Forms.Button btnSave;
         private System.ServiceProcess.ServiceController srvController;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }

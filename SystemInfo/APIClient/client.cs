@@ -1,5 +1,6 @@
 ﻿using InnoMetric;
 using InnoMetric.Models;
+using log4net;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 using System;
@@ -15,6 +16,7 @@ namespace APIClient
 {
     public class Client
     {
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static string strUri = ConfigurationManager.AppSettings["backend-uri"];////ConfigurationSettings.AppSettings["backend-uri"];
         public static String getLoginToken(String username, String password)
         {
@@ -43,18 +45,25 @@ namespace APIClient
 
         public static Boolean SaveReport(Report report, String token)
         {
-            Uri endpoint = new Uri(strUri);
-            InnoMetricClient client = new InnoMetricClient(endpoint, new AnonymousCredential());
+            try {
+                Uri endpoint = new Uri(strUri);
+                InnoMetricClient client = new InnoMetricClient(endpoint, new AnonymousCredential());
 
-            var task = Task.Run(async () => await client.AddReportUsingPOSTWithHttpMessagesAsync(token, report)
-                                                        .ConfigureAwait(false));
+                var task = Task.Run(async () => await client.AddReportUsingPOSTWithHttpMessagesAsync(token, report)
+                                                            .ConfigureAwait(false));
 
-            var result = task.Result;
+                var result = task.Result;
 
-            if (result != null)
-            {
-                return result.Response.StatusCode == HttpStatusCode.OK;
+                if (result != null)
+                {
+                    return result.Response.StatusCode == HttpStatusCode.OK;
+                }
             }
+            catch(Exception ex)
+            {
+                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+            }
+            
             return false;
         }
     }

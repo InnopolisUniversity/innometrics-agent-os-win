@@ -28,7 +28,7 @@ namespace InnoMetricsDataSync
         {
             try {
                 log.Info("Starting service...");
-                myConfig = loadInitialConfig();
+                myConfig = null;//loadInitialConfig();
                 timer.Elapsed += new ElapsedEventHandler(OnElapsedTime);
                 timer.Interval = (5 * 60 * 1000); //number in milisecinds (minutes * seconds * miliseconds)
                 timer.Enabled = true;
@@ -78,11 +78,11 @@ namespace InnoMetricsDataSync
             {
                 if(myConfig["TOKEN"] != null)
                 {
-                    Report records = reportGenerator();
+                    Report records = null;//reportGenerator();
                     log.Info("Submiting request...");
                     bool result = Client.SaveReport(records, myConfig["TOKEN"]);
                     log.Info("Updating activity status...");
-                    updateActivityStatus(ActivityStatus.Processing, result ? ActivityStatus.Accepted : ActivityStatus.Error);
+                    //updateActivityStatus(ActivityStatus.Processing, result ? ActivityStatus.Accepted : ActivityStatus.Error);
                     log.Info("Process finished...");
                 }
                 else
