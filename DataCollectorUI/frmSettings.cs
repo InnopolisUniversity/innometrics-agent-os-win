@@ -1,4 +1,5 @@
 ﻿using InnoMetricDataAccess;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -37,6 +38,21 @@ namespace DataCollectorUI
             myConfig["CHKUPDATE"] = chkUpdate.Checked ? "Y" : "N";
 
             da.saveMyConfig(myConfig);
+
+            string startPath = Environment.GetFolderPath(Environment.SpecialFolder.Programs)
+                   + @"\Innopolis university\InnoMetrics data collector\Data collector.appref-ms";
+
+            //MessageBox.Show(startPath, "InnoMetrics data collector", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+            {
+                if (chkStart.Checked)
+                    key.SetValue("InnoMetrics", startPath);
+                else
+                    key.DeleteValue("InnoMetrics", false);
+            }
+
+            
 
             /*
             if (srvController.Status != System.ServiceProcess.ServiceControllerStatus.Running)

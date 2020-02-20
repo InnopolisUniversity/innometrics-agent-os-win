@@ -21,7 +21,7 @@ namespace DataCollectorUI
             {
                 if (!mutex.WaitOne(0, false))
                 {
-                    MessageBox.Show("Instance already running");
+                    MessageBox.Show("Instance already running", "InnoMetrics data collector", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 

@@ -65,17 +65,21 @@ namespace DataCollectorUI
 
             }
 
+            lblTopApp1.Text = "No data available";
+            lblTopApp2.Text = "No data available";
+            lblTopApp3.Text = "No data available";
+
             if (topIdleApp != null)
             {
-                lblTopApp1.Text = topIdleApp[0].ExecutableName;
-                lblTopApp2.Text = topIdleApp[1].ExecutableName;
-                lblTopApp3.Text = topIdleApp[2].ExecutableName;
-            }
-            else
-            {
-                lblTopApp1.Text = "No data available";
-                lblTopApp2.Text = "No data available";
-                lblTopApp3.Text = "No data available";
+                try {
+                    lblTopApp1.Text = topIdleApp[0].ExecutableName;
+                    lblTopApp2.Text = topIdleApp[1].ExecutableName;
+                    lblTopApp3.Text = topIdleApp[2].ExecutableName;
+                }catch(Exception ex)
+                {
+                    
+                }
+                
             }
 
             this.Refresh();

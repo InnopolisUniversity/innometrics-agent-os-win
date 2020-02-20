@@ -140,7 +140,7 @@ namespace DataCollectorUI
                                 var myLastMeasure = lastState.Measurements.FirstOrDefault(m => m.MeasurementType == "1"); //1 -> EstimatedChargeRemaining
                                 var myCurrentMeasure = app.Measurements.FirstOrDefault(m => m.MeasurementType == "1");//1 -> EstimatedChargeRemaining
 
-                                if (myCurrentMeasure.Value != "-1")
+                                if (myCurrentMeasure != null && myCurrentMeasure.Value != "-1")
                                 {
                                     if (Double.Parse(myLastMeasure.Value) > Double.Parse(myCurrentMeasure.Value))
                                     {

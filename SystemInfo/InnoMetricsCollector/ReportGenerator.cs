@@ -67,23 +67,30 @@ namespace InnoMetricsCollector
                 };
 
                 //myAppActivity.Measurements = new List<MeasurementReport>();
-
-                String ChangingStatus = batteryStatus["BatteryStatus"].ToString();
-                float EstimatedChargeRemaining = float.Parse(batteryStatus["EstimatedChargeRemaining"].ToString());
-
-                EstimatedChargeRemaining = EstimatedChargeRemaining > 100.0 ? 100 : EstimatedChargeRemaining;
-
-                myAppActivity.Measurements.Add(new Metrics
+                if(batteryStatus != null && batteryStatus.Count > 0)
                 {
-                    MeasurementType = "1",// "EstimatedChargeRemaining",
-                    Value = ChangingStatus== "2" ? "-1" : EstimatedChargeRemaining.ToString()
-                });
+                    String ChangingStatus = batteryStatus["BatteryStatus"].ToString();
+                    float EstimatedChargeRemaining = float.Parse(batteryStatus["EstimatedChargeRemaining"].ToString());
 
-                myAppActivity.Measurements.Add(new Metrics
-                {
-                    MeasurementType = "2",// "BatteryStatus",
-                    Value = batteryStatus["BatteryStatus"].ToString()
-                });
+                    EstimatedChargeRemaining = EstimatedChargeRemaining > 100.0 ? 100 : EstimatedChargeRemaining;
+
+                    myAppActivity.Measurements.Add(new Metrics
+                    {
+                        MeasurementType = "1",// "EstimatedChargeRemaining",
+                        Value = ChangingStatus == "2" ? "-1" : EstimatedChargeRemaining.ToString()
+                    });
+
+                    myAppActivity.Measurements.Add(new Metrics
+                    {
+                        MeasurementType = "2",// "BatteryStatus",
+                        Value = batteryStatus["BatteryStatus"].ToString()
+                    });
+
+                }
+                
+
+
+
 
                 myAppActivity.Measurements.Add(new Metrics
                 {

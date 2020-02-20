@@ -25,6 +25,8 @@ namespace APIClient
             Uri endpoint = new Uri(strUri);
             InnoMetricClient client = new InnoMetricClient(endpoint, new AnonymousCredential());
 
+            
+
             AuthRequest req = new AuthRequest
             {
                 Email = username,
@@ -65,6 +67,24 @@ namespace APIClient
             }
             
             return false;
+        }
+
+        public static UserRequest createUser(String name, String surname, String email, String password, String token)
+        {
+            Uri endpoint = new Uri(strUri);
+            InnoMetricClient client = new InnoMetricClient(endpoint, new AnonymousCredential());
+
+            UserRequest req = new UserRequest
+            {
+                Email = email,
+                Name = name,
+                Surname = surname,
+                Password = password
+            };
+
+            var result = (UserRequest)client.CreateUserUsingPOST(req, token);
+
+            return result;
         }
     }
 }

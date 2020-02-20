@@ -30,7 +30,7 @@
     <SuiteName>InnoMetrics data collector</SuiteName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>39</ApplicationRevision>
+    <ApplicationRevision>41</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -74,7 +74,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>F0D4C5DFCE4F61D195DD3CCB74F08D050C84C884</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>A8643B34A3A023414492D39F4471E7FD46142FD4</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>DataCollectorUI_TemporaryKey.pfx</ManifestKeyFile>
