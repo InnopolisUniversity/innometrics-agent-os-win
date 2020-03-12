@@ -11,6 +11,7 @@ using InnoMetricsCollector;
 using InnoMetricsCollector.classes;
 using InnoMetricDataAccess;
 using log4net;
+using System.Globalization;
 
 namespace DataCollectorUI
 {
@@ -22,6 +23,8 @@ namespace DataCollectorUI
         private readonly Boolean isIdle;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private KeyboardTracker keyboard;
+        private MouseTracker mouse;
         public FrmSystemInfo()
         {
             InitializeComponent();
@@ -29,6 +32,12 @@ namespace DataCollectorUI
             UpdateTopIdleApps();
             idleTimeStart = new DateTime();
             isIdle = false;
+
+            keyboard = new KeyboardTracker();
+            keyboard.KeyBoardKeyPressed += keyboard_KeyBoardKeyPressed;
+
+            mouse = new MouseTracker();
+            mouse.MouseMoved += mouse_MouseMoved;
         }
 
         private void FrmSystemInfo_Load(object sender, EventArgs e)
@@ -165,6 +174,21 @@ namespace DataCollectorUI
         private void TimerTopApps_Tick(object sender, EventArgs e)
         {
             UpdateTopIdleApps();
+        }
+
+        void keyboard_KeyBoardKeyPressed(object sender, EventArgs e)
+        {
+            label10.Text = FormatDateTime(DateTime.Now);
+        }
+
+
+        void mouse_MouseMoved(object sender, EventArgs e)
+        {
+            label11.Text = FormatDateTime(DateTime.Now);
+        }
+        private string FormatDateTime(DateTime dateTime)
+        {
+            return dateTime.ToString("HH:mm:ss fff", CultureInfo.CurrentUICulture);
         }
     }
 }

@@ -71,7 +71,7 @@
     <ApplicationIcon>windows_collector.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>236C8DF5A68DB3AE3CD9D6A67EE06F0F38D5488F</ManifestCertificateThumbprint>
@@ -121,8 +121,11 @@
     <Compile Include="frmSystemInfo.Designer.cs">
       <DependentUpon>frmSystemInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="KeyboardTracker.cs" />
+    <Compile Include="MouseTracker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WindowsHookInput.cs" />
     <Content Include="windows_collector.ico" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
