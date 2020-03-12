@@ -18,7 +18,7 @@ namespace InnoMetricsDataCollector.classes
             return ConfigurationManager.ConnectionStrings[id].ConnectionString;
         }
 
-        public static Dictionary<String, String> loadInitialConfig()
+        public static Dictionary<String, String> LoadInitialConfig()
         {
             Dictionary<String, String> myConfig = new Dictionary<String, String>();
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -43,7 +43,7 @@ namespace InnoMetricsDataCollector.classes
             return myConfig;
         }
 
-        public static Boolean saveMyConfig(Dictionary<String, String> myconfig)
+        public static Boolean SaveMyConfig(Dictionary<String, String> myconfig)
         {
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -51,8 +51,10 @@ namespace InnoMetricsDataCollector.classes
                 try
                 {
                     cnn.Open();
-                    SQLiteCommand cmd = new SQLiteCommand(cnn);
-                    cmd.CommandText = @"Update configs set VALUE = @Value where LABEL = @Label";
+                    SQLiteCommand cmd = new SQLiteCommand(cnn)
+                    {
+                        CommandText = @"Update configs set VALUE = @Value where LABEL = @Label"
+                    };
                     foreach (String k in myconfig.Keys)
                     {
                         cmd.Prepare();
@@ -84,12 +86,14 @@ namespace InnoMetricsDataCollector.classes
 
                     log.Info("Saving activity data");
 
-                    activity.ActivityID = getNextActivityId(cnn);
+                    activity.ActivityID = GetNextActivityId(cnn);
 
-                    var cmd = new SQLiteCommand(cnn);
-                    cmd.CommandText = "insert into CollectorData (ActivityId, ProcessName, ProcessId, StartTime, " +
+                    var cmd = new SQLiteCommand(cnn)
+                    {
+                        CommandText = "insert into CollectorData (ActivityId, ProcessName, ProcessId, StartTime, " +
                         "EndTime, IPAddress, MacAddress, Description, Status, ServerStatus) values (@ActivityId, @ProcessName, " +
-                        "@ProcessId, @StartTime, @EndTime, @IPAddress, @MacAddress, @Description, @Status, @serverStatus)";
+                        "@ProcessId, @StartTime, @EndTime, @IPAddress, @MacAddress, @Description, @Status, @serverStatus)"
+                    };
                     cmd.Prepare();
                     log.Info("Preparing command");
                     cmd.Parameters.AddWithValue("@ActivityId", activity.ActivityID);
@@ -115,7 +119,7 @@ namespace InnoMetricsDataCollector.classes
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    //Console.WriteLine(ex.Message);
                     log.Info("Error process data -> " + ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
                 }
             }
@@ -129,9 +133,11 @@ namespace InnoMetricsDataCollector.classes
                 if (cnn.State != ConnectionState.Open)
                     cnn.Open();
 
-                var cmd = new SQLiteCommand(cnn);
-                cmd.CommandText = @"insert into CollectorMetrics (ActivityId, MetricTypeId, Value) 
-                                    values (@ActivityId, @MetricTypeId, @Value)";
+                var cmd = new SQLiteCommand(cnn)
+                {
+                    CommandText = @"insert into CollectorMetrics (ActivityId, MetricTypeId, Value) 
+                                    values (@ActivityId, @MetricTypeId, @Value)"
+                };
                 cmd.Prepare();
 
                 cmd.Parameters.AddWithValue("@ActivityId", ActivityId);
@@ -142,12 +148,12 @@ namespace InnoMetricsDataCollector.classes
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
                 log.Info("Error process data -> " + ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
             }
         }
 
-        private static int getNextActivityId(SQLiteConnection cnn)
+        private static int GetNextActivityId(SQLiteConnection cnn)
         {
             var myId = "0";
 
@@ -160,8 +166,10 @@ namespace InnoMetricsDataCollector.classes
 
 
                 //cnn.Open();
-                SQLiteCommand cmd = new SQLiteCommand(cnn);
-                cmd.CommandText = @"select count(*) + 1 from CollectorData";
+                SQLiteCommand cmd = new SQLiteCommand(cnn)
+                {
+                    CommandText = @"select count(*) + 1 from CollectorData"
+                };
 
                 myId = cmd.ExecuteScalar().ToString();
 

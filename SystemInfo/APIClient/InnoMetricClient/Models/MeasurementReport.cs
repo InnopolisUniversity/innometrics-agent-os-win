@@ -21,9 +21,10 @@ namespace InnoMetric.Models
         /// <summary>
         /// Initializes a new instance of the MeasurementReport class.
         /// </summary>
-        public MeasurementReport(string alternativeLabel = default(string), string measurementTypeId = default(string), string value = default(string))
+        public MeasurementReport(string alternativeLabel = default(string), DateTime? capturedDate = default(DateTime?), string measurementTypeId = default(string), string value = default(string))
         {
             AlternativeLabel = alternativeLabel;
+            CapturedDate = capturedDate;
             MeasurementTypeId = measurementTypeId;
             Value = value;
         }
@@ -32,6 +33,11 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "alternativeLabel")]
         public string AlternativeLabel { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "capturedDate")]
+        public DateTime? CapturedDate { get; set; }
 
         /// <summary>
         /// </summary>

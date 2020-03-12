@@ -228,7 +228,7 @@ namespace InnoMetric
         /// </summary>
         private void Initialize()
         {
-            this.BaseUri = new Uri("http://innometric.guru:9091/");
+            this.BaseUri = new Uri("http://10.90.137.67:9091/");
             SerializationSettings = new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented,
@@ -1592,20 +1592,8 @@ namespace InnoMetric
         /// <param name='token'>
         /// Token
         /// </param>
-        /// <param name='amountToReturn'>
-        /// amount_to_return
-        /// </param>
-        /// <param name='endTime'>
-        /// end_time
-        /// </param>
-        /// <param name='filters'>
-        /// filters
-        /// </param>
-        /// <param name='offset'>
-        /// offset
-        /// </param>
-        /// <param name='startTime'>
-        /// start_time
+        /// <param name='email'>
+        /// email
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -1616,15 +1604,15 @@ namespace InnoMetric
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<IList<Report>>> GetActivitiesUsingGETWithHttpMessagesAsync(string token, int amountToReturn, DateTime endTime, string filters, int offset, DateTime startTime, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<Report>> GetActivitiesUsingGETWithHttpMessagesAsync(string token, string email, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (token == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "token");
             }
-            if (filters == null)
+            if (email == null)
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "filters");
+                throw new ValidationException(ValidationRules.CannotBeNull, "email");
             }
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -1634,11 +1622,7 @@ namespace InnoMetric
                 _invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("token", token);
-                tracingParameters.Add("amountToReturn", amountToReturn);
-                tracingParameters.Add("endTime", endTime);
-                tracingParameters.Add("filters", filters);
-                tracingParameters.Add("offset", offset);
-                tracingParameters.Add("startTime", startTime);
+                tracingParameters.Add("email", email);
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "GetActivitiesUsingGET", tracingParameters);
             }
@@ -1646,14 +1630,10 @@ namespace InnoMetric
             var _baseUrl = this.BaseUri.AbsoluteUri;
             var _url = new Uri(new Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "V1/activity").ToString();
             List<string> _queryParameters = new List<string>();
-            _queryParameters.Add(string.Format("amount_to_return={0}", Uri.EscapeDataString(SafeJsonConvert.SerializeObject(amountToReturn, this.SerializationSettings).Trim('"'))));
-            _queryParameters.Add(string.Format("end_time={0}", Uri.EscapeDataString(SafeJsonConvert.SerializeObject(endTime, this.SerializationSettings).Trim('"'))));
-            if (filters != null)
+            if (email != null)
             {
-                _queryParameters.Add(string.Format("filters={0}", Uri.EscapeDataString(filters)));
+                _queryParameters.Add(string.Format("email={0}", Uri.EscapeDataString(email)));
             }
-            _queryParameters.Add(string.Format("offset={0}", Uri.EscapeDataString(SafeJsonConvert.SerializeObject(offset, this.SerializationSettings).Trim('"'))));
-            _queryParameters.Add(string.Format("start_time={0}", Uri.EscapeDataString(SafeJsonConvert.SerializeObject(startTime, this.SerializationSettings).Trim('"'))));
             if (_queryParameters.Count > 0)
             {
                 _url += "?" + string.Join("&", _queryParameters);
@@ -1724,7 +1704,7 @@ namespace InnoMetric
                 throw ex;
             }
             // Create Result
-            var _result = new HttpOperationResponse<IList<Report>>();
+            var _result = new HttpOperationResponse<Report>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
             // Deserialize Response
@@ -1733,7 +1713,7 @@ namespace InnoMetric
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = SafeJsonConvert.DeserializeObject<IList<Report>>(_responseContent, this.DeserializationSettings);
+                    _result.Body = SafeJsonConvert.DeserializeObject<Report>(_responseContent, this.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
@@ -2035,28 +2015,13 @@ namespace InnoMetric
         }
 
         /// <summary>
-        /// getActivitiesByProject
+        /// addProcessReport
         /// </summary>
-        /// <param name='projectName'>
-        /// ProjectName
-        /// </param>
         /// <param name='token'>
         /// Token
         /// </param>
-        /// <param name='amountToReturn'>
-        /// amount_to_return
-        /// </param>
-        /// <param name='endTime'>
-        /// end_time
-        /// </param>
-        /// <param name='filters'>
-        /// filters
-        /// </param>
-        /// <param name='offset'>
-        /// offset
-        /// </param>
-        /// <param name='startTime'>
-        /// start_time
+        /// <param name='report'>
+        /// report
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -2067,19 +2032,15 @@ namespace InnoMetric
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<IList<Report>>> GetActivitiesByProjectUsingGETWithHttpMessagesAsync(string projectName, string token, int amountToReturn, DateTime endTime, string filters, int offset, DateTime startTime, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<object>> AddProcessReportUsingPOSTWithHttpMessagesAsync(string token, AddProcessReportRequest report, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (projectName == null)
-            {
-                throw new ValidationException(ValidationRules.CannotBeNull, "projectName");
-            }
             if (token == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "token");
             }
-            if (filters == null)
+            if (report == null)
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "filters");
+                throw new ValidationException(ValidationRules.CannotBeNull, "report");
             }
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -2088,37 +2049,18 @@ namespace InnoMetric
             {
                 _invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("projectName", projectName);
                 tracingParameters.Add("token", token);
-                tracingParameters.Add("amountToReturn", amountToReturn);
-                tracingParameters.Add("endTime", endTime);
-                tracingParameters.Add("filters", filters);
-                tracingParameters.Add("offset", offset);
-                tracingParameters.Add("startTime", startTime);
+                tracingParameters.Add("report", report);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetActivitiesByProjectUsingGET", tracingParameters);
+                ServiceClientTracing.Enter(_invocationId, this, "AddProcessReportUsingPOST", tracingParameters);
             }
             // Construct URL
             var _baseUrl = this.BaseUri.AbsoluteUri;
-            var _url = new Uri(new Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "V1/project/{ProjectName}/activity").ToString();
-            _url = _url.Replace("{ProjectName}", Uri.EscapeDataString(projectName));
-            List<string> _queryParameters = new List<string>();
-            _queryParameters.Add(string.Format("amount_to_return={0}", Uri.EscapeDataString(SafeJsonConvert.SerializeObject(amountToReturn, this.SerializationSettings).Trim('"'))));
-            _queryParameters.Add(string.Format("end_time={0}", Uri.EscapeDataString(SafeJsonConvert.SerializeObject(endTime, this.SerializationSettings).Trim('"'))));
-            if (filters != null)
-            {
-                _queryParameters.Add(string.Format("filters={0}", Uri.EscapeDataString(filters)));
-            }
-            _queryParameters.Add(string.Format("offset={0}", Uri.EscapeDataString(SafeJsonConvert.SerializeObject(offset, this.SerializationSettings).Trim('"'))));
-            _queryParameters.Add(string.Format("start_time={0}", Uri.EscapeDataString(SafeJsonConvert.SerializeObject(startTime, this.SerializationSettings).Trim('"'))));
-            if (_queryParameters.Count > 0)
-            {
-                _url += "?" + string.Join("&", _queryParameters);
-            }
+            var _url = new Uri(new Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "V1/process").ToString();
             // Create HTTP transport objects
             HttpRequestMessage _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
+            _httpRequest.Method = new HttpMethod("POST");
             _httpRequest.RequestUri = new Uri(_url);
             // Set Headers
             if (token != null)
@@ -2143,6 +2085,12 @@ namespace InnoMetric
 
             // Serialize Request
             string _requestContent = null;
+            if(report != null)
+            {
+                _requestContent = SafeJsonConvert.SerializeObject(report, this.SerializationSettings);
+                _httpRequest.Content = new StringContent(_requestContent, Encoding.UTF8);
+                _httpRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+            }
             // Set Credentials
             if (this.Credentials != null)
             {
@@ -2163,7 +2111,7 @@ namespace InnoMetric
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 401 && (int)_statusCode != 403 && (int)_statusCode != 404)
+            if ((int)_statusCode != 200 && (int)_statusCode != 201 && (int)_statusCode != 401 && (int)_statusCode != 403 && (int)_statusCode != 404)
             {
                 var ex = new HttpOperationException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -2181,7 +2129,7 @@ namespace InnoMetric
                 throw ex;
             }
             // Create Result
-            var _result = new HttpOperationResponse<IList<Report>>();
+            var _result = new HttpOperationResponse<object>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
             // Deserialize Response
@@ -2190,7 +2138,7 @@ namespace InnoMetric
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = SafeJsonConvert.DeserializeObject<IList<Report>>(_responseContent, this.DeserializationSettings);
+                    _result.Body = SafeJsonConvert.DeserializeObject<object>(_responseContent, this.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {

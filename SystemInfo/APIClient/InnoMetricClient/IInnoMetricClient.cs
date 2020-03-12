@@ -211,20 +211,8 @@ namespace InnoMetric
         /// <param name='token'>
         /// Token
         /// </param>
-        /// <param name='amountToReturn'>
-        /// amount_to_return
-        /// </param>
-        /// <param name='endTime'>
-        /// end_time
-        /// </param>
-        /// <param name='filters'>
-        /// filters
-        /// </param>
-        /// <param name='offset'>
-        /// offset
-        /// </param>
-        /// <param name='startTime'>
-        /// start_time
+        /// <param name='email'>
+        /// email
         /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
@@ -232,7 +220,7 @@ namespace InnoMetric
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<IList<Report>>> GetActivitiesUsingGETWithHttpMessagesAsync(string token, int amountToReturn, DateTime endTime, string filters, int offset, DateTime startTime, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<Report>> GetActivitiesUsingGETWithHttpMessagesAsync(string token, string email, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// addReport
@@ -269,28 +257,13 @@ namespace InnoMetric
         Task<HttpOperationResponse<object>> DeleteActivityUsingDELETEWithHttpMessagesAsync(string token, int activityId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// getActivitiesByProject
+        /// addProcessReport
         /// </summary>
-        /// <param name='projectName'>
-        /// ProjectName
-        /// </param>
         /// <param name='token'>
         /// Token
         /// </param>
-        /// <param name='amountToReturn'>
-        /// amount_to_return
-        /// </param>
-        /// <param name='endTime'>
-        /// end_time
-        /// </param>
-        /// <param name='filters'>
-        /// filters
-        /// </param>
-        /// <param name='offset'>
-        /// offset
-        /// </param>
-        /// <param name='startTime'>
-        /// start_time
+        /// <param name='report'>
+        /// report
         /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
@@ -298,7 +271,7 @@ namespace InnoMetric
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<IList<Report>>> GetActivitiesByProjectUsingGETWithHttpMessagesAsync(string projectName, string token, int amountToReturn, DateTime endTime, string filters, int offset, DateTime startTime, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<object>> AddProcessReportUsingPOSTWithHttpMessagesAsync(string token, AddProcessReportRequest report, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// login

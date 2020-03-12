@@ -52,9 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="classes\CollectorActivity.cs" />
+    <Compile Include="classes\CollectorProcess.cs" />
+    <Compile Include="classes\CollectorProcessReport.cs" />
     <Compile Include="classes\CollectorReport.cs" />
     <Compile Include="classes\Metrics.cs" />
     <Compile Include="classes\OpenWindowGetter.cs" />
+    <Compile Include="classes\ProcessMetrics.cs" />
     <Compile Include="ReportGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

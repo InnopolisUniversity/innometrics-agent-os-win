@@ -410,24 +410,12 @@ namespace InnoMetric
             /// <param name='token'>
             /// Token
             /// </param>
-            /// <param name='amountToReturn'>
-            /// amount_to_return
+            /// <param name='email'>
+            /// email
             /// </param>
-            /// <param name='endTime'>
-            /// end_time
-            /// </param>
-            /// <param name='filters'>
-            /// filters
-            /// </param>
-            /// <param name='offset'>
-            /// offset
-            /// </param>
-            /// <param name='startTime'>
-            /// start_time
-            /// </param>
-            public static IList<Report> GetActivitiesUsingGET(this IInnoMetricClient operations, string token, int amountToReturn, DateTime endTime, string filters, int offset, DateTime startTime)
+            public static Report GetActivitiesUsingGET(this IInnoMetricClient operations, string token, string email)
             {
-                return Task.Factory.StartNew(s => ((IInnoMetricClient)s).GetActivitiesUsingGETAsync(token, amountToReturn, endTime, filters, offset, startTime), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+                return Task.Factory.StartNew(s => ((IInnoMetricClient)s).GetActivitiesUsingGETAsync(token, email), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -439,27 +427,15 @@ namespace InnoMetric
             /// <param name='token'>
             /// Token
             /// </param>
-            /// <param name='amountToReturn'>
-            /// amount_to_return
-            /// </param>
-            /// <param name='endTime'>
-            /// end_time
-            /// </param>
-            /// <param name='filters'>
-            /// filters
-            /// </param>
-            /// <param name='offset'>
-            /// offset
-            /// </param>
-            /// <param name='startTime'>
-            /// start_time
+            /// <param name='email'>
+            /// email
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<IList<Report>> GetActivitiesUsingGETAsync(this IInnoMetricClient operations, string token, int amountToReturn, DateTime endTime, string filters, int offset, DateTime startTime, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<Report> GetActivitiesUsingGETAsync(this IInnoMetricClient operations, string token, string email, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.GetActivitiesUsingGETWithHttpMessagesAsync(token, amountToReturn, endTime, filters, offset, startTime, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.GetActivitiesUsingGETWithHttpMessagesAsync(token, email, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -546,70 +522,40 @@ namespace InnoMetric
             }
 
             /// <summary>
-            /// getActivitiesByProject
+            /// addProcessReport
             /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='projectName'>
-            /// ProjectName
-            /// </param>
             /// <param name='token'>
             /// Token
             /// </param>
-            /// <param name='amountToReturn'>
-            /// amount_to_return
+            /// <param name='report'>
+            /// report
             /// </param>
-            /// <param name='endTime'>
-            /// end_time
-            /// </param>
-            /// <param name='filters'>
-            /// filters
-            /// </param>
-            /// <param name='offset'>
-            /// offset
-            /// </param>
-            /// <param name='startTime'>
-            /// start_time
-            /// </param>
-            public static IList<Report> GetActivitiesByProjectUsingGET(this IInnoMetricClient operations, string projectName, string token, int amountToReturn, DateTime endTime, string filters, int offset, DateTime startTime)
+            public static object AddProcessReportUsingPOST(this IInnoMetricClient operations, string token, AddProcessReportRequest report)
             {
-                return Task.Factory.StartNew(s => ((IInnoMetricClient)s).GetActivitiesByProjectUsingGETAsync(projectName, token, amountToReturn, endTime, filters, offset, startTime), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+                return Task.Factory.StartNew(s => ((IInnoMetricClient)s).AddProcessReportUsingPOSTAsync(token, report), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
             }
 
             /// <summary>
-            /// getActivitiesByProject
+            /// addProcessReport
             /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='projectName'>
-            /// ProjectName
-            /// </param>
             /// <param name='token'>
             /// Token
             /// </param>
-            /// <param name='amountToReturn'>
-            /// amount_to_return
-            /// </param>
-            /// <param name='endTime'>
-            /// end_time
-            /// </param>
-            /// <param name='filters'>
-            /// filters
-            /// </param>
-            /// <param name='offset'>
-            /// offset
-            /// </param>
-            /// <param name='startTime'>
-            /// start_time
+            /// <param name='report'>
+            /// report
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<IList<Report>> GetActivitiesByProjectUsingGETAsync(this IInnoMetricClient operations, string projectName, string token, int amountToReturn, DateTime endTime, string filters, int offset, DateTime startTime, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> AddProcessReportUsingPOSTAsync(this IInnoMetricClient operations, string token, AddProcessReportRequest report, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.GetActivitiesByProjectUsingGETWithHttpMessagesAsync(projectName, token, amountToReturn, endTime, filters, offset, startTime, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.AddProcessReportUsingPOSTWithHttpMessagesAsync(token, report, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

@@ -69,6 +69,31 @@ namespace APIClient
             return false;
         }
 
+        public static Boolean SaveProcessReport(AddProcessReportRequest report, String token)
+        {
+            try
+            {
+                Uri endpoint = new Uri(strUri);
+                InnoMetricClient client = new InnoMetricClient(endpoint, new AnonymousCredential());
+
+                var task = Task.Run(async () => await client.AddProcessReportUsingPOSTWithHttpMessagesAsync(token, report)
+                                                            .ConfigureAwait(false));
+
+                var result = task.Result;
+
+                if (result != null)
+                {
+                    return result.Response.StatusCode == HttpStatusCode.OK;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+            }
+
+            return false;
+        }
+
         public static UserRequest createUser(String name, String surname, String email, String password, String token)
         {
             Uri endpoint = new Uri(strUri);

@@ -14,10 +14,19 @@ namespace DataCollectorUI
 {
     public partial class frmLogin : Form
     {
-        
+        Boolean _requestLogin;
+
+
         public frmLogin()
         {
             InitializeComponent();
+            _requestLogin = false;
+        }
+
+        public frmLogin(Boolean requestLogin)
+        {
+            InitializeComponent();
+            _requestLogin = requestLogin;
         }
 
         private void btnSignIn_Click(object sender, EventArgs e)
@@ -37,11 +46,32 @@ namespace DataCollectorUI
                 //DataAccess.saveMyConfig(frmSettings.myConfig);
                 //frmMain newForm = new frmMain();
                 //newForm.sendToServer(secret_token);
+                _requestLogin = false;
                 this.Close();
             }
             else
             {
                 MessageBox.Show("username and password are incorrect, please verify them", "InnoMetrics", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void frmLogin_Load(object sender, EventArgs e)
+        {
+            label1.Visible = _requestLogin;
+        }
+
+        private void frmLogin_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            
+            if (_requestLogin)
+            {
+                MessageBox.Show("Please introduce you credential and clic in login.", "InnoMetrics", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                e.Cancel = true;
             }
         }
     }

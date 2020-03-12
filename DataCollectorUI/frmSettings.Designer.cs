@@ -52,51 +52,54 @@
             // 
             // nudCollectionInterval
             // 
-            this.nudCollectionInterval.Location = new System.Drawing.Point(270, 285);
+            this.nudCollectionInterval.Location = new System.Drawing.Point(240, 228);
+            this.nudCollectionInterval.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.nudCollectionInterval.Maximum = new decimal(new int[] {
             9999999,
             0,
             0,
             0});
             this.nudCollectionInterval.Name = "nudCollectionInterval";
-            this.nudCollectionInterval.Size = new System.Drawing.Size(120, 26);
+            this.nudCollectionInterval.Size = new System.Drawing.Size(107, 22);
             this.nudCollectionInterval.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 285);
+            this.label1.Location = new System.Drawing.Point(14, 228);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(238, 20);
+            this.label1.Size = new System.Drawing.Size(214, 17);
             this.label1.TabIndex = 1;
             this.label1.Text = "Data collection interval (minutes)";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 325);
+            this.label2.Location = new System.Drawing.Point(14, 260);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(228, 20);
+            this.label2.Size = new System.Drawing.Size(205, 17);
             this.label2.TabIndex = 3;
             this.label2.Text = "Sending data interval (minutes)";
             // 
             // nudSendingInterval
             // 
-            this.nudSendingInterval.Location = new System.Drawing.Point(270, 325);
+            this.nudSendingInterval.Location = new System.Drawing.Point(240, 260);
+            this.nudSendingInterval.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.nudSendingInterval.Maximum = new decimal(new int[] {
             9999999,
             0,
             0,
             0});
             this.nudSendingInterval.Name = "nudSendingInterval";
-            this.nudSendingInterval.Size = new System.Drawing.Size(120, 26);
+            this.nudSendingInterval.Size = new System.Drawing.Size(107, 22);
             this.nudSendingInterval.TabIndex = 2;
             // 
             // btnSesionControl
             // 
-            this.btnSesionControl.Location = new System.Drawing.Point(27, 128);
+            this.btnSesionControl.Location = new System.Drawing.Point(24, 102);
+            this.btnSesionControl.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSesionControl.Name = "btnSesionControl";
-            this.btnSesionControl.Size = new System.Drawing.Size(75, 30);
+            this.btnSesionControl.Size = new System.Drawing.Size(67, 24);
             this.btnSesionControl.TabIndex = 4;
             this.btnSesionControl.Text = "Log&in";
             this.btnSesionControl.UseVisualStyleBackColor = true;
@@ -105,9 +108,10 @@
             // chkUpdate
             // 
             this.chkUpdate.AutoSize = true;
-            this.chkUpdate.Location = new System.Drawing.Point(16, 21);
+            this.chkUpdate.Location = new System.Drawing.Point(14, 17);
+            this.chkUpdate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkUpdate.Name = "chkUpdate";
-            this.chkUpdate.Size = new System.Drawing.Size(230, 24);
+            this.chkUpdate.Size = new System.Drawing.Size(203, 21);
             this.chkUpdate.TabIndex = 6;
             this.chkUpdate.Text = "Check update automatically";
             this.chkUpdate.UseVisualStyleBackColor = true;
@@ -115,9 +119,10 @@
             // chkStart
             // 
             this.chkStart.AutoSize = true;
-            this.chkStart.Location = new System.Drawing.Point(16, 51);
+            this.chkStart.Location = new System.Drawing.Point(14, 41);
+            this.chkStart.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkStart.Name = "chkStart";
-            this.chkStart.Size = new System.Drawing.Size(225, 24);
+            this.chkStart.Size = new System.Drawing.Size(200, 21);
             this.chkStart.TabIndex = 7;
             this.chkStart.Text = "Start on login automatically";
             this.chkStart.UseVisualStyleBackColor = true;
@@ -128,9 +133,11 @@
             this.groupBox1.Controls.Add(this.lblUserStatus);
             this.groupBox1.Controls.Add(this.lblUserName);
             this.groupBox1.Controls.Add(this.btnSesionControl);
-            this.groupBox1.Location = new System.Drawing.Point(16, 90);
+            this.groupBox1.Location = new System.Drawing.Point(14, 72);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(413, 169);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.groupBox1.Size = new System.Drawing.Size(367, 135);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "User account";
@@ -138,35 +145,36 @@
             // lblLastDataCollectedTime
             // 
             this.lblLastDataCollectedTime.AutoSize = true;
-            this.lblLastDataCollectedTime.Location = new System.Drawing.Point(23, 95);
+            this.lblLastDataCollectedTime.Location = new System.Drawing.Point(20, 76);
             this.lblLastDataCollectedTime.Name = "lblLastDataCollectedTime";
-            this.lblLastDataCollectedTime.Size = new System.Drawing.Size(181, 20);
+            this.lblLastDataCollectedTime.Size = new System.Drawing.Size(161, 17);
             this.lblLastDataCollectedTime.TabIndex = 2;
             this.lblLastDataCollectedTime.Text = "Latest data submission: ";
             // 
             // lblUserStatus
             // 
             this.lblUserStatus.AutoSize = true;
-            this.lblUserStatus.Location = new System.Drawing.Point(23, 63);
+            this.lblUserStatus.Location = new System.Drawing.Point(20, 50);
             this.lblUserStatus.Name = "lblUserStatus";
-            this.lblUserStatus.Size = new System.Drawing.Size(64, 20);
+            this.lblUserStatus.Size = new System.Drawing.Size(56, 17);
             this.lblUserStatus.TabIndex = 1;
             this.lblUserStatus.Text = "Status: ";
             // 
             // lblUserName
             // 
             this.lblUserName.AutoSize = true;
-            this.lblUserName.Location = new System.Drawing.Point(23, 31);
+            this.lblUserName.Location = new System.Drawing.Point(20, 25);
             this.lblUserName.Name = "lblUserName";
-            this.lblUserName.Size = new System.Drawing.Size(95, 20);
+            this.lblUserName.Size = new System.Drawing.Size(85, 17);
             this.lblUserName.TabIndex = 0;
             this.lblUserName.Text = "User name: ";
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(188, 361);
+            this.btnSave.Location = new System.Drawing.Point(167, 289);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 30);
+            this.btnSave.Size = new System.Drawing.Size(67, 24);
             this.btnSave.TabIndex = 5;
             this.btnSave.Text = "&Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -180,21 +188,21 @@
             // 
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "InnoMetrics Collector";
-            this.notifyIcon1.Visible = true;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(20, 414);
+            this.textBox1.Location = new System.Drawing.Point(18, 331);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 26);
+            this.textBox1.Size = new System.Drawing.Size(89, 22);
             this.textBox1.TabIndex = 9;
             this.textBox1.Visible = false;
             // 
             // frmSettings
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(451, 461);
+            this.ClientSize = new System.Drawing.Size(401, 331);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.groupBox1);
@@ -206,6 +214,7 @@
             this.Controls.Add(this.nudCollectionInterval);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmSettings";

@@ -10,48 +10,77 @@ using System.Windows.Forms;
 using InnoMetricsCollector;
 using InnoMetricsCollector.classes;
 using InnoMetricDataAccess;
+using log4net;
 
 namespace DataCollectorUI
 {
-    public partial class frmSystemInfo : Form
+    public partial class FrmSystemInfo : Form
     {
         public CollectorActivity topActivity;
-        public List<CollectorActivity> topIdleApp;
+        public List<String> topIdleApp;
         public DateTime idleTimeStart;
-        private Boolean isIdle;
+        private readonly Boolean isIdle;
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public frmSystemInfo()
+        public FrmSystemInfo()
         {
             InitializeComponent();
-            updateView();
+            UpdateView();
+            UpdateTopIdleApps();
             idleTimeStart = new DateTime();
             isIdle = false;
         }
 
-        private void frmSystemInfo_Load(object sender, EventArgs e)
+        private void FrmSystemInfo_Load(object sender, EventArgs e)
         {
             ReportGenerator generator = new ReportGenerator();
             DataAccess da = new DataAccess();
-            Dictionary<String, String> myConfig = da.loadInitialConfig();
+            Dictionary<String, String> myConfig = da.LoadInitialConfig();
 
-            lblOS.Text = generator.getOSVersion();
-            lblUserName.Text = generator.getCurrentUser();
+            lblOS.Text = generator.GetOSVersion();
+            lblUserName.Text = generator.GetCurrentUser();
             lblLogin.Text = myConfig["USERNAME"];
-            lblIP.Text = generator.getIpAddress();
-            lblMAC.Text = generator.getMACAddress();
+            lblIP.Text = generator.GetIpAddress();
+            lblMAC.Text = generator.GetMACAddress();
+
+            //System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            //System.Diagnostics.FileVersionInfo fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = "";// fileVersionInfo.ProductVersion;
+
+            if (System.Diagnostics.Debugger.IsAttached)
+                version = "Debug Mode";
+            else
+            {
+                try
+                {
+                    version = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Major.ToString() + "." +
+                    System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Minor.ToString() + "." +
+                    System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Build.ToString() + "." +
+                    System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Revision.ToString();
+                }
+                catch(Exception ex)
+                {
+                    log.Error(ex.ToString());
+                }
+                
+            }
+
+            this.Text = "InnoMetrics collector - " + version;
+
+
         }
 
-        public void updateView()
+        public void UpdateView()
         {
-
+            topActivity = frmMain.myCurrentActivity;
             if (topActivity != null) {
-                isIdle = false;
+                //isIdle = false;
                 //timerIdleCounter.Enabled = false;
                 pbActiveAppIcon.Image = Icon.ExtractAssociatedIcon(topActivity.mainAppPath).ToBitmap();
                 lblActiveAppName.Text = "App name: \t" + topActivity.ExecutableName;
                 lblActiveAppTime.Text = "Running time: \t" + new DateTime((DateTime.Now - topActivity.StartTime).Ticks).ToString("HH:mm:ss");// topActivity.StartTime.ToString();
             }
-            else
+            /*else
             {
                 pbActiveAppIcon.Image = null;
                 lblActiveAppName.Text = "The is not active application";
@@ -64,6 +93,8 @@ namespace DataCollectorUI
                 }
 
             }
+
+            /*
 
             lblTopApp1.Text = "No data available";
             lblTopApp2.Text = "No data available";
@@ -80,18 +111,44 @@ namespace DataCollectorUI
                     
                 }
                 
-            }
+            }*/
 
             this.Refresh();
             
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void UpdateTopIdleApps()
         {
-            updateView();
+            lblTopApp1.Text = "No data available";
+            lblTopApp2.Text = "No data available";
+            lblTopApp3.Text = "No data available";
+
+            DataAccess da = new DataAccess();
+            List<String> topIdleApp = da.LoadGetTopIdleApps();
+            if (topIdleApp != null)
+            {
+                try
+                {
+                    lblTopApp1.Text = topIdleApp[0];
+                    lblTopApp2.Text = topIdleApp[1];
+                    lblTopApp3.Text = topIdleApp[2];
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex.ToString());
+                }
+
+            }
+
+            this.Refresh();
         }
 
-        private void timerIdleCounter_Tick(object sender, EventArgs e)
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            UpdateView();
+        }
+
+        private void TimerIdleCounter_Tick(object sender, EventArgs e)
         {
             if (isIdle)
             {
@@ -103,6 +160,11 @@ namespace DataCollectorUI
                     if (topActivity.StartTime != null)
                         lblActiveAppTime.Text = "Running time: \t" + new DateTime((DateTime.Now - topActivity.StartTime).Ticks).ToString("HH:mm:ss");// topActivity.StartTime.ToString();
             }
+        }
+
+        private void TimerTopApps_Tick(object sender, EventArgs e)
+        {
+            UpdateTopIdleApps();
         }
     }
 }

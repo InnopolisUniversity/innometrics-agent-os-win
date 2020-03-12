@@ -21,7 +21,7 @@ namespace InnoMetric.Models
         /// <summary>
         /// Initializes a new instance of the ActivityReport class.
         /// </summary>
-        public ActivityReport(int? activityID = default(int?), string activityType = default(string), string browserTitle = default(string), string browserUrl = default(string), DateTime? endTime = default(DateTime?), string executableName = default(string), bool? idleActivity = default(bool?), string ipAddress = default(string), string macAddress = default(string), IList<MeasurementReport> measurements = default(IList<MeasurementReport>), DateTime? startTime = default(DateTime?), string userID = default(string))
+        public ActivityReport(int? activityID = default(int?), string activityType = default(string), string browserTitle = default(string), string browserUrl = default(string), DateTime? endTime = default(DateTime?), string executableName = default(string), bool? idleActivity = default(bool?), string ipAddress = default(string), string macAddress = default(string), DateTime? startTime = default(DateTime?), string userID = default(string))
         {
             ActivityID = activityID;
             ActivityType = activityType;
@@ -32,7 +32,6 @@ namespace InnoMetric.Models
             IdleActivity = idleActivity;
             IpAddress = ipAddress;
             MacAddress = macAddress;
-            Measurements = measurements;
             StartTime = startTime;
             UserID = userID;
         }
@@ -81,11 +80,6 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "mac_address")]
         public string MacAddress { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "measurements")]
-        public IList<MeasurementReport> Measurements { get; set; }
 
         /// <summary>
         /// </summary>

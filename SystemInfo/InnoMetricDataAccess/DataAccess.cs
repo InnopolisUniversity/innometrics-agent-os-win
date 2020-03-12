@@ -17,9 +17,9 @@ namespace InnoMetricDataAccess
     public class DataAccess
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        const string regKeyFolders = @"HKEY_USERS\<SID>\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders";
-        const string regValueAppData = @"AppData";
-
+        //const string regKeyFolders = @"HKEY_USERS\<SID>\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders";
+        //const string regValueAppData = @"AppData";
+        const String dbDirectory = @"C:\TMP\InnoMetrics\db\";
         public enum ActivityStatus
         {
             Collected = 0,
@@ -30,14 +30,11 @@ namespace InnoMetricDataAccess
 
         public void CheckDB()
         {
+            string sourceFile = AppDomain.CurrentDomain.BaseDirectory + @"CollectorDB.db";
+            string destinationFile = dbDirectory + @"CollectorDB.db";
 
-            String dbDirectory = @"C:\TMP\InnoMetrics\db\";
-            if (!System.IO.File.Exists(dbDirectory + "CollectorDB.db"))
+            if (!System.IO.File.Exists(destinationFile))
             {
-                string sourceFile = AppDomain.CurrentDomain.BaseDirectory + @"CollectorDB.db";
-                //var myApp = AppDomain.CurrentDomain.BaseDirectory;
-
-                string destinationFile = dbDirectory + @"CollectorDB.db";
                 try
                 {
                     bool exists = System.IO.Directory.Exists(dbDirectory);
@@ -49,23 +46,35 @@ namespace InnoMetricDataAccess
                 }
                 catch (IOException iox)
                 {
-                    MessageBox.Show(iox.Message);
+                    MessageBox.Show(iox.ToString());
                 }
             }
+            else
+            {
+                Dictionary<String, String> myConfig = LoadInitialConfig();
+                var myVersion = ConfigurationManager.AppSettings["db_version"];
+                //MessageBox.Show("myVersion -> " + myVersion + ". current version: " + myConfig["VERSION"].ToString());
+                if (myVersion.ToString() != myConfig["VERSION"].ToString())
+                {
+                    try {
+                        //File.Delete(destinationFile);
+                        File.Copy(sourceFile, destinationFile, true);
+                    }
+                    catch (IOException iox)
+                    {
+                        MessageBox.Show(iox.ToString());
+                    }
 
-            
+                }
+            }
         }
 
-        private string LoadConnectionString(string id = "Default")
+        private string LoadConnectionString()
         {
-            
-            
-            //return Configs.getConnectionString().Replace("%AppData%", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)); // ConfigurationManager.ConnectionStrings[id].ConnectionString;
             return Configs.getConnectionString().Replace("%AppData%", Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Temp"));
-            
         }
 
-        public Dictionary<String, String> loadInitialConfig()
+        public Dictionary<String, String> LoadInitialConfig()
         {
             Dictionary<String, String> myConfig = new Dictionary<String, String>();
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -82,29 +91,44 @@ namespace InnoMetricDataAccess
                 {
                     myConfig.Add(r[0].ToString(), r[1].ToString());
                 }
+                cnn.Close();
             }
             return myConfig;
 
         }
 
-        public Boolean saveMyConfig(Dictionary<String, String> myconfig)
+        public Boolean SaveMyConfig(Dictionary<String, String> myconfig)
         {
+
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                cnn.Open();
-                SQLiteCommand cmd = new SQLiteCommand(cnn);
-                cmd.CommandText = @"Update configs set VALUE = @Value where LABEL = @Label";
-                foreach (String k in myconfig.Keys)
+                try
                 {
-                    cmd.Prepare();
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@Value", myconfig[k].ToString());
-                    cmd.Parameters.AddWithValue("@Label", k);
-                    cmd.ExecuteNonQuery();
+                    cnn.Open();
+                    SQLiteCommand cmd = new SQLiteCommand(cnn)
+                    {
+                        CommandText = @"Update configs set VALUE = @Value where LABEL = @Label"
+                    };
+                    foreach (String k in myconfig.Keys)
+                    {
+                        cmd.Prepare();
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@Value", myconfig[k].ToString());
+                        cmd.Parameters.AddWithValue("@Label", k);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception e)
+                {
+                    log.Error(e.Message);
+                    //Console.WriteLine(e.Message);
+                    MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 return true;
             }
+
+
         }
 
         public void SaveMyActivity(CollectorActivity activity)
@@ -116,24 +140,26 @@ namespace InnoMetricDataAccess
                     if (cnn.State != ConnectionState.Open)
                         cnn.Open();
 
-                    activity.ActivityID = getNextActivityId(cnn);
+                    activity.ActivityID = GetNextActivityId(cnn);
 
-                    var cmd = new SQLiteCommand(cnn);
-                    cmd.CommandText = "insert into CollectorData (ActivityId, ProcessName, ProcessId, StartTime, " +
+                    var cmd = new SQLiteCommand(cnn)
+                    {
+                        CommandText = "insert into CollectorData (ActivityId, ProcessName, ProcessId, StartTime, " +
                         "EndTime, IPAddress, MacAddress, Description, Status, ServerStatus) values (@ActivityId, @ProcessName, " +
-                        "@ProcessId, @StartTime, @EndTime, @IPAddress, @MacAddress, @Description, @Status, @serverStatus)";
+                        "@ProcessId, @StartTime, @EndTime, @IPAddress, @MacAddress, @Description, @Status, @serverStatus)"
+                    };
                     cmd.Prepare();
 
                     cmd.Parameters.AddWithValue("@ActivityId", activity.ActivityID);
                     cmd.Parameters.AddWithValue("@ProcessName", activity.ExecutableName);
                     cmd.Parameters.AddWithValue("@ProcessId", activity.ProcessId);
-                    cmd.Parameters.AddWithValue("@StartTime", activity.StartTime);
-                    cmd.Parameters.AddWithValue("@EndTime", activity.EndTime);
+                    cmd.Parameters.AddWithValue("@StartTime", activity.StartTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    cmd.Parameters.AddWithValue("@EndTime", activity.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
                     cmd.Parameters.AddWithValue("@IPAddress", activity.IpAddress);
                     cmd.Parameters.AddWithValue("@MacAddress", activity.MacAddress);
                     cmd.Parameters.AddWithValue("@Description", activity.Description);
                     cmd.Parameters.AddWithValue("@Status", activity.Status);
-                    cmd.Parameters.AddWithValue("@serverStatus", "0");
+                    cmd.Parameters.AddWithValue("@serverStatus", ActivityStatus.Collected);
 
                     cmd.ExecuteNonQuery();
 
@@ -146,7 +172,8 @@ namespace InnoMetricDataAccess
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    log.Error(e.Message);
+                    //Console.WriteLine(e.Message);
                     MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -159,9 +186,11 @@ namespace InnoMetricDataAccess
                 if (cnn.State != ConnectionState.Open)
                     cnn.Open();
 
-                var cmd = new SQLiteCommand(cnn);
-                cmd.CommandText = @"insert into CollectorMetrics (ActivityId, MetricTypeId, Value) 
-                                    values (@ActivityId, @MetricTypeId, @Value)";
+                var cmd = new SQLiteCommand(cnn)
+                {
+                    CommandText = @"insert into CollectorMetrics (ActivityId, MetricTypeId, Value) 
+                                    values (@ActivityId, @MetricTypeId, @Value)"
+                };
                 cmd.Prepare();
 
                 cmd.Parameters.AddWithValue("@ActivityId", ActivityId);
@@ -172,37 +201,210 @@ namespace InnoMetricDataAccess
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
+                log.Error(e.Message);
             }
         }
 
-        private int getNextActivityId(SQLiteConnection cnn)
+        private int GetNextActivityId(SQLiteConnection cnn)
         {
-
             if (cnn.State != ConnectionState.Open)
                 cnn.Open();
 
-            Dictionary<String, String> myConfig = new Dictionary<String, String>();
+            DataSet ds = new DataSet();
+            SQLiteDataAdapter da = new SQLiteDataAdapter("select ifnull(max(CAST(activityid as decimal)) + 1, 1) from CollectorData", cnn);
+            SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
+            da.Fill(ds);
 
+            var myId = "";
 
-            //cnn.Open();
-            SQLiteCommand cmd = new SQLiteCommand(cnn);
-            cmd.CommandText = @"select count(*) + 1 from CollectorData";
+            foreach (DataRow r in ds.Tables[0].Rows)
+            {
+                myId = r[0].ToString();
+            }
+            /*
+            SQLiteCommand cmd = new SQLiteCommand(cnn)
+            {
+                CommandText = @"select max(activityid) + 1 from CollectorData"
+            };
 
-            var myId = cmd.ExecuteScalar().ToString();
+            var myId = cmd.ExecuteScalar().ToString();*/
 
             return int.Parse(myId);
 
         }
 
-        public List<String> loadProcessHistory()
+        private int GetNextProcessId(SQLiteConnection cnn)
+        {
+            if (cnn.State != ConnectionState.Open)
+                cnn.Open();
+
+
+            DataSet ds = new DataSet();
+            SQLiteDataAdapter da = new SQLiteDataAdapter("select ifnull(max(CAST(ProcessId as decimal)) + 1, 1) from CollectorProcessData", cnn);
+            SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
+            da.Fill(ds);
+
+            var myId = "";
+
+            foreach (DataRow r in ds.Tables[0].Rows)
+            {
+                myId = r[0].ToString();
+            }
+            //cnn.Close();
+
+            //SQLiteCommand cmd = new SQLiteCommand(cnn)
+            //{
+            //    CommandText = @"select max(ifnull(NULLIF(processid, ''), 0)) + 1 from CollectorProcessData"
+            //};
+
+            //var myId = cmd.().ToString();
+
+            return int.Parse(myId);
+
+        }
+
+        private Boolean ExistProcessById(SQLiteConnection cnn, String ProcessId)
+        {
+            if (cnn.State != ConnectionState.Open)
+                cnn.Open();
+
+            SQLiteCommand cmd = new SQLiteCommand(cnn)
+            {
+                CommandText = @"select count(*) from CollectorProcessData where ProcessId = @ProcessId"
+            };
+
+
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@ProcessId", ProcessId);
+
+            var myId = cmd.ExecuteScalar().ToString();
+
+
+
+            DataSet ds = new DataSet();
+            SQLiteDataAdapter da = new SQLiteDataAdapter("select * from CollectorProcessData  where ProcessId = @ProcessId", cnn);
+            da.SelectCommand.Parameters.AddWithValue("@ProcessId", ProcessId);
+            SQLiteCommandBuilder cmd2 = new SQLiteCommandBuilder(da);
+            da.Fill(ds);
+
+            myId = "";
+
+            foreach (DataRow r in ds.Tables[0].Rows)
+            {
+                myId = r[0].ToString();
+            }
+
+
+            return ds.Tables[0].Rows.Count > 0;
+
+        }
+
+        public CollectorProcess SaveMyProcess(CollectorProcess process)
+        {
+            log.Debug("Executing SaveMyProcess...");
+            using (var cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                try
+                {
+                    Boolean recordExist = ExistProcessById(cnn, process.ProcessID.ToString());
+                    log.Debug(process.ProcessID + ", Process name: " + process.ProcessName);
+
+                    if (process.ProcessID == -1 || !recordExist)
+                    {
+                        if (cnn.State != ConnectionState.Open)
+                            cnn.Open();
+
+                        if (process.ProcessID == -1)
+                            process.ProcessID = GetNextProcessId(cnn);
+
+                        var cmd = new SQLiteCommand(cnn)
+                        {
+                            CommandText = @"insert into CollectorProcessData (ProcessId, ProcessType, ProcessName, 
+                                        WindowsTitle, BrowserURL, IPAddress, MacAddress, ServerStatus) 
+                                        values (@ProcessId, @ProcessType, @ProcessName, @WindowsTitle, 
+                                        @BrowserURL, @IPAddress, @MacAddress, @serverStatus)"
+                        };
+                        cmd.Prepare();
+
+                        
+
+                        cmd.Parameters.AddWithValue("@ProcessId", process.ProcessID);
+                        cmd.Parameters.AddWithValue("@ProcessType", process.ProcessType);
+                        cmd.Parameters.AddWithValue("@ProcessName", process.ProcessName);
+                        cmd.Parameters.AddWithValue("@WindowsTitle", process.WindowsTitle);
+                        cmd.Parameters.AddWithValue("@BrowserURL", process.BrowserUrl);
+                        cmd.Parameters.AddWithValue("@IPAddress", process.IpAddress);
+                        cmd.Parameters.AddWithValue("@MacAddress", process.MacAddress);
+                        cmd.Parameters.AddWithValue("@serverStatus", ActivityStatus.Collected);
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    ProcessMetrics batteryMeuasure = null;// new ProcessMetrics();
+
+                    foreach (var m in process.Measurements)
+                    {
+                        SaveProcessMeasurement(m, cnn, process);
+                        if (m.MeasurementType == "1") batteryMeuasure = m;
+                    }
+                    process.Measurements.Clear();
+
+                    if (batteryMeuasure != null) process.Measurements.Add(batteryMeuasure);
+
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine(e.Message);
+                    log.Error(e.Message);
+                    MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                return process;
+            }
+        }
+
+        private void SaveProcessMeasurement(ProcessMetrics metric, SQLiteConnection cnn, CollectorProcess Process)
+        {
+            try
+            {
+                if (cnn.State != ConnectionState.Open)
+                    cnn.Open();
+
+                var cmd = new SQLiteCommand(cnn)
+                {
+                    CommandText = @"insert into CollectorProcessMetrics (ProcessID, MetricTypeId, Value, collectedTime, IPAddress, MacAddress) 
+                                    values (@ProcessID, @MetricTypeId, @Value, @CollectedTime, @IPAddress, @MacAddress)"
+                };
+                cmd.Prepare();
+
+                cmd.Parameters.AddWithValue("@ProcessID", Process.ProcessID);
+                cmd.Parameters.AddWithValue("@MetricTypeId", metric.MeasurementType);
+                cmd.Parameters.AddWithValue("@Value", metric.Value);
+                cmd.Parameters.AddWithValue("@CollectedTime", metric.CapturedTime);
+                cmd.Parameters.AddWithValue("@IPAddress", Process.IpAddress);
+                cmd.Parameters.AddWithValue("@MacAddress", Process.MacAddress);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine(e.Message);
+                log.Error(e.Message);
+            }
+        }
+
+
+
+        public List<String> LoadProcessHistory()
         {
             List<String> myHistory = new List<string>();
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
 
                 DataSet ds = new DataSet();
-                SQLiteDataAdapter da = new SQLiteDataAdapter("select * from CollectorData where ServerStatus = '0'", cnn);
+                SQLiteDataAdapter da = new SQLiteDataAdapter("select * from CollectorProcessData where ServerStatus = '0'", cnn);
                 SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
                 da.Fill(ds);
 
@@ -216,7 +418,7 @@ namespace InnoMetricDataAccess
 
                     activity += "  Metrics -> {";
 
-                    List<String> metrics = loadMetricsHistory(activity.Split(';')[0]);
+                    List<String> metrics = LoadMetricsHistory(activity.Split(';')[0]);
 
                     foreach (String m in metrics)
                     {
@@ -230,15 +432,15 @@ namespace InnoMetricDataAccess
             return myHistory;
         }
 
-        public List<String> loadMetricsHistory(String ActivityId)
+        public List<String> LoadMetricsHistory(String ActivityId)
         {
             List<String> myHistory = new List<string>();
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
 
                 DataSet ds = new DataSet();
-                SQLiteDataAdapter da = new SQLiteDataAdapter("select MetricTypeId, Value from CollectorMetrics where ActivityId = @ActivityId", cnn);
-                da.SelectCommand.Parameters.AddWithValue("@ActivityId", ActivityId);
+                SQLiteDataAdapter da = new SQLiteDataAdapter("select MetricTypeId, Value from CollectorProcessMetrics where ProcessID = @ProcessID", cnn);
+                da.SelectCommand.Parameters.AddWithValue("@ProcessID", ActivityId);
                 SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
 
                 da.Fill(ds);
@@ -259,13 +461,14 @@ namespace InnoMetricDataAccess
             return myHistory;
         }
 
-        public Report reportGenerator(String account)
+        public Report ReportGenerator(String account)
         {
-            Report myReport = new Report();
+            Report myReport = new Report
+            {
+                Activities = new List<ActivityReport>()
+            };
 
-            myReport.Activities = new List<ActivityReport>();
-
-            updateActivityStatus(ActivityStatus.Collected, ActivityStatus.Processing);//Updating server Status from 0 -> new to 1 -> Processing
+            UpdateActivityStatus(ActivityStatus.Collected, ActivityStatus.Processing);//Updating server Status from 0 -> new to 1 -> Processing
 
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -297,7 +500,7 @@ namespace InnoMetricDataAccess
                     {
                         ExecutableName = r.ItemArray[1].ToString(),
                         ActivityType = r.ItemArray[2].ToString(),
-                        BrowserTitle = r.ItemArray[3].ToString(),
+                        BrowserTitle = r.ItemArray[10].ToString(),
                         BrowserUrl = r.ItemArray[4].ToString(),
                         StartTime = DateTime.Parse(r.ItemArray[5].ToString()),
                         EndTime = DateTime.Parse(r.ItemArray[6].ToString()),
@@ -307,7 +510,7 @@ namespace InnoMetricDataAccess
                         UserID = account//"x.vasquez"
                     };
 
-                    activity = loadReportMetrics(ActivityId, activity);
+                    activity = LoadReportMetrics(ActivityId, activity);
 
                     myReport.Activities.Add(activity);
 
@@ -316,7 +519,10 @@ namespace InnoMetricDataAccess
             return myReport;
         }
 
-        private ActivityReport loadReportMetrics(String ActivityId, ActivityReport myActivity)
+
+
+
+        private ActivityReport LoadReportMetrics(String ActivityId, ActivityReport myActivity)
         {
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -327,8 +533,8 @@ namespace InnoMetricDataAccess
                 SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
 
                 da.Fill(ds);
-                myActivity.Measurements = new List<MeasurementReport>();
-
+                //myActivity.Measurements = new List<MeasurementReport>();
+                /*
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
                     MeasurementReport metric = new MeasurementReport
@@ -338,27 +544,214 @@ namespace InnoMetricDataAccess
                         AlternativeLabel = ""
                     };
 
-                    myActivity.Measurements.Add(metric);
-                }
+                    //myActivity.Measurements.Add(metric);
+                }*/
             }
             return myActivity;
         }
 
-        public void updateActivityStatus(ActivityStatus oldStatus, ActivityStatus newStatus)
+        public void UpdateActivityStatus(ActivityStatus oldStatus, ActivityStatus newStatus)
         {
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 cnn.Open();
-                SQLiteCommand cmd = new SQLiteCommand(cnn);
-                cmd.CommandText = @"Update CollectorData 
+                SQLiteCommand cmd = new SQLiteCommand(cnn)
+                {
+                    CommandText = @"Update CollectorData 
                                        set ServerStatus = @newStatus 
-                                     where ServerStatus = @oldStatus";
+                                     where ServerStatus = @oldStatus"
+                };
                 cmd.Prepare();
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@oldStatus", oldStatus);
                 cmd.Parameters.AddWithValue("@newStatus", newStatus);
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        public AddProcessReportRequest ProcessReportGenerator(String account)
+        {
+            AddProcessReportRequest myReport = new AddProcessReportRequest
+            {
+                ProcessesReport = new List<ProcessReport>()
+            };
+
+            UpdateProcessStatus(ActivityStatus.Collected, ActivityStatus.Processing);//Updating server Status from 0 -> new to 1 -> Processing
+
+            using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+
+                DataSet ds = new DataSet();
+
+                SQLiteDataAdapter da = new SQLiteDataAdapter(@"select ProcessId, 
+                                                                      ProcessType, 
+                                                                      ProcessName, 
+                                                                      WindowsTitle,
+                                                                      BrowserURL,
+                                                                      IPAddress, 
+                                                                      MacAddress,
+                                                                      ServerStatus 
+                                                                 from CollectorProcessData
+                                                                where ServerStatus = '1'", cnn);
+                SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
+                da.Fill(ds);
+
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    String ProcessId = r.ItemArray[0].ToString();
+
+                    ProcessReport process = new ProcessReport
+                    {
+                        ProcessName = r.ItemArray[2].ToString(),
+                        IpAddress = r.ItemArray[5].ToString(),
+                        MacAddress = r.ItemArray[6].ToString(),
+                        UserID = account
+                    };
+
+                    process = LoadProcessReportMetrics(ProcessId, process);
+
+                    myReport.ProcessesReport.Add(process);
+
+                }
+            }
+            return myReport;
+        }
+
+        private ProcessReport LoadProcessReportMetrics(String ProcessId, ProcessReport myProcess)
+        {
+            using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+
+                DataSet ds = new DataSet();
+                SQLiteDataAdapter da = new SQLiteDataAdapter("select MetricTypeId, Value, CollectedTime from CollectorProcessMetrics where ProcessId = @ProcessId", cnn);
+                da.SelectCommand.Parameters.AddWithValue("@ProcessId", ProcessId);
+                SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
+
+                da.Fill(ds);
+                myProcess.MeasurementReportList = new List<MeasurementReport>();
+
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    MeasurementReport metric = new MeasurementReport
+                    {
+                        MeasurementTypeId = r.ItemArray[0].ToString(),
+                        Value = r.ItemArray[1].ToString(),
+                        AlternativeLabel = "",
+                        CapturedDate = DateTime.Parse(r.ItemArray[2].ToString()),
+                    };
+
+                    myProcess.MeasurementReportList.Add(metric);
+                }
+            }
+            return myProcess;
+        }
+
+        public void UpdateProcessStatus(ActivityStatus oldStatus, ActivityStatus newStatus)
+        {
+            using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                cnn.Open();
+                SQLiteCommand cmd = new SQLiteCommand(cnn)
+                {
+                    CommandText = @"Update CollectorProcessData 
+                                       set ServerStatus = @newStatus 
+                                     where ServerStatus = @oldStatus"
+                };
+                cmd.Prepare();
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@oldStatus", oldStatus);
+                cmd.Parameters.AddWithValue("@newStatus", newStatus);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+
+        public void CleanDataHistory()
+        {
+            using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                cnn.Open();
+                SQLiteCommand cmd = new SQLiteCommand(cnn)
+                {
+                    CommandText = @"delete
+                                    from collectorMetrics 
+                                    where activityId in (
+	                                    select activityID 
+	                                    from CollectorData 
+	                                    where serverStatus = @Status)"
+                };
+                cmd.Prepare();
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@Status", ActivityStatus.Accepted);
+                cmd.ExecuteNonQuery();
+
+                //cmd = new SQLiteCommand(cnn);
+                cmd.CommandText = @"Delete CollectorData 
+                                     where ServerStatus = @Status";
+                cmd.Prepare();
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@Status", ActivityStatus.Accepted);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+
+        public void CleanProcessDataHistory()
+        {
+            using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                cnn.Open();
+                SQLiteCommand cmd = new SQLiteCommand(cnn)
+                {
+                    CommandText = @"delete
+                                    from collectorProcessMetrics 
+                                    where processID in (
+	                                    select processID 
+	                                    from CollectorProcessData 
+	                                    where serverStatus = @Status)"
+                };
+                cmd.Prepare();
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@Status", ActivityStatus.Accepted);
+                cmd.ExecuteNonQuery();
+
+                //cmd = new SQLiteCommand(cnn);
+                cmd.CommandText = @"Delete from CollectorProcessData 
+                                     where ServerStatus = @Status";
+                cmd.Prepare();
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@Status", ActivityStatus.Accepted);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+
+        public List<String> LoadGetTopIdleApps()
+        {
+            List<String> TopApps = new List<String>();
+            using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+
+                log.Debug(cnn.ConnectionString);
+
+                DataSet ds = new DataSet();
+                SQLiteDataAdapter da = new SQLiteDataAdapter(@"select ProcessName
+                                                                 from collectorData
+                                                                where date(StartTime) = Date('now')
+                                                             group by ProcessName
+                                                             order by sum(((JulianDay(EndTime)- JulianDay(StartTime)) * 24 * 60)) asc
+                                                                limit 3", cnn);
+
+                SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
+                da.Fill(ds);
+
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    TopApps.Add(r[0].ToString());
+                }
+            }
+            return TopApps;
+
         }
     }
 }

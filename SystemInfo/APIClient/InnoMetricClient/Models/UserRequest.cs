@@ -21,9 +21,11 @@ namespace InnoMetric.Models
         /// <summary>
         /// Initializes a new instance of the UserRequest class.
         /// </summary>
-        public UserRequest(string email = default(string), string name = default(string), string password = default(string), string surname = default(string))
+        public UserRequest(DateTime? confirmedAt = default(DateTime?), string email = default(string), string isactive = default(string), string name = default(string), string password = default(string), string surname = default(string))
         {
+            ConfirmedAt = confirmedAt;
             Email = email;
+            Isactive = isactive;
             Name = name;
             Password = password;
             Surname = surname;
@@ -31,8 +33,18 @@ namespace InnoMetric.Models
 
         /// <summary>
         /// </summary>
+        [JsonProperty(PropertyName = "confirmed_at")]
+        public DateTime? ConfirmedAt { get; set; }
+
+        /// <summary>
+        /// </summary>
         [JsonProperty(PropertyName = "email")]
         public string Email { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "isactive")]
+        public string Isactive { get; set; }
 
         /// <summary>
         /// </summary>

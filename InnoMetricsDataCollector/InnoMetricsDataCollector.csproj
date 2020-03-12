@@ -117,9 +117,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <EmbeddedResource Include="CollectorDB.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
     <None Include="InnoMetricsDataCollector_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
