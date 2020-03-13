@@ -526,6 +526,7 @@ namespace DataCollectorUI
                 if (totalminutes > 2)
                 {
                     // set activity to idle, and start Idle counter
+                    // on next windows update end Idle counter
                 }
             }
         }
