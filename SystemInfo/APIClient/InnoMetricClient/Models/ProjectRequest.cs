@@ -11,17 +11,17 @@ namespace InnoMetric.Models
     using Microsoft.Rest;
     using Microsoft.Rest.Serialization;
 
-    public partial class ProjectResponse
+    public partial class ProjectRequest
     {
         /// <summary>
-        /// Initializes a new instance of the ProjectResponse class.
+        /// Initializes a new instance of the ProjectRequest class.
         /// </summary>
-        public ProjectResponse() { }
+        public ProjectRequest() { }
 
         /// <summary>
-        /// Initializes a new instance of the ProjectResponse class.
+        /// Initializes a new instance of the ProjectRequest class.
         /// </summary>
-        public ProjectResponse(string isActive = default(string), string name = default(string), int? projectID = default(int?))
+        public ProjectRequest(string isActive = default(string), string name = default(string), int? projectID = default(int?))
         {
             IsActive = isActive;
             Name = name;

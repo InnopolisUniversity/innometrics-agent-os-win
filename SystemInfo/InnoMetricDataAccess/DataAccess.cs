@@ -1,4 +1,5 @@
 ﻿using InnoMetric.Models;
+using InnoMetricsCollector;
 using InnoMetricsCollector.classes;
 using log4net;
 using System;
@@ -56,7 +57,8 @@ namespace InnoMetricDataAccess
                 //MessageBox.Show("myVersion -> " + myVersion + ". current version: " + myConfig["VERSION"].ToString());
                 if (myVersion.ToString() != myConfig["VERSION"].ToString())
                 {
-                    try {
+                    try
+                    {
                         //File.Delete(destinationFile);
                         File.Copy(sourceFile, destinationFile, true);
                     }
@@ -145,8 +147,8 @@ namespace InnoMetricDataAccess
                     var cmd = new SQLiteCommand(cnn)
                     {
                         CommandText = "insert into CollectorData (ActivityId, ProcessName, ProcessId, StartTime, " +
-                        "EndTime, IPAddress, MacAddress, Description, Status, ServerStatus) values (@ActivityId, @ProcessName, " +
-                        "@ProcessId, @StartTime, @EndTime, @IPAddress, @MacAddress, @Description, @Status, @serverStatus)"
+                        "EndTime, IPAddress, MacAddress, Description, PID, Status, ServerStatus) values (@ActivityId, @ProcessName, " +
+                        "@ProcessId, @StartTime, @EndTime, @IPAddress, @MacAddress, @Description, @PID, @Status, @serverStatus)"
                     };
                     cmd.Prepare();
 
@@ -158,6 +160,7 @@ namespace InnoMetricDataAccess
                     cmd.Parameters.AddWithValue("@IPAddress", activity.IpAddress);
                     cmd.Parameters.AddWithValue("@MacAddress", activity.MacAddress);
                     cmd.Parameters.AddWithValue("@Description", activity.Description);
+                    cmd.Parameters.AddWithValue("@PID", activity.ProcessId);
                     cmd.Parameters.AddWithValue("@Status", activity.Status);
                     cmd.Parameters.AddWithValue("@serverStatus", ActivityStatus.Collected);
 
@@ -222,13 +225,6 @@ namespace InnoMetricDataAccess
             {
                 myId = r[0].ToString();
             }
-            /*
-            SQLiteCommand cmd = new SQLiteCommand(cnn)
-            {
-                CommandText = @"select max(activityid) + 1 from CollectorData"
-            };
-
-            var myId = cmd.ExecuteScalar().ToString();*/
 
             return int.Parse(myId);
 
@@ -251,14 +247,6 @@ namespace InnoMetricDataAccess
             {
                 myId = r[0].ToString();
             }
-            //cnn.Close();
-
-            //SQLiteCommand cmd = new SQLiteCommand(cnn)
-            //{
-            //    CommandText = @"select max(ifnull(NULLIF(processid, ''), 0)) + 1 from CollectorProcessData"
-            //};
-
-            //var myId = cmd.().ToString();
 
             return int.Parse(myId);
 
@@ -322,13 +310,13 @@ namespace InnoMetricDataAccess
                         var cmd = new SQLiteCommand(cnn)
                         {
                             CommandText = @"insert into CollectorProcessData (ProcessId, ProcessType, ProcessName, 
-                                        WindowsTitle, BrowserURL, IPAddress, MacAddress, ServerStatus) 
+                                        WindowsTitle, BrowserURL, IPAddress, MacAddress, PID, CollectedTime, ServerStatus) 
                                         values (@ProcessId, @ProcessType, @ProcessName, @WindowsTitle, 
-                                        @BrowserURL, @IPAddress, @MacAddress, @serverStatus)"
+                                        @BrowserURL, @IPAddress, @MacAddress, @PID, @CollectedTime, @serverStatus)"
                         };
                         cmd.Prepare();
 
-                        
+
 
                         cmd.Parameters.AddWithValue("@ProcessId", process.ProcessID);
                         cmd.Parameters.AddWithValue("@ProcessType", process.ProcessType);
@@ -337,6 +325,8 @@ namespace InnoMetricDataAccess
                         cmd.Parameters.AddWithValue("@BrowserURL", process.BrowserUrl);
                         cmd.Parameters.AddWithValue("@IPAddress", process.IpAddress);
                         cmd.Parameters.AddWithValue("@MacAddress", process.MacAddress);
+                        cmd.Parameters.AddWithValue("@PID", process.PID);
+                        cmd.Parameters.AddWithValue("@CollectedTime", process.collectedTime.ToString("yyyy-MM-dd HH:mm:ss"));
                         cmd.Parameters.AddWithValue("@serverStatus", ActivityStatus.Collected);
 
                         cmd.ExecuteNonQuery();
@@ -468,6 +458,8 @@ namespace InnoMetricDataAccess
                 Activities = new List<ActivityReport>()
             };
 
+            ReportGenerator generator = new ReportGenerator();
+            String OSVERION = generator.GetOSVersion();
             UpdateActivityStatus(ActivityStatus.Collected, ActivityStatus.Processing);//Updating server Status from 0 -> new to 1 -> Processing
 
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -486,7 +478,8 @@ namespace InnoMetricDataAccess
                                                                       MacAddress, 
                                                                       Description, 
                                                                       Status, 
-                                                                      ServerStatus 
+                                                                      ServerStatus,
+                                                                      PID
                                                                  from CollectorData
                                                                 where ServerStatus = '1'", cnn);
                 SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
@@ -504,9 +497,11 @@ namespace InnoMetricDataAccess
                         BrowserUrl = r.ItemArray[4].ToString(),
                         StartTime = DateTime.Parse(r.ItemArray[5].ToString()),
                         EndTime = DateTime.Parse(r.ItemArray[6].ToString()),
-                        IdleActivity = false,//r.ItemArray[7].ToString(),
+                        IdleActivity = r.ItemArray[11].ToString() != "A",//r.ItemArray[7].ToString(),
                         IpAddress = r.ItemArray[8].ToString(),
                         MacAddress = r.ItemArray[9].ToString(),
+                        Pid = r.ItemArray[13].ToString(),
+                        Osversion = OSVERION,
                         UserID = account//"x.vasquez"
                     };
 
@@ -575,7 +570,8 @@ namespace InnoMetricDataAccess
             {
                 ProcessesReport = new List<ProcessReport>()
             };
-
+            ReportGenerator generator = new ReportGenerator();
+            string OSVERSION = generator.GetOSVersion();
             UpdateProcessStatus(ActivityStatus.Collected, ActivityStatus.Processing);//Updating server Status from 0 -> new to 1 -> Processing
 
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -590,7 +586,9 @@ namespace InnoMetricDataAccess
                                                                       BrowserURL,
                                                                       IPAddress, 
                                                                       MacAddress,
-                                                                      ServerStatus 
+                                                                      ServerStatus,
+                                                                      PID, 
+                                                                      CollectedTime
                                                                  from CollectorProcessData
                                                                 where ServerStatus = '1'", cnn);
                 SQLiteCommandBuilder cmd = new SQLiteCommandBuilder(da);
@@ -605,6 +603,9 @@ namespace InnoMetricDataAccess
                         ProcessName = r.ItemArray[2].ToString(),
                         IpAddress = r.ItemArray[5].ToString(),
                         MacAddress = r.ItemArray[6].ToString(),
+                        CollectedTime = DateTime.Parse(r.ItemArray[9].ToString()),
+                        Osversion = OSVERSION,
+                        Pid = r.ItemArray[8].ToString(),
                         UserID = account
                     };
 

@@ -41,6 +41,108 @@ namespace InnoMetric
 
 
             /// <summary>
+        /// addAppCategory
+        /// </summary>
+        /// <param name='appCategoryRequest'>
+        /// appCategoryRequest
+        /// </param>
+        /// <param name='token'>
+        /// Token
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<AppCategoryResponse>> AddAppCategoryUsingPOSTWithHttpMessagesAsync(AppCategoryRequest appCategoryRequest, string token = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// UpdateAppCategory
+        /// </summary>
+        /// <param name='appCategoryRequest'>
+        /// appCategoryRequest
+        /// </param>
+        /// <param name='token'>
+        /// Token
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<AppCategoryResponse>> UpdateAppCategoryUsingPUTWithHttpMessagesAsync(AppCategoryRequest appCategoryRequest, string token = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// getAppCategoryById
+        /// </summary>
+        /// <param name='appId'>
+        /// AppId
+        /// </param>
+        /// <param name='token'>
+        /// Token
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<AppCategoryResponse>> GetAppCategoryByIdUsingGETWithHttpMessagesAsync(int appId, string token = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// addCategory
+        /// </summary>
+        /// <param name='categoryRequest'>
+        /// categoryRequest
+        /// </param>
+        /// <param name='token'>
+        /// Token
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<CategoryResponse>> AddCategoryUsingPOSTWithHttpMessagesAsync(CategoryRequest categoryRequest, string token = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// UpdateCategory
+        /// </summary>
+        /// <param name='categoryRequest'>
+        /// categoryRequest
+        /// </param>
+        /// <param name='token'>
+        /// Token
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<CategoryResponse>> UpdateCategoryUsingPUTWithHttpMessagesAsync(CategoryRequest categoryRequest, string token = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// getCategoryById
+        /// </summary>
+        /// <param name='categoryId'>
+        /// CategoryId
+        /// </param>
+        /// <param name='token'>
+        /// Token
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<CategoryResponse>> GetCategoryByIdUsingGETWithHttpMessagesAsync(int categoryId, string token = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// CreateMeasurementType
         /// </summary>
         /// <param name='token'>
@@ -56,6 +158,51 @@ namespace InnoMetric
         /// The cancellation token.
         /// </param>
         Task<HttpOperationResponse<MeasurementTypeResponse>> CreateMeasurementTypeUsingPOSTWithHttpMessagesAsync(string token, MeasurementTypeRequest measurementType, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// getActiveProjects
+        /// </summary>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<ProjectListResponse>> GetActiveProjectsUsingGETWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// CreateProject
+        /// </summary>
+        /// <param name='project'>
+        /// project
+        /// </param>
+        /// <param name='token'>
+        /// Token
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<ProjectResponse>> CreateProjectUsingPOSTWithHttpMessagesAsync(ProjectRequest project, string token = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// updateProject
+        /// </summary>
+        /// <param name='token'>
+        /// Token
+        /// </param>
+        /// <param name='project'>
+        /// project
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<ProjectResponse>> UpdateProjectUsingPUTWithHttpMessagesAsync(string token, ProjectRequest project, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// ListAllRoles
@@ -166,13 +313,10 @@ namespace InnoMetric
         Task<HttpOperationResponse<bool?>> UpdateUserStatusUsingPUTWithHttpMessagesAsync(bool isActive, string token, string userId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// CreateProject
+        /// getActiveUsers
         /// </summary>
-        /// <param name='token'>
-        /// Token
-        /// </param>
-        /// <param name='name'>
-        /// name
+        /// <param name='projectId'>
+        /// ProjectId
         /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
@@ -180,7 +324,7 @@ namespace InnoMetric
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<ProjectResponse>> CreateProjectUsingPOSTWithHttpMessagesAsync(string token, string name, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<UserListResponse>> GetActiveUsersUsingGETWithHttpMessagesAsync(string projectId = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// InviteUserProject
@@ -204,6 +348,72 @@ namespace InnoMetric
         /// The cancellation token.
         /// </param>
         Task<HttpOperationResponse<bool?>> InviteUserProjectUsingPOSTWithHttpMessagesAsync(bool manager, string projectName, string token, string userEmail, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// getReportActivities
+        /// </summary>
+        /// <param name='email'>
+        /// email
+        /// </param>
+        /// <param name='maxDate'>
+        /// max_Date
+        /// </param>
+        /// <param name='minDate'>
+        /// min_Date
+        /// </param>
+        /// <param name='projectID'>
+        /// projectID
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<ActivitiesReportByUserResponse>> GetReportActivitiesUsingGETWithHttpMessagesAsync(string email = default(string), DateTime? maxDate = default(DateTime?), DateTime? minDate = default(DateTime?), string projectID = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// getCumulativeReport
+        /// </summary>
+        /// <param name='email'>
+        /// email
+        /// </param>
+        /// <param name='maxDate'>
+        /// max_Date
+        /// </param>
+        /// <param name='minDate'>
+        /// min_Date
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<CumulativeReportResponse>> GetCumulativeReportUsingGETWithHttpMessagesAsync(string email = default(string), DateTime? maxDate = default(DateTime?), DateTime? minDate = default(DateTime?), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// getTimeReport
+        /// </summary>
+        /// <param name='email'>
+        /// email
+        /// </param>
+        /// <param name='maxDate'>
+        /// max_Date
+        /// </param>
+        /// <param name='minDate'>
+        /// min_Date
+        /// </param>
+        /// <param name='projectID'>
+        /// projectID
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<TimeReportResponse>> GetTimeReportUsingGETWithHttpMessagesAsync(string email = default(string), DateTime? maxDate = default(DateTime?), DateTime? minDate = default(DateTime?), string projectID = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// getActivities

@@ -21,14 +21,22 @@ namespace InnoMetric.Models
         /// <summary>
         /// Initializes a new instance of the ProcessReport class.
         /// </summary>
-        public ProcessReport(string ipAddress = default(string), string macAddress = default(string), IList<MeasurementReport> measurementReportList = default(IList<MeasurementReport>), string processName = default(string), string userID = default(string))
+        public ProcessReport(DateTime? collectedTime = default(DateTime?), string ipAddress = default(string), string macAddress = default(string), IList<MeasurementReport> measurementReportList = default(IList<MeasurementReport>), string osversion = default(string), string pid = default(string), string processName = default(string), string userID = default(string))
         {
+            CollectedTime = collectedTime;
             IpAddress = ipAddress;
             MacAddress = macAddress;
             MeasurementReportList = measurementReportList;
+            Osversion = osversion;
+            Pid = pid;
             ProcessName = processName;
             UserID = userID;
         }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "collectedTime")]
+        public DateTime? CollectedTime { get; set; }
 
         /// <summary>
         /// </summary>
@@ -44,6 +52,16 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "measurementReportList")]
         public IList<MeasurementReport> MeasurementReportList { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "osversion")]
+        public string Osversion { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "pid")]
+        public string Pid { get; set; }
 
         /// <summary>
         /// </summary>

@@ -21,7 +21,7 @@ namespace InnoMetric.Models
         /// <summary>
         /// Initializes a new instance of the ActivityReport class.
         /// </summary>
-        public ActivityReport(int? activityID = default(int?), string activityType = default(string), string browserTitle = default(string), string browserUrl = default(string), DateTime? endTime = default(DateTime?), string executableName = default(string), bool? idleActivity = default(bool?), string ipAddress = default(string), string macAddress = default(string), DateTime? startTime = default(DateTime?), string userID = default(string))
+        public ActivityReport(int? activityID = default(int?), string activityType = default(string), string browserTitle = default(string), string browserUrl = default(string), DateTime? endTime = default(DateTime?), string executableName = default(string), bool? idleActivity = default(bool?), string ipAddress = default(string), string macAddress = default(string), string osversion = default(string), string pid = default(string), DateTime? startTime = default(DateTime?), string userID = default(string))
         {
             ActivityID = activityID;
             ActivityType = activityType;
@@ -32,6 +32,8 @@ namespace InnoMetric.Models
             IdleActivity = idleActivity;
             IpAddress = ipAddress;
             MacAddress = macAddress;
+            Osversion = osversion;
+            Pid = pid;
             StartTime = startTime;
             UserID = userID;
         }
@@ -80,6 +82,16 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "mac_address")]
         public string MacAddress { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "osversion")]
+        public string Osversion { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "pid")]
+        public string Pid { get; set; }
 
         /// <summary>
         /// </summary>

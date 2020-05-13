@@ -60,22 +60,39 @@
     <Compile Include="InnoMetricClient\IInnoMetricClient.cs" />
     <Compile Include="InnoMetricClient\InnoMetricClient.cs" />
     <Compile Include="InnoMetricClient\InnoMetricClientExtensions.cs" />
+    <Compile Include="InnoMetricClient\Models\ActivitiesReportByUser.cs" />
+    <Compile Include="InnoMetricClient\Models\ActivitiesReportByUserResponse.cs" />
     <Compile Include="InnoMetricClient\Models\ActivityReport.cs" />
     <Compile Include="InnoMetricClient\Models\AddProcessReportRequest.cs" />
+    <Compile Include="InnoMetricClient\Models\AppCategoryRequest.cs" />
+    <Compile Include="InnoMetricClient\Models\AppCategoryResponse.cs" />
     <Compile Include="InnoMetricClient\Models\AuthRequest.cs" />
+    <Compile Include="InnoMetricClient\Models\CategoryRequest.cs" />
+    <Compile Include="InnoMetricClient\Models\CategoryResponse.cs" />
+    <Compile Include="InnoMetricClient\Models\CumulativeActivityReport.cs" />
+    <Compile Include="InnoMetricClient\Models\CumulativeReportResponse.cs" />
     <Compile Include="InnoMetricClient\Models\MeasurementReport.cs" />
     <Compile Include="InnoMetricClient\Models\MeasurementTypeRequest.cs" />
     <Compile Include="InnoMetricClient\Models\MeasurementTypeResponse.cs" />
     <Compile Include="InnoMetricClient\Models\ProcessReport.cs" />
+    <Compile Include="InnoMetricClient\Models\ProjectListResponse.cs" />
+    <Compile Include="InnoMetricClient\Models\ProjectRequest.cs" />
     <Compile Include="InnoMetricClient\Models\ProjectResponse.cs" />
     <Compile Include="InnoMetricClient\Models\Report.cs" />
     <Compile Include="InnoMetricClient\Models\Role.cs" />
+    <Compile Include="InnoMetricClient\Models\TimeReportByUser.cs" />
+    <Compile Include="InnoMetricClient\Models\TimeReportResponse.cs" />
+    <Compile Include="InnoMetricClient\Models\UserListResponse.cs" />
     <Compile Include="InnoMetricClient\Models\UserRequest.cs" />
+    <Compile Include="InnoMetricClient\Models\UserResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
