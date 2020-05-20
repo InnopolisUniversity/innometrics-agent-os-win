@@ -71,7 +71,7 @@
     <ApplicationIcon>windows_collector.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>236C8DF5A68DB3AE3CD9D6A67EE06F0F38D5488F</ManifestCertificateThumbprint>

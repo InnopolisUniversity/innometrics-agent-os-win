@@ -47,7 +47,13 @@ namespace DataCollectorUI
 
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private KeyboardTracker keyboard;
+        private MouseTracker mouse;
 
+
+        //LAST MOUSE AND KEYBOARD MOVEMENTS
+        private DateTime last_mouse_signal;
+        private DateTime last_keyboard_touch;
 
         ///////////////////////////////////////////////////////////////////////////////////////////
         const uint WINEVENT_OUTOFCONTEXT = 0;
@@ -75,6 +81,12 @@ namespace DataCollectorUI
         public frmMain()
         {
             InitializeComponent();
+
+            keyboard = new KeyboardTracker();
+            keyboard.KeyBoardKeyPressed += keyboard_KeyBoardKeyPressed;
+
+            mouse = new MouseTracker();
+            mouse.MouseMoved += mouse_MouseMoved;
         }
 
 
@@ -91,9 +103,9 @@ namespace DataCollectorUI
                 this.Visible = false;
                 this.WindowState = FormWindowState.Minimized;
                 this.Hide();
-                
+
                 UpdateConfig();
-                
+
                 if (myConfig.ContainsKey("TOKEN"))
                 {
                     if (String.IsNullOrEmpty(myConfig["TOKEN"]))
@@ -108,7 +120,7 @@ namespace DataCollectorUI
                         UpdateConfig();
                     }
                 }
-                
+
                 notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", "The data collector is running now...", ToolTipIcon.Info);
 
                 abortDataCollection = false;
@@ -129,14 +141,14 @@ namespace DataCollectorUI
                     EVENT_SYSTEM_FOREGROUND, IntPtr.Zero,
                     winEventProcDel, 0, 0, WINEVENT_OUTOFCONTEXT);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
                 MessageBox.Show(ex.ToString());
 
             }
         }
-        
+
         private void UpdateConfig()
         {
             DataAccess da = new DataAccess();
@@ -182,7 +194,7 @@ namespace DataCollectorUI
                     {
                         foreach (var app in myReport.processes)
                         {
-                            log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " +  app.ProcessID);
+                            log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " + app.ProcessID);
                             var lastState = myLastReport.processes.Where(p => app.PID == p.PID && app.ProcessName == p.ProcessName).FirstOrDefault();
                             if (lastState != null)
                             {
@@ -248,7 +260,7 @@ namespace DataCollectorUI
                             log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " + app.ProcessID);
                         }
 
-                        
+
 
                         DataAccess da = new DataAccess();
 
@@ -295,6 +307,15 @@ namespace DataCollectorUI
             }
         }
 
+        void keyboard_KeyBoardKeyPressed(object sender, EventArgs e)
+        {
+            last_keyboard_touch = DateTime.Now;
+        }
+
+        void mouse_MouseMoved(object sender, EventArgs e)
+        {
+            last_mouse_signal = DateTime.Now;
+        }
 
         private void ToolStripMenuItem2_Click(object sender, EventArgs e)
         {
@@ -308,7 +329,7 @@ namespace DataCollectorUI
 
             if (dataSync.ThreadState == System.Threading.ThreadState.Running)
                 dataSync.Abort();
-            
+
             log.Debug(check.ThreadState.ToString());
             log.Debug(dataSync.ThreadState.ToString());
 
@@ -445,7 +466,8 @@ namespace DataCollectorUI
                     }
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
 
             }
@@ -478,7 +500,7 @@ namespace DataCollectorUI
                         DataAccess da = new DataAccess();
                         myCurrentActivity.EndTime = dataCollectionTime;
                         da.SaveMyActivity(myCurrentActivity);
-                        log.Debug("End of app tracked -> " + myCurrentActivity.ExecutableName + " - "+ myCurrentActivity.StartTime.ToString("yyyy-MM-dd HH:mm:ss") + " to " + myCurrentActivity.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                        log.Debug("End of app tracked -> " + myCurrentActivity.ExecutableName + " - " + myCurrentActivity.StartTime.ToString("yyyy-MM-dd HH:mm:ss") + " to " + myCurrentActivity.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
                     }
                     myCurrentActivity = myCollector.GetCurrentActivity(hwnd, dataCollectionTime);
@@ -489,6 +511,30 @@ namespace DataCollectorUI
                 log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
             }
 
+        }
+
+        //ON CURRENT WINDOW UPDATE ACTION
+        //INITIALIZE LAST_KEYBOARD_TOUCH TO ZERO(NULL)
+        void simulation_method()
+        {
+            if (last_keyboard_touch != null || last_mouse_signal != null)
+            {
+                DateTime maximum_date = MaxDate(last_mouse_signal, last_keyboard_touch);
+                DateTime present = DateTime.Now;
+                double totalminutes = (present - maximum_date).TotalMinutes;
+
+                if (totalminutes > 2)
+                {
+                    // set activity to idle, and start Idle counter
+                    // on next windows update end Idle counter
+                }
+            }
+        }
+
+        public DateTime MaxDate(DateTime first, DateTime second)
+        {
+            if (first > second) return first;
+            else return second;
         }
     }
 }
