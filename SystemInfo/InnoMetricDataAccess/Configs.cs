@@ -12,7 +12,8 @@ namespace InnoMetricDataAccess
         public static String getConnectionString()
         {
 #if DEBUG
-            return @"Data Source=.\db\CollectorDB.db; Version=3";
+            //return @"Data Source=.\db\CollectorDB.db; Version=3";
+            return @"Data Source=.\CollectorDB.db; Version=3";
 #else
             //return @"Data Source=%AppData%\InnoMetrics\db\CollectorDB.db; Version=3";
             return @"Data Source=C:\TMP\InnoMetrics\db\CollectorDB.db; Version=3";

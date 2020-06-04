@@ -60,6 +60,7 @@ namespace InnoMetricsCollector
                         Status = "0",
                         mainAppPath = w.Value[12].ToString(),
                         PID = w.Value[1].ToString(),
+                        collectedTime = measurementTime
                     };
 
                     if (batteryStatus != null && batteryStatus.Count > 0)
@@ -87,7 +88,6 @@ namespace InnoMetricsCollector
                     }
                     else
                     {
-
                         // Default values for desktop computers
                         myProcess.Measurements.Add(new ProcessMetrics
                         {

@@ -18,8 +18,8 @@ namespace DataCollectorUI
     {
         public CollectorActivity topActivity;
         public List<String> topIdleApp;
-        public DateTime idleTimeStart;
-        private readonly Boolean isIdle;
+        public static DateTime idleTimeStart;
+        public static Boolean isIdle;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public FrmSystemInfo()
@@ -28,7 +28,7 @@ namespace DataCollectorUI
             UpdateView();
             UpdateTopIdleApps();
             idleTimeStart = new DateTime();
-            isIdle = false;
+            //isIdle = false;
         }
 
         private void FrmSystemInfo_Load(object sender, EventArgs e)
@@ -150,16 +150,16 @@ namespace DataCollectorUI
 
         private void TimerIdleCounter_Tick(object sender, EventArgs e)
         {
-            if (isIdle)
-            {
-                lblTotalIdleTime.Text = new DateTime((DateTime.Now - idleTimeStart).Ticks).ToString("HH:mm:ss");
-            }
+            //if (isIdle)
+            //{
+            lblTotalIdleTime.Text = new DateTime((DateTime.Now - idleTimeStart).Ticks).ToString("HH:mm:ss");
+            /*}
             else
             {
                 if(topActivity != null)
                     if (topActivity.StartTime != null)
                         lblActiveAppTime.Text = "Running time: \t" + new DateTime((DateTime.Now - topActivity.StartTime).Ticks).ToString("HH:mm:ss");// topActivity.StartTime.ToString();
-            }
+            }*/
         }
 
         private void TimerTopApps_Tick(object sender, EventArgs e)

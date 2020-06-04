@@ -33,8 +33,8 @@ namespace DataCollectorUI
         CollectorProcessReport myLastReport;
         public static CollectorActivity myCurrentActivity;
         Thread check;
-
         Thread dataSync;
+        Thread activityTracking;
         FrmSystemInfo mySystemInfoForm;
 
         private int COLLECTION_INTERVAL;
@@ -46,6 +46,12 @@ namespace DataCollectorUI
         public static Dictionary<String, String> myConfig;
 
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private KeyboardTracker keyboard;
+        private MouseTracker mouse;
+        //LAST MOUSE AND KEYBOARD MOVEMENTS
+        public DateTime last_mouse_signal;
+        private DateTime last_keyboard_touch;
 
 
 
@@ -75,6 +81,12 @@ namespace DataCollectorUI
         public frmMain()
         {
             InitializeComponent();
+
+            keyboard = new KeyboardTracker();
+            keyboard.KeyBoardKeyPressed += keyboard_KeyBoardKeyPressed;
+
+            mouse = new MouseTracker();
+            mouse.MouseMoved += mouse_MouseMoved;
         }
 
 
@@ -121,6 +133,9 @@ namespace DataCollectorUI
                 dataSync = new Thread(SyncData);
                 dataSync.Start();
 
+                activityTracking = new Thread(simulation_method);
+                activityTracking.Start();
+
                 mySystemInfoForm = new FrmSystemInfo();
                 myCurrentActivity = null;
 
@@ -131,7 +146,7 @@ namespace DataCollectorUI
             }
             catch(Exception ex)
             {
-                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                log.Error(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
                 MessageBox.Show(ex.ToString());
 
             }
@@ -285,13 +300,13 @@ namespace DataCollectorUI
 
                     if (abortDataCollection)
                     {
-                        log.Debug("stopping thread DataCollection");
+                        log.Info("stopping thread DataCollection");
                     }
                 }
             }
             catch (Exception ex)
             {
-                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
             }
         }
 
@@ -308,9 +323,14 @@ namespace DataCollectorUI
 
             if (dataSync.ThreadState == System.Threading.ThreadState.Running)
                 dataSync.Abort();
-            
+
+            if (activityTracking.ThreadState == System.Threading.ThreadState.Running)
+                activityTracking.Abort();
+
             log.Debug(check.ThreadState.ToString());
             log.Debug(dataSync.ThreadState.ToString());
+            log.Debug(activityTracking.ThreadState.ToString());
+            
 
             Application.Exit();
         }
@@ -334,7 +354,7 @@ namespace DataCollectorUI
             }
             catch (Exception ex)
             {
-                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
             }
         }
 
@@ -440,13 +460,13 @@ namespace DataCollectorUI
 #endif
                     if (abortDataSync)
                     {
-                        log.Debug("stopping thread DataSync");
+                        log.Info("stopping thread DataSync");
                         break;
                     }
                 }
             }
             catch (Exception ex) {
-                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
 
             }
         }
@@ -459,7 +479,7 @@ namespace DataCollectorUI
             }
             catch (Exception ex)
             {
-                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
             }
         }
 
@@ -486,9 +506,63 @@ namespace DataCollectorUI
             }
             catch (Exception ex)
             {
-                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
             }
 
+        }
+
+        void keyboard_KeyBoardKeyPressed(object sender, EventArgs e)
+        {
+            last_keyboard_touch = DateTime.Now;
+            FrmSystemInfo.idleTimeStart = DateTime.Now;
+            if (myCurrentActivity != null)
+                myCurrentActivity.IdleActivity = false;
+        }
+
+        void mouse_MouseMoved(object sender, EventArgs e)
+        {
+            last_mouse_signal = DateTime.Now;
+            FrmSystemInfo.idleTimeStart = DateTime.Now;
+            if (myCurrentActivity != null)
+                myCurrentActivity.IdleActivity = false;
+        }
+
+        //ON CURRENT WINDOW UPDATE ACTION
+        //INITIALIZE LAST_KEYBOARD_TOUCH TO ZERO(NULL)
+        void simulation_method()
+        {
+            while (true)
+            {
+                if (last_keyboard_touch != null || last_mouse_signal != null)
+                {
+                    DateTime maximum_date = MaxDate(last_mouse_signal, last_keyboard_touch);
+                    DateTime present = DateTime.Now;
+                    double totalminutes = (present - maximum_date).TotalMinutes;
+                    Boolean isIdle = false;
+                    if (myCurrentActivity == null)
+                        isIdle = true;
+                    else
+                        isIdle = myCurrentActivity.IdleActivity;
+
+                    if (totalminutes > 2 && !isIdle)
+                    {
+                        DataAccess da = new DataAccess();
+                        myCurrentActivity.EndTime = maximum_date;
+                        da.SaveMyActivity(myCurrentActivity);
+                        myCurrentActivity.StartTime = maximum_date;
+                        myCurrentActivity.IdleActivity = true;
+                        myCurrentActivity.EndTime = new DateTime();
+                    }
+                }
+                Thread.Sleep(1000);
+            }
+            
+        }
+
+        public DateTime MaxDate(DateTime first, DateTime second)
+        {
+            if (first > second) return first;
+            else return second;
         }
     }
 }

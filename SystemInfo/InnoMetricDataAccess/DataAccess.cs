@@ -205,6 +205,7 @@ namespace InnoMetricDataAccess
             catch (Exception e)
             {
                 //Console.WriteLine(e.Message);
+                MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 log.Error(e.Message);
             }
         }
@@ -381,6 +382,7 @@ namespace InnoMetricDataAccess
             catch (Exception e)
             {
                 //Console.WriteLine(e.Message);
+                MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 log.Error(e.Message);
             }
         }

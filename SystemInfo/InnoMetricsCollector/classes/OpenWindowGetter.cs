@@ -68,68 +68,6 @@ namespace InnoMetricsCollector.classes
 
                         Object[] data = GetProcessData(uint.Parse(processid.ToString()), shellWindow, LogicalProcessors);
 
-                        /*Process process = Process.GetProcessById(Int32.Parse(processid.ToString()));
-
-                        IntPtr hWnd = process.MainWindowHandle;
-
-                        if (hWnd == shellWindow) continue;
-
-                        //if (!IsWindowVisible(hWnd)) continue;
-
-                        int length = GetWindowTextLength(hWnd);
-                        if (length == 0) continue;
-
-                        StringBuilder builder = new StringBuilder(length);
-                        GetWindowText(hWnd, builder, length + 1);
-
-                        var cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
-                        cpuCounter.NextValue();
-                        var cpuUsage = cpuCounter.NextValue();
-
-                        Double cpuUtilization = Double.Parse(cpuUsage.ToString()) / LogicalProcessors;
-                        //cpuCounter = new PerformanceCounter("Processor", "% Processor Time", process.ProcessName, true);
-                        //cpuCounter.NextValue();
-                        //var cpuUsage2 = cpuCounter.NextValue();
-
-                        string status;
-                        if (hWnd == GetForegroundWindow())
-                        {
-                            status = "ACTIVE";
-                        }
-                        else
-                        {
-                            status = "IDLE";
-                        }
-
-                        Object[] data = {
-                            // 0 Process name
-                            process.ProcessName,
-                            // 1 Process ID
-                            processid.ToString(),//process.Id.ToString(),
-                            // 2 Process status
-                            status,
-                            // 3 Description of the process
-                            builder.ToString(),
-                            // 4 exe name
-                            process.MainModule.ModuleName,
-                            // 5 process starting time
-                            process.StartTime,
-                            // 6 Total processor time
-                            process.TotalProcessorTime,
-                            // 7 USer processor time
-                            process.UserProcessorTime,
-                            // 8 window titte
-                            process.MainWindowTitle,
-                            // 9 RAM Usage
-                            process.WorkingSet64/(1024*1024),
-                            // 10 Virtual RAM Usage
-                            process.VirtualMemorySize64 /(1024*1024),
-                            // 11 CPU usage
-                            cpuUtilization, //cpuUsage,
-                            //12 Executable path
-                            process.MainModule.FileName,
-                        };*/
-
                         windows.Add(hWnd, data);
                     }
                     catch (Exception ex)
@@ -203,8 +141,6 @@ namespace InnoMetricsCollector.classes
                     GetWindowText(hWnd, builder, length + 1);
                     AppDescription = builder.ToString();
                 }
-
-                
 
                 var cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
                 cpuCounter.NextValue();

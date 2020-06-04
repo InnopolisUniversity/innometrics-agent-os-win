@@ -8,8 +8,6 @@ namespace InnoMetricsCollector.classes
 {
     public class CollectorProcess
     {
-        
-
         public int ProcessID { get; set; }
         public string ProcessType { get; set; }
         public string ProcessName { get; set; }
