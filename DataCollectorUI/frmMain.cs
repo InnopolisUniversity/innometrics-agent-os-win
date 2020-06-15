@@ -12,8 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
-
 using System.Management;
 using System.Diagnostics;
 using System.Net;
@@ -502,6 +500,7 @@ namespace DataCollectorUI
 
                     }
                     myCurrentActivity = myCollector.GetCurrentActivity(hwnd, dataCollectionTime);
+                    myCurrentActivity.StartTime = dataCollectionTime;
                 }
             }
             catch (Exception ex)
@@ -546,12 +545,23 @@ namespace DataCollectorUI
 
                     if (totalminutes > 2 && !isIdle)
                     {
-                        DataAccess da = new DataAccess();
-                        myCurrentActivity.EndTime = maximum_date;
-                        da.SaveMyActivity(myCurrentActivity);
-                        myCurrentActivity.StartTime = maximum_date;
-                        myCurrentActivity.IdleActivity = true;
-                        myCurrentActivity.EndTime = new DateTime();
+                        try {
+                            DataAccess da = new DataAccess();
+                            myCurrentActivity.EndTime = maximum_date;
+                            da.SaveMyActivity(myCurrentActivity);
+                        }
+                        catch(Exception ex)
+                        {
+                            log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                        }
+                        finally
+                        {
+                            myCurrentActivity.StartTime = present;
+                            myCurrentActivity.IdleActivity = true;
+                            myCurrentActivity.EndTime = new DateTime();
+                        }
+                        
+                        
                     }
                 }
                 Thread.Sleep(1000);
