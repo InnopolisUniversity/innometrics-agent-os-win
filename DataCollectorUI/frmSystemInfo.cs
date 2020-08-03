@@ -36,12 +36,20 @@ namespace DataCollectorUI
             ReportGenerator generator = new ReportGenerator();
             DataAccess da = new DataAccess();
             Dictionary<String, String> myConfig = da.LoadInitialConfig();
+            try
+            {
+                
 
-            lblOS.Text = generator.GetOSVersion();
-            lblUserName.Text = generator.GetCurrentUser();
-            lblLogin.Text = myConfig["USERNAME"];
-            lblIP.Text = generator.GetIpAddress();
-            lblMAC.Text = generator.GetMACAddress();
+                lblOS.Text = generator.GetOSVersion();
+                lblUserName.Text = generator.GetCurrentUser();
+                lblLogin.Text = myConfig["USERNAME"];
+                lblIP.Text = generator.GetIpAddress();
+                lblMAC.Text = generator.GetMACAddress();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.ToString());
+            }
 
             //System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             //System.Diagnostics.FileVersionInfo fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -58,15 +66,13 @@ namespace DataCollectorUI
                     System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Build.ToString() + "." +
                     System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Revision.ToString();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     log.Error(ex.ToString());
                 }
-                
             }
 
             this.Text = "InnoMetrics collector - " + version;
-
 
         }
 

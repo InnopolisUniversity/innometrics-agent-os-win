@@ -56,6 +56,7 @@ namespace DataCollectorUI
         ///////////////////////////////////////////////////////////////////////////////////////////
         const uint WINEVENT_OUTOFCONTEXT = 0;
         const uint EVENT_SYSTEM_FOREGROUND = 3;
+        const uint EVENT_OBJECT_SELECTION = 32774;
 
         delegate void WinEventDelegate(IntPtr hWinEventHook,
             uint eventType, IntPtr hwnd, int idObject,
@@ -74,7 +75,10 @@ namespace DataCollectorUI
 
         IntPtr m_hhook;
 
+        IntPtr tab_hhook;
+
         private WinEventDelegate winEventProcDel;
+        private WinEventDelegate tabEventProcDel;
 
         public frmMain()
         {
@@ -138,9 +142,14 @@ namespace DataCollectorUI
                 myCurrentActivity = null;
 
                 winEventProcDel = new WinEventDelegate(WinEventProc);
+                tabEventProcDel = new WinEventDelegate(WinEventProc);
                 m_hhook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND,
                     EVENT_SYSTEM_FOREGROUND, IntPtr.Zero,
                     winEventProcDel, 0, 0, WINEVENT_OUTOFCONTEXT);
+
+                tab_hhook = SetWinEventHook(EVENT_OBJECT_SELECTION,
+                    EVENT_OBJECT_SELECTION, IntPtr.Zero,
+                    tabEventProcDel, 0, 0, WINEVENT_OUTOFCONTEXT);
             }
             catch(Exception ex)
             {
@@ -179,11 +188,12 @@ namespace DataCollectorUI
 
         private void LoadReport()
         {
-            try
+
+            log.Info("Loading report...");
+            DateTime dataCollectionTime;
+            while (true)
             {
-                log.Info("Loading report...");
-                DateTime dataCollectionTime;
-                while (true)
+                try
                 {
                     //myCollector = new ReportGenerator();
                     log.Info("loadReport is being executed...");
@@ -195,7 +205,7 @@ namespace DataCollectorUI
                     {
                         foreach (var app in myReport.processes)
                         {
-                            log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " +  app.ProcessID);
+                            log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " + app.ProcessID);
                             var lastState = myLastReport.processes.Where(p => app.PID == p.PID && app.ProcessName == p.ProcessName).FirstOrDefault();
                             if (lastState != null)
                             {
@@ -261,7 +271,7 @@ namespace DataCollectorUI
                             log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " + app.ProcessID);
                         }
 
-                        
+
 
                         DataAccess da = new DataAccess();
 
@@ -290,22 +300,24 @@ namespace DataCollectorUI
                     */
 
                     //mySystemInfoForm.updateView();
+                }
+                catch (Exception ex)
+                {
+                    log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                }
 #if DEBUG
                     Thread.Sleep(15000);
 #else
-                    Thread.Sleep(COLLECTION_INTERVAL);
+                Thread.Sleep(COLLECTION_INTERVAL);
 #endif
 
-                    if (abortDataCollection)
-                    {
-                        log.Info("stopping thread DataCollection");
-                    }
+                if (abortDataCollection)
+                {
+                    log.Info("stopping thread DataCollection");
+                    break;
                 }
             }
-            catch (Exception ex)
-            {
-                log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
-            }
+
         }
 
 
@@ -407,10 +419,11 @@ namespace DataCollectorUI
 
         private void SyncData()
         {
-            try
+
+            log.Info("Initializing sync data method...");
+            while (true)
             {
-                log.Info("Initializing sync data method...");
-                while (true)
+                try
                 {
                     log.Info("syncData is being executed...");
                     if (myConfig.ContainsKey("TOKEN"))
@@ -435,7 +448,7 @@ namespace DataCollectorUI
                             log.Info("Submiting activity request... sending " + Activityrecords.Activities.Count + " records");
                             result = Client.SaveReport(Activityrecords, token);
                             da.UpdateActivityStatus(DataAccess.ActivityStatus.Processing, result ? DataAccess.ActivityStatus.Accepted : DataAccess.ActivityStatus.Error);
-                            //da.CleanDataHistory();
+                            da.CleanDataHistory();
                         }
                         else
                         {
@@ -450,23 +463,25 @@ namespace DataCollectorUI
 
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+
+                }
 
 #if DEBUG
                     Thread.Sleep(120000);
 #else
-                    Thread.Sleep(SENDING_INTERVAL);
+                Thread.Sleep(SENDING_INTERVAL);
 #endif
-                    if (abortDataSync)
-                    {
-                        log.Info("stopping thread DataSync");
-                        break;
-                    }
+                if (abortDataSync)
+                {
+                    log.Info("stopping thread DataSync");
+                    break;
                 }
             }
-            catch (Exception ex) {
-                log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
 
-            }
         }
 
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -487,17 +502,21 @@ namespace DataCollectorUI
         {
             try
             {
-                log.Info("WinEventProc is being executed...");
-                if (eventType == EVENT_SYSTEM_FOREGROUND)
+                DateTime dataCollectionTime = DateTime.Now;
+                if (eventType == EVENT_SYSTEM_FOREGROUND || eventType == EVENT_OBJECT_SELECTION)
                 {
-                    DateTime dataCollectionTime = DateTime.Now;
-                    if (myCurrentActivity != null)
+                    CollectorActivity tmp = myCurrentActivity;
+                    
+                    if (tmp != null)
                     {
+                        log.Info("WinEventProc is being executed..., tracking app -> " + tmp.ExecutableName);
+                        Console.WriteLine("WinEventProc is being executed..., tracking app -> " + tmp.ExecutableName);
                         DataAccess da = new DataAccess();
-                        myCurrentActivity.EndTime = dataCollectionTime;
-                        da.SaveMyActivity(myCurrentActivity);
-                        log.Debug("End of app tracked -> " + myCurrentActivity.ExecutableName + " - "+ myCurrentActivity.StartTime.ToString("yyyy-MM-dd HH:mm:ss") + " to " + myCurrentActivity.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
-
+                        tmp.EndTime = dataCollectionTime;
+                        da.SaveMyActivity(tmp);
+                        log.Debug("End of app tracked -> " + tmp.ExecutableName + " - "+ tmp.StartTime.ToString("yyyy-MM-dd HH:mm:ss") + " to " + tmp.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                      
+                        
                     }
                     myCurrentActivity = myCollector.GetCurrentActivity(hwnd, dataCollectionTime);
                     myCurrentActivity.StartTime = dataCollectionTime;
@@ -506,6 +525,7 @@ namespace DataCollectorUI
             catch (Exception ex)
             {
                 log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                Console.WriteLine(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
             }
 
         }
@@ -513,17 +533,31 @@ namespace DataCollectorUI
         void keyboard_KeyBoardKeyPressed(object sender, EventArgs e)
         {
             last_keyboard_touch = DateTime.Now;
-            FrmSystemInfo.idleTimeStart = DateTime.Now;
+            FrmSystemInfo.idleTimeStart = last_keyboard_touch;
             if (myCurrentActivity != null)
+            {
                 myCurrentActivity.IdleActivity = false;
+                logApp(myCurrentActivity, last_keyboard_touch, "Keyboard");
+            }
+                
         }
 
         void mouse_MouseMoved(object sender, EventArgs e)
         {
             last_mouse_signal = DateTime.Now;
-            FrmSystemInfo.idleTimeStart = DateTime.Now;
+            FrmSystemInfo.idleTimeStart = last_mouse_signal;
             if (myCurrentActivity != null)
+            {
                 myCurrentActivity.IdleActivity = false;
+                logApp(myCurrentActivity, last_mouse_signal, "Mouse");
+            }
+                
+        }
+
+
+        void logApp(CollectorActivity app, DateTime caputuredTime, String source)
+        {
+            log.Info("Tracking apps for presence tracking, AppName:" +  app.AppName +"|ExecutableFile:" + app.ExecutableName + "|CaptureTime:" + caputuredTime.ToString("yyyy-MM-dd HH:mm:ss") + "|Source:" + source) ;
         }
 
         //ON CURRENT WINDOW UPDATE ACTION
@@ -538,30 +572,36 @@ namespace DataCollectorUI
                     DateTime present = DateTime.Now;
                     double totalminutes = (present - maximum_date).TotalMinutes;
                     Boolean isIdle = false;
-                    if (myCurrentActivity == null)
-                        isIdle = true;
-                    else
-                        isIdle = myCurrentActivity.IdleActivity;
 
-                    if (totalminutes > 2 && !isIdle)
+                    CollectorActivity tmp = myCurrentActivity;
+                    if(tmp != null)
                     {
-                        try {
-                            DataAccess da = new DataAccess();
-                            myCurrentActivity.EndTime = maximum_date;
-                            da.SaveMyActivity(myCurrentActivity);
-                        }
-                        catch(Exception ex)
+                        if (tmp == null)
+                            isIdle = true;
+                        else
+                            isIdle = tmp.IdleActivity;
+
+                        if (totalminutes > 2 && !isIdle)
                         {
-                            log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+
+                            try
+                            {
+                                DataAccess da = new DataAccess();
+                                tmp.EndTime = maximum_date;
+                                log.Info(tmp.AppName + " became IDLE....");
+                                da.SaveMyActivity(tmp);
+                            }
+                            catch (Exception ex)
+                            {
+                                log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                            }
+                            finally
+                            {
+                                myCurrentActivity.StartTime = present;
+                                myCurrentActivity.IdleActivity = true;
+                                myCurrentActivity.EndTime = new DateTime();
+                            }
                         }
-                        finally
-                        {
-                            myCurrentActivity.StartTime = present;
-                            myCurrentActivity.IdleActivity = true;
-                            myCurrentActivity.EndTime = new DateTime();
-                        }
-                        
-                        
                     }
                 }
                 Thread.Sleep(1000);

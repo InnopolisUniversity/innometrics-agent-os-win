@@ -185,6 +185,9 @@ namespace InnoMetricsCollector.classes
                             cpuUtilization, //cpuUsage,
                             //12 Executable path
                             process.MainModule.FileName,
+                            //13 File name description
+                            process.MainModule.FileVersionInfo.FileDescription,// + " | " + process.MainModule.FileVersionInfo.ProductName,
+
                         };
 
                 return data;

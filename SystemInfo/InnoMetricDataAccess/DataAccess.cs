@@ -153,7 +153,7 @@ namespace InnoMetricDataAccess
                     cmd.Prepare();
 
                     cmd.Parameters.AddWithValue("@ActivityId", activity.ActivityID);
-                    cmd.Parameters.AddWithValue("@ProcessName", activity.ExecutableName);
+                    cmd.Parameters.AddWithValue("@ProcessName", activity.AppName);
                     cmd.Parameters.AddWithValue("@ProcessId", activity.ProcessId);
                     cmd.Parameters.AddWithValue("@StartTime", activity.StartTime.ToString("yyyy-MM-dd HH:mm:ss"));
                     cmd.Parameters.AddWithValue("@EndTime", activity.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
@@ -161,7 +161,7 @@ namespace InnoMetricDataAccess
                     cmd.Parameters.AddWithValue("@MacAddress", activity.MacAddress);
                     cmd.Parameters.AddWithValue("@Description", activity.Description);
                     cmd.Parameters.AddWithValue("@PID", activity.ProcessId);
-                    cmd.Parameters.AddWithValue("@Status", activity.Status);
+                    cmd.Parameters.AddWithValue("@Status", (activity.IdleActivity ? "I" : "A"));
                     cmd.Parameters.AddWithValue("@serverStatus", ActivityStatus.Collected);
 
                     cmd.ExecuteNonQuery();
@@ -177,7 +177,7 @@ namespace InnoMetricDataAccess
                 {
                     log.Error(e.Message);
                     //Console.WriteLine(e.Message);
-                    MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -205,7 +205,7 @@ namespace InnoMetricDataAccess
             catch (Exception e)
             {
                 //Console.WriteLine(e.Message);
-                MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+               // MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 log.Error(e.Message);
             }
         }
@@ -300,38 +300,36 @@ namespace InnoMetricDataAccess
                     Boolean recordExist = ExistProcessById(cnn, process.ProcessID.ToString());
                     log.Debug(process.ProcessID + ", Process name: " + process.ProcessName);
 
-                    if (process.ProcessID == -1 || !recordExist)
+                    //if (process.ProcessID == -1 || !recordExist)
+                    //{
+                    if (cnn.State != ConnectionState.Open)
+                        cnn.Open();
+
+                    //if (process.ProcessID == -1)
+                    process.ProcessID = GetNextProcessId(cnn);
+
+                    var cmd = new SQLiteCommand(cnn)
                     {
-                        if (cnn.State != ConnectionState.Open)
-                            cnn.Open();
-
-                        if (process.ProcessID == -1)
-                            process.ProcessID = GetNextProcessId(cnn);
-
-                        var cmd = new SQLiteCommand(cnn)
-                        {
-                            CommandText = @"insert into CollectorProcessData (ProcessId, ProcessType, ProcessName, 
+                        CommandText = @"insert into CollectorProcessData (ProcessId, ProcessType, ProcessName, 
                                         WindowsTitle, BrowserURL, IPAddress, MacAddress, PID, CollectedTime, ServerStatus) 
                                         values (@ProcessId, @ProcessType, @ProcessName, @WindowsTitle, 
                                         @BrowserURL, @IPAddress, @MacAddress, @PID, @CollectedTime, @serverStatus)"
-                        };
-                        cmd.Prepare();
+                    };
+                    cmd.Prepare();
 
+                    cmd.Parameters.AddWithValue("@ProcessId", process.ProcessID);
+                    cmd.Parameters.AddWithValue("@ProcessType", process.ProcessType);
+                    cmd.Parameters.AddWithValue("@ProcessName", process.ProcessName);
+                    cmd.Parameters.AddWithValue("@WindowsTitle", process.WindowsTitle);
+                    cmd.Parameters.AddWithValue("@BrowserURL", process.BrowserUrl);
+                    cmd.Parameters.AddWithValue("@IPAddress", process.IpAddress);
+                    cmd.Parameters.AddWithValue("@MacAddress", process.MacAddress);
+                    cmd.Parameters.AddWithValue("@PID", process.PID);
+                    cmd.Parameters.AddWithValue("@CollectedTime", process.collectedTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    cmd.Parameters.AddWithValue("@serverStatus", ActivityStatus.Collected);
 
-
-                        cmd.Parameters.AddWithValue("@ProcessId", process.ProcessID);
-                        cmd.Parameters.AddWithValue("@ProcessType", process.ProcessType);
-                        cmd.Parameters.AddWithValue("@ProcessName", process.ProcessName);
-                        cmd.Parameters.AddWithValue("@WindowsTitle", process.WindowsTitle);
-                        cmd.Parameters.AddWithValue("@BrowserURL", process.BrowserUrl);
-                        cmd.Parameters.AddWithValue("@IPAddress", process.IpAddress);
-                        cmd.Parameters.AddWithValue("@MacAddress", process.MacAddress);
-                        cmd.Parameters.AddWithValue("@PID", process.PID);
-                        cmd.Parameters.AddWithValue("@CollectedTime", process.collectedTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                        cmd.Parameters.AddWithValue("@serverStatus", ActivityStatus.Collected);
-
-                        cmd.ExecuteNonQuery();
-                    }
+                    cmd.ExecuteNonQuery();
+                    //}
 
                     ProcessMetrics batteryMeuasure = null;// new ProcessMetrics();
 
@@ -343,13 +341,12 @@ namespace InnoMetricDataAccess
                     process.Measurements.Clear();
 
                     if (batteryMeuasure != null) process.Measurements.Add(batteryMeuasure);
-
                 }
                 catch (Exception e)
                 {
                     //Console.WriteLine(e.Message);
                     log.Error(e.Message);
-                    MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 return process;
@@ -382,7 +379,7 @@ namespace InnoMetricDataAccess
             catch (Exception e)
             {
                 //Console.WriteLine(e.Message);
-                MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 log.Error(e.Message);
             }
         }

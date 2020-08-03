@@ -44,8 +44,10 @@ namespace InnoMetricsCollector
                 // 9 RAM Usage
                 // 10 Virtual RAM Usage
                 // 11 CPU usage
-                //12 Executable path
-                if(w.Value != null)
+                // 12 Executable path
+                // 13 File name description
+
+                if (w.Value != null)
                 {
                     CollectorProcess myProcess = new CollectorProcess
                     {
@@ -157,10 +159,11 @@ namespace InnoMetricsCollector
                 // 9 RAM Usage
                 // 10 Virtual RAM Usage
                 // 11 CPU usage
-                //12 Executable path
+                // 12 Executable path
+                // 13 File name description
 
                 //CollectorActivity 
-                if(currentWindow != null)
+                if (currentWindow != null)
                 {
                     myActivity = new CollectorActivity
                     {
@@ -178,6 +181,7 @@ namespace InnoMetricsCollector
                         Description = currentWindow[3].ToString(),
                         Status = "0",
                         mainAppPath = currentWindow[12].ToString(),
+                        AppName = currentWindow[13].ToString(),
                     };
                 }
                    

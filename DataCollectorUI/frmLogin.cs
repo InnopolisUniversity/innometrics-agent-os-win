@@ -67,11 +67,35 @@ namespace DataCollectorUI
 
         private void frmLogin_FormClosing(object sender, FormClosingEventArgs e)
         {
-            
+            //Environment.Exit(0);
+
             if (_requestLogin)
             {
-                MessageBox.Show("Please introduce you credential and clic in login.", "InnoMetrics", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                e.Cancel = true;
+                DialogResult result = MessageBox.Show("Do you really want to close InnoMetrics data collecctor?", "InnoMetrics", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                if(result == DialogResult.Yes)
+                {
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void txtemail_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+            {
+                txtpassword.Focus();
+            }
+        }
+
+        private void txtpassword_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+            {
+                btnSignIn_Click(sender, e);
             }
         }
     }

@@ -24,6 +24,7 @@ namespace InnoMetricsCollector.classes
         public String Description { get; set; }
         public String Status { get; set; }
         public String mainAppPath { get; set; }
+        public String AppName { get; set; }
 
         public CollectorActivity()
         {

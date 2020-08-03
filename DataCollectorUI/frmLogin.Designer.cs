@@ -58,6 +58,7 @@
             this.txtpassword.Size = new System.Drawing.Size(286, 30);
             this.txtpassword.TabIndex = 5;
             this.txtpassword.UseSystemPasswordChar = true;
+            this.txtpassword.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtpassword_KeyPress);
             // 
             // txtemail
             // 
@@ -66,6 +67,7 @@
             this.txtemail.Name = "txtemail";
             this.txtemail.Size = new System.Drawing.Size(286, 30);
             this.txtemail.TabIndex = 4;
+            this.txtemail.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtemail_KeyPress);
             // 
             // password
             // 
