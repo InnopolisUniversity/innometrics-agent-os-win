@@ -21,6 +21,13 @@ namespace InnoMetricDataAccess
         //const string regKeyFolders = @"HKEY_USERS\<SID>\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders";
         //const string regValueAppData = @"AppData";
         const String dbDirectory = @"C:\TMP\InnoMetrics\db\";
+
+#if DEBUG
+        const Int16 LIMIT_QUERY = 10;
+#else
+        const Int16 LIMIT_QUERY = 500;
+#endif
+
         public enum ActivityStatus
         {
             Collected = 0,
@@ -544,7 +551,7 @@ namespace InnoMetricDataAccess
             return myActivity;
         }
 
-        public void UpdateActivityStatus(ActivityStatus oldStatus, ActivityStatus newStatus)
+        public void UpdateActivityStatus(ActivityStatus oldStatus, ActivityStatus newStatus, Boolean setLimit = false)
         {
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -555,6 +562,14 @@ namespace InnoMetricDataAccess
                                        set ServerStatus = @newStatus 
                                      where ServerStatus = @oldStatus"
                 };
+
+                if (setLimit)
+                {
+                    cmd.CommandText += @" and activityId in (SELECT activityId
+                                                               FROM CollectorData
+                                                              ORDER BY StartTime ASC
+                                                              LIMIT "+ LIMIT_QUERY + ")";
+                }
                 cmd.Prepare();
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@oldStatus", oldStatus);
@@ -571,7 +586,7 @@ namespace InnoMetricDataAccess
             };
             ReportGenerator generator = new ReportGenerator();
             string OSVERSION = generator.GetOSVersion();
-            UpdateProcessStatus(ActivityStatus.Collected, ActivityStatus.Processing);//Updating server Status from 0 -> new to 1 -> Processing
+            UpdateProcessStatus(ActivityStatus.Collected, ActivityStatus.Processing, true);//Updating server Status from 0 -> new to 1 -> Processing
 
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -646,7 +661,7 @@ namespace InnoMetricDataAccess
             return myProcess;
         }
 
-        public void UpdateProcessStatus(ActivityStatus oldStatus, ActivityStatus newStatus)
+        public void UpdateProcessStatus(ActivityStatus oldStatus, ActivityStatus newStatus, Boolean setLimit = false)
         {
             using (SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -657,6 +672,14 @@ namespace InnoMetricDataAccess
                                        set ServerStatus = @newStatus 
                                      where ServerStatus = @oldStatus"
                 };
+                if (setLimit)
+                {
+                    cmd.CommandText += @" and processID in (SELECT processID
+                                                              FROM CollectorProcessData
+                                                             ORDER BY CollectedTime ASC
+                                                             LIMIT " + LIMIT_QUERY + ")";
+                }
+                
                 cmd.Prepare();
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@oldStatus", oldStatus);
@@ -686,7 +709,7 @@ namespace InnoMetricDataAccess
                 cmd.ExecuteNonQuery();
 
                 //cmd = new SQLiteCommand(cnn);
-                cmd.CommandText = @"Delete CollectorData 
+                cmd.CommandText = @"Delete from CollectorData 
                                      where ServerStatus = @Status";
                 cmd.Prepare();
                 cmd.Parameters.Clear();
