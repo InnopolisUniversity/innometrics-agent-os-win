@@ -11,16 +11,16 @@ namespace InnoMetricsCollector
 
         public event EventHandler<EventArgs> KeyBoardKeyPressed;
 
-        private WindowsHookInput.HookDelegate keyBoardDelegate;
+        private WindowsHookInput.HookDelegate _keyBoardDelegate;
         private IntPtr keyBoardHandle;
         private const Int32 WH_KEYBOARD_LL = 13;
         private bool disposed;
 
         public KeyboardTracker()
         {
-            keyBoardDelegate = KeyboardHookDelegate;
+            _keyBoardDelegate = KeyboardHookDelegate;
             keyBoardHandle = WindowsHookInput.SetWindowsHookEx(
-                WH_KEYBOARD_LL, keyBoardDelegate, IntPtr.Zero, 0);
+                WH_KEYBOARD_LL, _keyBoardDelegate, IntPtr.Zero, 0);
         }
 
         private IntPtr KeyboardHookDelegate(

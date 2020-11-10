@@ -1,13 +1,10 @@
 ﻿using APIClient;
 using InnoMetric.Models;
-using InnoMetricDataAccess;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.ServiceProcess;
 using System.Timers;
-using static InnoMetricDataAccess.DataAccess;
 
 namespace InnoMetricsDataSync
 {

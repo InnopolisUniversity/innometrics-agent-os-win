@@ -22,9 +22,9 @@
 
         #region Código generado por el Diseñador de componentes
 
-        /// <summary> 
-        /// Método necesario para admitir el Diseñador. No se puede modificar
-        /// el contenido de este método con el editor de código.
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
@@ -32,7 +32,6 @@
             // InnoMetricsDataSync
             // 
             this.ServiceName = "InnoMetricsDataSync";
-
         }
 
         #endregion

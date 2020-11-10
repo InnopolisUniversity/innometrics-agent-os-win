@@ -66,7 +66,7 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>0C276E2F9060240AC3A5614B5FC9FFE526EEA86D</ManifestCertificateThumbprint>
@@ -121,6 +121,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\APIClient\APIClient.csproj">
+      <Project>{1aeaf2f2-b510-4268-afce-da1d75888136}</Project>
+      <Name>APIClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InnoMetricDataAccess\InnoMetricDataAccess.csproj">
+      <Project>{bf563758-b345-4636-adef-5db5875475b4}</Project>
+      <Name>InnoMetricDataAccess</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SystemInfo\APIClient\APIClient.csproj">
       <Project>{1aeaf2f2-b510-4268-afce-da1d75888136}</Project>
       <Name>APIClient</Name>

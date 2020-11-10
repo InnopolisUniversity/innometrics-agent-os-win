@@ -51,15 +51,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="classes\CollectorActivity.cs" />
-    <Compile Include="classes\CollectorProcess.cs" />
-    <Compile Include="classes\CollectorProcessReport.cs" />
-    <Compile Include="classes\CollectorReport.cs" />
-    <Compile Include="classes\Metrics.cs" />
-    <Compile Include="classes\OpenWindowGetter.cs" />
-    <Compile Include="classes\ProcessMetrics.cs" />
+    <Compile Include="DTO\CollectorActivity.cs" />
+    <Compile Include="DTO\CollectorProcess.cs" />
+    <Compile Include="DTO\CollectorProcessReport.cs" />
+    <Compile Include="DTO\CollectorReport.cs" />
+    <Compile Include="DTO\Metrics.cs" />
+    <Compile Include="DTO\ProcessMetrics.cs" />
     <Compile Include="KeyboardTracker.cs" />
     <Compile Include="MouseTracker.cs" />
+    <Compile Include="OpenWindowGetter.cs" />
     <Compile Include="ReportGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WindowsHookInput.cs" />
