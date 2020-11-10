@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Management;
 using System.Net;
@@ -19,19 +20,18 @@ namespace InnoMetricsCollector
             log.Info("Generation process report...");
             CollectorProcessReport myReport = new CollectorProcessReport();
 
-            IDictionary<IntPtr, Object[]> currentWindows = OpenWindowGetter.GetProcessInfo();
+            var currentWindows = OpenWindowGetter.GetOpenedWindowsProcessesInfo();
             IDictionary<String, Object> batteryStatus = OpenWindowGetter.GetBatteryStatus();
 
             // get IP address of host computer
             // Retrive the Name of HOST  
-            string myIP = GetIpAddress();
+            var myIp = GetIpAddress();
 
             // get mac address of host machine
             String firstMacAddress = GetMACAddress();
 
-            foreach (KeyValuePair<IntPtr, Object[]> w in currentWindows)
+            foreach (var w in currentWindows)
             {
-
                 // 0 Process name
                 // 1 Process ID
                 // 2 Process status
@@ -47,90 +47,90 @@ namespace InnoMetricsCollector
                 // 12 Executable path
                 // 13 File name description
 
-                if (w.Value != null)
-                {
-                    CollectorProcess myProcess = new CollectorProcess
-                    {
-                        ProcessName = w.Value[4].ToString(),
-                        ProcessType = "OS",
-                        WindowsTitle = w.Value[8].ToString(),
-                        BrowserUrl = "",
-                        IpAddress = myIP,
-                        MacAddress = firstMacAddress,
-                        UserName = "",
-                        Description = w.Value[3].ToString(),
-                        Status = "0",
-                        mainAppPath = w.Value[12].ToString(),
-                        PID = w.Value[1].ToString(),
-                        collectedTime = measurementTime
-                    };
-
-                    if (batteryStatus != null && batteryStatus.Count > 0)
-                    {
-                        String ChangingStatus = batteryStatus["BatteryStatus"].ToString();
-                        float EstimatedChargeRemaining = float.Parse(batteryStatus["EstimatedChargeRemaining"].ToString());
-
-                        EstimatedChargeRemaining = EstimatedChargeRemaining > 100.0 ? 100 : EstimatedChargeRemaining;
-
-                        myProcess.Measurements.Add(new ProcessMetrics
-                        {
-                            MeasurementType = "1",// "EstimatedChargeRemaining",
-                            Value = ChangingStatus == "2" ? "-1" : EstimatedChargeRemaining.ToString(),
-                            CapturedTime = measurementTime
-
-                        });
-
-                        myProcess.Measurements.Add(new ProcessMetrics
-                        {
-                            MeasurementType = "2",// "BatteryStatus",
-                            Value = batteryStatus["BatteryStatus"].ToString(),
-                            CapturedTime = measurementTime
-                        });
-
-                    }
-                    else
-                    {
-                        // Default values for desktop computers
-                        myProcess.Measurements.Add(new ProcessMetrics
-                        {
-                            MeasurementType = "1",// "EstimatedChargeRemaining",
-                            Value = "-1",
-                            CapturedTime = measurementTime
-                        });
-
-                        myProcess.Measurements.Add(new ProcessMetrics
-                        {
-                            MeasurementType = "2",// "BatteryStatus",
-                            Value = "-1",
-                            CapturedTime = measurementTime
-                        });
-                    }
-
-                    myProcess.Measurements.Add(new ProcessMetrics
-                    {
-                        MeasurementType = "3",// "RAM",
-                        Value = w.Value[9].ToString(),
-                        CapturedTime = measurementTime
-                    });
-
-                    myProcess.Measurements.Add(new ProcessMetrics
-                    {
-                        MeasurementType = "4",// "vRAM",
-                        Value = w.Value[10].ToString(),
-                        CapturedTime = measurementTime
-                    });
-
-                    myProcess.Measurements.Add(new ProcessMetrics
-                    {
-                        MeasurementType = "5",// "CPU",
-                        Value = w.Value[11].ToString(),
-                        CapturedTime = measurementTime
-                    });
-
-                    myReport.processes.Add(myProcess);
-                }
+                var wi = w.Value;
+                var pi = w.Value.ProcessInfo;
                 
+                CollectorProcess myProcess = new CollectorProcess
+                {
+                    ProcessName = pi.ProcessName,
+                    ProcessType = "OS",
+                    WindowsTitle = wi.WindowTitle,
+                    BrowserUrl = "",
+                    IpAddress = myIp,
+                    MacAddress = firstMacAddress,
+                    UserName = "",
+                    Description = pi.MainModuleDescription,
+                    Status = "0",
+                    mainAppPath = pi.MainModulePath,
+                    PID = pi.ProcessId.ToString(),
+                    collectedTime = measurementTime
+                };
+
+                if (batteryStatus != null && batteryStatus.Count > 0)
+                {
+                    string changingStatus = batteryStatus["BatteryStatus"].ToString();
+                    var estimatedChargeRemaining = float.Parse(batteryStatus["EstimatedChargeRemaining"].ToString());
+
+                    estimatedChargeRemaining = estimatedChargeRemaining > 100.0 ? 100 : estimatedChargeRemaining;
+
+                    myProcess.Measurements.Add(new ProcessMetrics
+                    {
+                        MeasurementType = "1", // "EstimatedChargeRemaining",
+                        Value = changingStatus == "2" ? "-1" : estimatedChargeRemaining.ToString(),
+                        CapturedTime = measurementTime
+
+                    });
+
+                    myProcess.Measurements.Add(new ProcessMetrics
+                    {
+                        MeasurementType = "2", // "BatteryStatus",
+                        Value = batteryStatus["BatteryStatus"].ToString(),
+                        CapturedTime = measurementTime
+                    });
+
+                }
+                else
+                {
+                    // Default values for desktop computers
+                    myProcess.Measurements.Add(new ProcessMetrics
+                    {
+                        MeasurementType = "1", // "EstimatedChargeRemaining",
+                        Value = "-1",
+                        CapturedTime = measurementTime
+                    });
+
+                    myProcess.Measurements.Add(new ProcessMetrics
+                    {
+                        MeasurementType = "2", // "BatteryStatus",
+                        Value = "-1",
+                        CapturedTime = measurementTime
+                    });
+                }
+
+                myProcess.Measurements.Add(new ProcessMetrics
+                {
+                    MeasurementType = "3", // "RAM",
+                    Value = pi.RamWorkingSetSize.ToString(),
+                    CapturedTime = measurementTime
+                });
+
+                myProcess.Measurements.Add(new ProcessMetrics
+                {
+                    MeasurementType = "4", // "vRAM",
+                    Value = pi.RamVirtualSize.ToString(),
+                    CapturedTime = measurementTime
+                });
+
+                myProcess.Measurements.Add(new ProcessMetrics
+                {
+                    MeasurementType = "5", // "CPU",
+                    Value = pi.CpuUsage.ToString(CultureInfo.InvariantCulture),
+                    CapturedTime = measurementTime
+                });
+
+                myReport.processes.Add(myProcess);
             }
+
 
             return myReport;
         }
@@ -142,7 +142,8 @@ namespace InnoMetricsCollector
             CollectorActivity myActivity = null;
             try
             {
-                Object[] currentWindow = OpenWindowGetter.GetProcessDetails(hWnd);
+                var wi = OpenWindowGetter.GetWindowInfo(hWnd);
+                var pi = wi.ProcessInfo;
 
                 String myIP = GetIpAddress();
                 String firstMacAddress = GetMACAddress();
@@ -163,25 +164,25 @@ namespace InnoMetricsCollector
                 // 13 File name description
 
                 //CollectorActivity 
-                if (currentWindow != null)
+                if (wi != null)
                 {
                     myActivity = new CollectorActivity
                     {
                         ActivityID = -1,
                         ActivityType = "OS",
-                        BrowserTitle = currentWindow[8].ToString(),
+                        BrowserTitle = wi.WindowTitle,
                         StartTime = measurementTime,
-                        ExecutableName = currentWindow[4].ToString(),
+                        ExecutableName = pi.MainModuleName,
                         IdleActivity = false,
-                        ProcessId = currentWindow[1].ToString(),
+                        ProcessId = pi.ProcessId.ToString(),
                         BrowserUrl = "",
                         IpAddress = myIP,
                         MacAddress = firstMacAddress,
                         UserName = "",
-                        Description = currentWindow[3].ToString(),
+                        Description = wi.WindowTitle,
                         Status = "0",
-                        mainAppPath = currentWindow[12].ToString(),
-                        AppName = currentWindow[13].ToString(),
+                        mainAppPath = pi.MainModulePath,
+                        AppName = pi.MainModuleDescription,
                     };
                 }
                    

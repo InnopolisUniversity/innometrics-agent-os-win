@@ -23,8 +23,8 @@
         #region Código generado por el Diseñador de componentes
 
         /// <summary>
-        /// Método necesario para admitir el Diseñador. No se puede modificar
-        /// el contenido de este método con el editor de código.
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
@@ -46,15 +46,12 @@
             // 
             // ProjectInstaller
             // 
-            this.Installers.AddRange(new System.Configuration.Install.Installer[] {
-            this.SrvProcessInstaller,
-            this.SrvInstaller});
-
+            this.Installers.AddRange(new System.Configuration.Install.Installer[] {this.SrvProcessInstaller, this.SrvInstaller});
         }
 
-        #endregion
-
-        private System.ServiceProcess.ServiceProcessInstaller SrvProcessInstaller;
         private System.ServiceProcess.ServiceInstaller SrvInstaller;
+        private System.ServiceProcess.ServiceProcessInstaller SrvProcessInstaller;
+
+        #endregion
     }
 }

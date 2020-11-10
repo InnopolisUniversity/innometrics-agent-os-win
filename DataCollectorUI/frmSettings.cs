@@ -32,7 +32,7 @@ namespace DataCollectorUI
         private void btnSesionControl_Click(object sender, EventArgs e)
         {
             
-            frmLogin frmLogin = new frmLogin(_requestLogin);
+            var frmLogin = new frmLogin(_requestLogin);
             frmLogin.ShowDialog();
            frmLogin.Dispose();
             populateUserFrame();
@@ -45,7 +45,7 @@ namespace DataCollectorUI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DataAccess da = new DataAccess();
+            var da = new DataAccess();
             myConfig["COLLECTION_INTERVAL"] = nudCollectionInterval.Value.ToString();
             myConfig["SENDING_INTERVAL"] = nudSendingInterval.Value.ToString();
             myConfig["STARTONLOGIN"] = chkStart.Checked ? "Y" : "N";
@@ -53,12 +53,12 @@ namespace DataCollectorUI
 
             da.SaveMyConfig(myConfig);
 
-            string startPath = Environment.GetFolderPath(Environment.SpecialFolder.Programs)
-                   + @"\Innopolis university\InnoMetrics data collector\Data collector.appref-ms";
+            var startPath = Environment.GetFolderPath(Environment.SpecialFolder.Programs)
+                            + @"\Innopolis university\InnoMetrics data collector\Data collector.appref-ms";
 
             //MessageBox.Show(startPath, "InnoMetrics data collector", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            using (RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+            using (var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
             {
                 if (chkStart.Checked)
                     key.SetValue("InnoMetrics", startPath);
@@ -82,7 +82,7 @@ namespace DataCollectorUI
             try
             {
                 //textBox1.Text = Application.ExecutablePath;
-                DataAccess da = new DataAccess();
+                var da = new DataAccess();
                 myConfig = da.LoadInitialConfig();
 
                 lblUserName.Text = "User name: " + myConfig["USERNAME"];

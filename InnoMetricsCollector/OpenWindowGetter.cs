@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Management;
 using System.Diagnostics;
-using System.Net;
+using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
-
-
+using InnoMetricsCollector.classes;
 using HWND = System.IntPtr;
-using System.Linq;
 
-namespace InnoMetricsCollector.classes
+namespace InnoMetricsCollector
 {
     class OpenWindowGetter
     {
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
+        private static readonly int LogicalProcessors = Environment.ProcessorCount;
+        
+        // TODO: move those into a separate class
         #region "Import USER32.dll"
-        private delegate bool EnumWindowsProc(HWND hWnd, int lParam);
+        public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
         [DllImport("USER32.DLL")]
-        private static extern bool EnumWindows(EnumWindowsProc enumFunc, int lParam);
+        private static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
 
         [DllImport("USER32.DLL")]
         private static extern int GetWindowText(HWND hWnd, StringBuilder lpString, int nMaxCount);
@@ -36,53 +36,35 @@ namespace InnoMetricsCollector.classes
         private static extern IntPtr GetShellWindow();
 
         [DllImport("user32.dll", SetLastError = true)]
-        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
         [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
         #endregion 
 
-        /// <summary>Returns a dictionary that contains the handle and title of all the open windows.</summary>
-        /// <returns>A dictionary that contains the handle and title of all the open windows.</returns>
-        public static IDictionary<HWND, Object[]> GetProcessInfo()
+        private static IEnumerable<IntPtr> FindWindows()
         {
-            Dictionary<HWND, Object[]> windows = new Dictionary<HWND, Object[]>();
-            //Console.WriteLine("Number Of Logical Processors: {0}", Environment.ProcessorCount);
-            int LogicalProcessors = Environment.ProcessorCount;
-            object processid = String.Empty;
-            HWND shellWindow = GetShellWindow();
-            try
+            var res = new List<IntPtr>();
+
+            EnumWindows(delegate(IntPtr wnd, IntPtr param)
             {
-                ObjectQuery sq = new ObjectQuery("Select * from Win32_Process where SessionId != 0");
-                ManagementObjectSearcher searcher = new ManagementObjectSearcher(sq);
+                if (IsWindowVisible(wnd))
+                    res.Add(wnd);
+                return true;
+            }, IntPtr.Zero);
 
-                int counter = searcher.Get().Count;
-                foreach (ManagementObject oReturn in searcher.Get())
-                {
-                    try
-                    {
-                        processid = oReturn["ProcessId"];
-                        Process process = Process.GetProcessById(Int32.Parse(processid.ToString()));
-
-                        IntPtr hWnd = process.MainWindowHandle;
-
-                        Object[] data = GetProcessData(uint.Parse(processid.ToString()), shellWindow, LogicalProcessors);
-
-                        windows.Add(hWnd, data);
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Error("Error getting information -> " + ex.Message + ", " + ex.StackTrace);
-                    }
-                }
-            }
-            catch
-            {
-                return null;
-            }
-            return windows;
+            return res;
+        }
+        
+        public static IDictionary<HWND, WindowInfo> GetOpenedWindowsProcessesInfo()
+        {
+            var shellWindow = GetShellWindow();
+            return FindWindows()
+                .Where(window => window != shellWindow)
+                .ToDictionary(window => window, GetWindowInfo);
         }
 
+        // What the battery stuff is even doing here?!
         public static IDictionary<String, Object> GetBatteryStatus()
         {
             Dictionary<String, Object> BatteryStatus = new Dictionary<String, Object>();
@@ -103,102 +85,80 @@ namespace InnoMetricsCollector.classes
 
             return BatteryStatus;
         }
-        /// <summary>
-        /// Returns the process details given a hWnd pointer
-        /// </summary>
-        /// <param name="hWnd"></param>
-        /// <returns>Returns an array of details</returns>
-        public static Object[] GetProcessDetails(IntPtr hWnd)
+        
+        public static WindowInfo GetWindowInfo(HWND hWnd)
         {
-            CollectorActivity newActivity = new CollectorActivity();
+            var windowTitle = "";
+            var length = GetWindowTextLength(hWnd);
+            if (length != 0)
+            {
+                // TODO: fix race condition
+                var builder = new StringBuilder(length);
+                GetWindowText(hWnd, builder, length + 1);
+                windowTitle = builder.ToString();
+            }
 
-            uint processID;
-            int LogicalProcessors = Environment.ProcessorCount;
+            GetWindowThreadProcessId(hWnd, out var pid);
+            
+            return new WindowInfo
+            {
+                WindowTitle = windowTitle,
+                IsForeground = GetForegroundWindow() == hWnd,
+                ProcessInfo = GetProcessInfo(pid),
+            };
+        }
+        
+        public static ProcessInfo GetProcessInfo(int pid)
+        {
+            var process = Process.GetProcessById(pid);
 
-            GetWindowThreadProcessId(hWnd, out processID);
-            Object[] data = GetProcessData(processID, IntPtr.Zero, LogicalProcessors);
+            var mainModule = process.MainModule;
 
-            return data;
-
+            // TODO: probably not a cheap operation
+            //var cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
+            //cpuCounter.NextValue();
+            var cpuUsage = 0.0;//cpuCounter.NextValue();
+            
+            return new ProcessInfo
+            {
+                ProcessName = process.ProcessName,
+                ProcessId = pid,
+                MainModuleName = mainModule.ModuleName,
+                MainModulePath = mainModule.FileName,
+                MainModuleDescription = mainModule.FileVersionInfo.FileDescription,
+                
+                StartTime = process.StartTime,
+                TotalProcessorTime = process.TotalProcessorTime,
+                UserProcessorTime = process.UserProcessorTime,
+                
+                RamVirtualSize = (int)(process.VirtualMemorySize64 / 1024 / 1024), // B -> MiB
+                RamWorkingSetSize = (int)(process.WorkingSet64 / 1024 / 1024),
+                
+                CpuUsage = cpuUsage,
+            };
         }
 
-
-        private static Object[] GetProcessData(uint processID, HWND shellWindow, int LogicalProcessors)
+        public class ProcessInfo
         {
-            try {
-                Process process = Process.GetProcessById(Int32.Parse(processID.ToString()));
+            public string ProcessName { get; set; }
+            public int ProcessId { get; set; }
+            public string MainModuleName { get; set; }
+            public string MainModulePath { get; set; }
+            public string MainModuleDescription { get; set; }
+            public DateTime StartTime { get; set; }
+            public TimeSpan TotalProcessorTime { get; set; }
+            public TimeSpan UserProcessorTime { get; set; }
+            public int RamWorkingSetSize { get; set; }
+            public int RamVirtualSize { get; set; }
+            public double CpuUsage { get; set; }
+        }
 
-                IntPtr hWnd = process.MainWindowHandle;
-
-                if (shellWindow != IntPtr.Zero)
-                    if (hWnd == shellWindow) return null;
-
-                //if (!IsWindowVisible(hWnd)) continue;
-                String AppDescription = "";
-                int length = GetWindowTextLength(hWnd);
-                if (length != 0) {
-                    StringBuilder builder = new StringBuilder(length);
-                    GetWindowText(hWnd, builder, length + 1);
-                    AppDescription = builder.ToString();
-                }
-
-                var cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
-                cpuCounter.NextValue();
-                var cpuUsage = cpuCounter.NextValue();
-
-                Double cpuUtilization = Double.Parse(cpuUsage.ToString()) / LogicalProcessors;
-
-                string status;
-                if (hWnd == GetForegroundWindow())
-                {
-                    status = "ACTIVE";
-                }
-                else
-                {
-                    status = "IDLE";
-                }
-
-                Object[] data = {
-                            // 0 Process name
-                            process.ProcessName,
-                            // 1 Process ID
-                            processID.ToString(),//process.Id.ToString(),
-                            // 2 Process status
-                            status,
-                            // 3 Description of the process
-                            AppDescription,//builder.ToString(),
-                            // 4 exe name
-                            process.MainModule.ModuleName,
-                            // 5 process starting time
-                            process.StartTime,
-                            // 6 Total processor time
-                            process.TotalProcessorTime,
-                            // 7 USer processor time
-                            process.UserProcessorTime,
-                            // 8 window titte
-                            process.MainWindowTitle,
-                            // 9 RAM Usage
-                            process.WorkingSet64/(1024*1024),
-                            // 10 Virtual RAM Usage
-                            process.VirtualMemorySize64 /(1024*1024),
-                            // 11 CPU usage
-                            cpuUtilization, //cpuUsage,
-                            //12 Executable path
-                            process.MainModule.FileName,
-                            //13 File name description
-                            process.MainModule.FileVersionInfo.FileDescription,// + " | " + process.MainModule.FileVersionInfo.ProductName,
-
-                        };
-
-                return data;
-            }
-            catch(Exception ex)
-            {
-                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
-                return null;
-            }
+        public class WindowInfo
+        {
+            public string WindowTitle { get; set; }
+            public bool IsForeground { get; set; }
             
-
+            public ProcessInfo ProcessInfo { get; set; }
         }
     }
 }

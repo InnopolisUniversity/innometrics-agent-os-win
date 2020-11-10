@@ -38,7 +38,7 @@ namespace InnoMetricsDataSync
                 {
                     log.Info("There is a user registered");
                     log.Info("try to login automatically with username and password");
-                    myConfig["TOKEN"] = Client.getLoginToken(myConfig["USERNAME"], myConfig["PASSWORD"]);
+                    myConfig["TOKEN"] = Client.GetLoginToken(myConfig["USERNAME"], myConfig["PASSWORD"]);
                     log.Debug("token -> " + myConfig["TOKEN"]);
                 }
                 else

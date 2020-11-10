@@ -33,9 +33,9 @@ namespace DataCollectorUI
 
         private void FrmSystemInfo_Load(object sender, EventArgs e)
         {
-            ReportGenerator generator = new ReportGenerator();
-            DataAccess da = new DataAccess();
-            Dictionary<String, String> myConfig = da.LoadInitialConfig();
+            var generator = new ReportGenerator();
+            var da = new DataAccess();
+            var myConfig = da.LoadInitialConfig();
             try
             {
                 
@@ -53,7 +53,7 @@ namespace DataCollectorUI
 
             //System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             //System.Diagnostics.FileVersionInfo fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
-            string version = "";// fileVersionInfo.ProductVersion;
+            var version = "";// fileVersionInfo.ProductVersion;
 
             if (System.Diagnostics.Debugger.IsAttached)
                 version = "Debug Mode";
@@ -129,8 +129,8 @@ namespace DataCollectorUI
             lblTopApp2.Text = "No data available";
             lblTopApp3.Text = "No data available";
 
-            DataAccess da = new DataAccess();
-            List<String> topIdleApp = da.LoadGetTopIdleApps();
+            var da = new DataAccess();
+            var topIdleApp = da.LoadGetTopIdleApps();
             if (topIdleApp != null)
             {
                 try

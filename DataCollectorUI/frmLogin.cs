@@ -14,7 +14,7 @@ namespace DataCollectorUI
 {
     public partial class frmLogin : Form
     {
-        Boolean _requestLogin;
+        bool _requestLogin;
 
 
         public frmLogin()
@@ -23,7 +23,7 @@ namespace DataCollectorUI
             _requestLogin = false;
         }
 
-        public frmLogin(Boolean requestLogin)
+        public frmLogin(bool requestLogin)
         {
             InitializeComponent();
             _requestLogin = requestLogin;
@@ -32,10 +32,10 @@ namespace DataCollectorUI
         private void btnSignIn_Click(object sender, EventArgs e)
         {
             //define local variables from the user inputs 
-            string email = txtemail.Text;
-            string password = txtpassword.Text;
+            var email = txtemail.Text;
+            var password = txtpassword.Text;
 
-            String token = Client.getLoginToken(email, password);
+            var token = Client.GetLoginToken(email, password);
 
 
             if (!String.IsNullOrEmpty(token))
@@ -71,7 +71,7 @@ namespace DataCollectorUI
 
             if (_requestLogin)
             {
-                DialogResult result = MessageBox.Show("Do you really want to close InnoMetrics data collecctor?", "InnoMetrics", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                var result = MessageBox.Show("Do you really want to close InnoMetrics data collecctor?", "InnoMetrics", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                 if(result == DialogResult.Yes)
                 {
                     Environment.Exit(0);

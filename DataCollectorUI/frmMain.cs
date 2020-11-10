@@ -96,7 +96,7 @@ namespace DataCollectorUI
         {
             try
             {
-                DataAccess da = new DataAccess();
+                var da = new DataAccess();
                 da.CheckDB();
 
                 log.Info("Loading app...");
@@ -115,7 +115,7 @@ namespace DataCollectorUI
                         log.Error("Error in the service starting process, please check the user credentials...");
                         ShowNotification("There is an error sending the data collected, please check the user credentials...", ToolTipIcon.Error);
 
-                        frmSettings myForm = new frmSettings(true);
+                        var myForm = new frmSettings(true);
                         myForm.ShowDialog();
                         //myForm.Dispose();
 
@@ -161,7 +161,7 @@ namespace DataCollectorUI
         
         private void UpdateConfig()
         {
-            DataAccess da = new DataAccess();
+            var da = new DataAccess();
             myConfig = da.LoadInitialConfig();
 
             COLLECTION_INTERVAL = (myConfig.ContainsKey("COLLECTION_INTERVAL") ? int.Parse(myConfig["COLLECTION_INTERVAL"].ToString()) : 1) * 60 * 1000;
@@ -171,11 +171,11 @@ namespace DataCollectorUI
         private void LoadData()
         {
             log.Info("Loading data...");
-            DataAccess da = new DataAccess();
+            var da = new DataAccess();
             richTextBox1.Text = "";
-            List<String> records = da.LoadProcessHistory();
+            var records = da.LoadProcessHistory();
 
-            foreach (string r in records)
+            foreach (var r in records)
             {
                 richTextBox1.Text += r + "\n";
             }
@@ -198,7 +198,7 @@ namespace DataCollectorUI
                     //myCollector = new ReportGenerator();
                     log.Info("loadReport is being executed...");
                     dataCollectionTime = DateTime.Now;
-                    CollectorProcessReport myReport = myCollector.GetCurrentProcessReport(dataCollectionTime);
+                    var myReport = myCollector.GetCurrentProcessReport(dataCollectionTime);
                     log.Info("Currect active process -> " + myReport.processes.Count);
                     //activeApp = null;
                     if (myLastReport != null)
@@ -273,7 +273,7 @@ namespace DataCollectorUI
 
 
 
-                        DataAccess da = new DataAccess();
+                        var da = new DataAccess();
 
                         foreach (var app in myReport.processes)//result)
                         {
@@ -303,7 +303,7 @@ namespace DataCollectorUI
                 }
                 catch (Exception ex)
                 {
-                    log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                    log.Info($"{ex.Message}, {ex.StackTrace}, {ex.Source}");
                 }
 #if DEBUG
                     Thread.Sleep(15000);
@@ -356,7 +356,7 @@ namespace DataCollectorUI
         {
             try
             {
-                frmSettings myForm = new frmSettings();
+                var myForm = new frmSettings();
                 myForm.ShowDialog();
                 myForm.Dispose();
 
@@ -430,21 +430,21 @@ namespace DataCollectorUI
                     {
                         if (!String.IsNullOrEmpty(myConfig["TOKEN"]))
                         {
-                            DataAccess da = new DataAccess();
+                            var da = new DataAccess();
 
-                            String token = Client.getLoginToken(myConfig["USERNAME"], myConfig["PASSWORD"]);
+                            var token = Client.GetLoginToken(myConfig["USERNAME"], myConfig["PASSWORD"]);
 
-                            AddProcessReportRequest records = da.ProcessReportGenerator(myConfig["USERNAME"]);
+                            var records = da.ProcessReportGenerator(myConfig["USERNAME"]);
 
                             log.Info("Submiting process request... sending " + records.ProcessesReport.Count + " records");
-                            bool result = Client.SaveProcessReport(records, token);// myConfig["TOKEN"]);
+                            var result = Client.SaveProcessReport(records, token);// myConfig["TOKEN"]);
                             log.Info("Updating activity status...");
                             da.UpdateProcessStatus(DataAccess.ActivityStatus.Processing, result ? DataAccess.ActivityStatus.Accepted : DataAccess.ActivityStatus.Error);
                             da.CleanProcessDataHistory();
                             log.Info("Process finished...");
 
 
-                            Report Activityrecords = da.ReportGenerator(myConfig["USERNAME"]);
+                            var Activityrecords = da.ReportGenerator(myConfig["USERNAME"]);
                             log.Info("Submiting activity request... sending " + Activityrecords.Activities.Count + " records");
                             result = Client.SaveReport(Activityrecords, token);
                             da.UpdateActivityStatus(DataAccess.ActivityStatus.Processing, result ? DataAccess.ActivityStatus.Accepted : DataAccess.ActivityStatus.Error);
@@ -455,7 +455,7 @@ namespace DataCollectorUI
                             log.Error("Error in the service starting process, please check the user credentials...");
                             ShowNotification("There is an error sending the data collected, please check the user credentials...", ToolTipIcon.Error);
 
-                            frmSettings myForm = new frmSettings(true);
+                            var myForm = new frmSettings(true);
                             myForm.ShowDialog();
                             myForm.Dispose();
 
@@ -502,16 +502,16 @@ namespace DataCollectorUI
         {
             try
             {
-                DateTime dataCollectionTime = DateTime.Now;
+                var dataCollectionTime = DateTime.Now;
                 if (eventType == EVENT_SYSTEM_FOREGROUND || eventType == EVENT_OBJECT_SELECTION)
                 {
-                    CollectorActivity tmp = myCurrentActivity;
+                    var tmp = myCurrentActivity;
                     
                     if (tmp != null)
                     {
                         log.Info("WinEventProc is being executed..., tracking app -> " + tmp.ExecutableName);
                         Console.WriteLine("WinEventProc is being executed..., tracking app -> " + tmp.ExecutableName);
-                        DataAccess da = new DataAccess();
+                        var da = new DataAccess();
                         tmp.EndTime = dataCollectionTime;
                         da.SaveMyActivity(tmp);
                         log.Debug("End of app tracked -> " + tmp.ExecutableName + " - "+ tmp.StartTime.ToString("yyyy-MM-dd HH:mm:ss") + " to " + tmp.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
@@ -568,12 +568,12 @@ namespace DataCollectorUI
             {
                 if (last_keyboard_touch != null || last_mouse_signal != null)
                 {
-                    DateTime maximum_date = MaxDate(last_mouse_signal, last_keyboard_touch);
-                    DateTime present = DateTime.Now;
-                    double totalminutes = (present - maximum_date).TotalMinutes;
-                    Boolean isIdle = false;
+                    var maximum_date = MaxDate(last_mouse_signal, last_keyboard_touch);
+                    var present = DateTime.Now;
+                    var totalminutes = (present - maximum_date).TotalMinutes;
+                    var isIdle = false;
 
-                    CollectorActivity tmp = myCurrentActivity;
+                    var tmp = myCurrentActivity;
                     if(tmp != null)
                     {
                         if (tmp == null)
@@ -586,7 +586,7 @@ namespace DataCollectorUI
 
                             try
                             {
-                                DataAccess da = new DataAccess();
+                                var da = new DataAccess();
                                 tmp.EndTime = maximum_date;
                                 log.Info(tmp.AppName + " became IDLE....");
                                 da.SaveMyActivity(tmp);

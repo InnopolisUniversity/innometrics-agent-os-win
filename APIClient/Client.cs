@@ -1,105 +1,91 @@
-﻿using InnoMetric;
+﻿using System;
+using System.Configuration;
+using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
+using InnoMetric;
 using InnoMetric.Models;
 using log4net;
-using Microsoft.Rest;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-//using System.Configuration;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace APIClient
 {
-    public class Client
+    public static class Client
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private static string strUri = ConfigurationManager.AppSettings["backend-uri"];////ConfigurationSettings.AppSettings["backend-uri"];
-        public static String getLoginToken(String username, String password)
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private static readonly string StrUri = ConfigurationManager.AppSettings["backend-uri"];
+
+        public static string GetLoginToken(string username, string password)
         {
-            String myToken = String.Empty;
+            var endpoint = new Uri(StrUri);
+            var client = new InnoMetricClient(endpoint, new AnonymousCredential());
 
-            Uri endpoint = new Uri(strUri);
-            InnoMetricClient client = new InnoMetricClient(endpoint, new AnonymousCredential());
 
-            
-
-            AuthRequest req = new AuthRequest
+            var req = new AuthRequest
             {
                 Email = username,
                 Password = password
             };
 
-            var result = (JObject)client.LoginUsingPOST(req);
+            dynamic result = client.LoginUsingPOST(req);
 
-            var result2 = client.LoginUsingPOST(req);
+            if (result != null) 
+                return result.token.ToString();
 
-            if (result != null)
-            {
-                myToken = result.GetValue("token").ToString();
-            }
-
-            return myToken;
+            return "";
         }
 
-        public static Boolean SaveReport(Report report, String token)
-        {
-            try {
-                Uri endpoint = new Uri(strUri);
-                InnoMetricClient client = new InnoMetricClient(endpoint, new AnonymousCredential());
-
-                var task = Task.Run(async () => await client.AddReportUsingPOSTWithHttpMessagesAsync(token, report)
-                                                            .ConfigureAwait(false));
-
-                var result = task.Result;
-
-                if (result != null)
-                {
-                    return result.Response.StatusCode == HttpStatusCode.OK;
-                }
-            }
-            catch(Exception ex)
-            {
-                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
-            }
-            
-            return false;
-        }
-
-        public static Boolean SaveProcessReport(AddProcessReportRequest report, String token)
+        public static bool SaveReport(Report report, string token)
         {
             try
             {
-                Uri endpoint = new Uri(strUri);
-                InnoMetricClient client = new InnoMetricClient(endpoint, new AnonymousCredential());
+                var endpoint = new Uri(StrUri);
+                var client = new InnoMetricClient(endpoint, new AnonymousCredential());
 
-                var task = Task.Run(async () => await client.AddProcessReportUsingPOSTWithHttpMessagesAsync(token, report)
-                                                            .ConfigureAwait(false));
+                var task = Task.Run(async () => await client.AddReportUsingPOSTWithHttpMessagesAsync(token, report)
+                    .ConfigureAwait(false));
 
                 var result = task.Result;
 
-                if (result != null)
-                {
-                    return result.Response.StatusCode == HttpStatusCode.OK;
-                }
+                if (result != null) return result.Response.StatusCode == HttpStatusCode.OK;
             }
             catch (Exception ex)
             {
-                log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                Log.Debug($"{ex.Message}, {ex.StackTrace}, {ex.Source}");
             }
 
             return false;
         }
 
-        public static UserRequest createUser(String name, String surname, String email, String password, String token)
+        public static bool SaveProcessReport(AddProcessReportRequest report, string token)
         {
-            Uri endpoint = new Uri(strUri);
-            InnoMetricClient client = new InnoMetricClient(endpoint, new AnonymousCredential());
+            try
+            {
+                var endpoint = new Uri(StrUri);
+                var client = new InnoMetricClient(endpoint, new AnonymousCredential());
 
-            UserRequest req = new UserRequest
+                var task = Task.Run(async () => await client
+                    .AddProcessReportUsingPOSTWithHttpMessagesAsync(token, report)
+                    .ConfigureAwait(false));
+
+                var result = task.Result;
+
+                if (result != null) return result.Response.StatusCode == HttpStatusCode.OK;
+            }
+            catch (Exception ex)
+            {
+                Log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+            }
+
+            return false;
+        }
+
+        public static UserRequest CreateUser(string name, string surname, string email, string password, string token)
+        {
+            var endpoint = new Uri(StrUri);
+            var client = new InnoMetricClient(endpoint, new AnonymousCredential());
+
+            var req = new UserRequest
             {
                 Email = email,
                 Name = name,
@@ -107,7 +93,7 @@ namespace APIClient
                 Password = password
             };
 
-            var result = (UserRequest)client.CreateUserUsingPOST(req, token);
+            var result = client.CreateUserUsingPOST(req, token);
 
             return result;
         }
