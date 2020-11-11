@@ -5,7 +5,9 @@ using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using InnoMetricsCollector.classes;
+using log4net.Appender;
 using HWND = System.IntPtr;
 
 namespace InnoMetricsCollector
@@ -40,8 +42,10 @@ namespace InnoMetricsCollector
 
         [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
-        #endregion 
 
+        #endregion
+
+        
         private static IEnumerable<IntPtr> FindWindows()
         {
             var res = new List<IntPtr>();
@@ -58,10 +62,38 @@ namespace InnoMetricsCollector
         
         public static IDictionary<HWND, WindowInfo> GetOpenedWindowsProcessesInfo()
         {
+            // TODO: this needs redesign; it queries duplicate values from the same processes
             var shellWindow = GetShellWindow();
-            return FindWindows()
-                .Where(window => window != shellWindow)
-                .ToDictionary(window => window, GetWindowInfo);
+            var windowHandles = FindWindows()
+                .Where(window => window != shellWindow).ToArray();
+
+            var processes = windowHandles.Select(w =>
+            {
+                GetWindowThreadProcessId(w, out var pid);
+                return Process.GetProcessById(pid);
+            }).ToArray();
+
+            var windowInfo = windowHandles.Select(GetWindowInfoWithoutProcess).ToArray();
+            var processInfo = processes.Select(GetProcessInfo).ToArray();
+            Thread.Sleep(1000);
+
+            var now = DateTime.Now;
+            var cpuTimes = processes.Select(p => p.TotalProcessorTime);
+
+            foreach (var (pi, time) in processInfo.Zip(cpuTimes, (p, t) => (p, t)))
+            {
+                var dt = now - pi.MeasurementTime;
+                var dpt = time - pi.TotalProcessorTime;
+                pi.CpuUsage = dpt.TotalSeconds / dt.TotalSeconds * 100 / LogicalProcessors;
+            }
+
+            foreach (var (pi, w) in processInfo.Zip(windowInfo, (p, w) => (p, w)))
+            {
+                w.ProcessInfo = pi;
+            }
+
+            return windowHandles.Zip(windowInfo, (k, v) => (k, v))
+                .ToDictionary(t => t.k, t => t.v);
         }
 
         // What the battery stuff is even doing here?!
@@ -88,6 +120,14 @@ namespace InnoMetricsCollector
         
         public static WindowInfo GetWindowInfo(HWND hWnd)
         {
+            var res = GetWindowInfoWithoutProcess(hWnd);
+            GetWindowThreadProcessId(hWnd, out var pid);
+            res.ProcessInfo = GetProcessInfo(pid);
+            return res;
+        }
+
+        private static WindowInfo GetWindowInfoWithoutProcess(HWND hWnd)
+        {
             var windowTitle = "";
             var length = GetWindowTextLength(hWnd);
             if (length != 0)
@@ -98,31 +138,30 @@ namespace InnoMetricsCollector
                 windowTitle = builder.ToString();
             }
 
-            GetWindowThreadProcessId(hWnd, out var pid);
             
             return new WindowInfo
             {
                 WindowTitle = windowTitle,
                 IsForeground = GetForegroundWindow() == hWnd,
-                ProcessInfo = GetProcessInfo(pid),
             };
         }
-        
-        public static ProcessInfo GetProcessInfo(int pid)
-        {
-            var process = Process.GetProcessById(pid);
 
+        private static ProcessInfo GetProcessInfo(int pid) => GetProcessInfo(Process.GetProcessById(pid));
+
+        private static ProcessInfo GetProcessInfo(Process process)
+        {
             var mainModule = process.MainModule;
 
             // TODO: probably not a cheap operation
             //var cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
             //cpuCounter.NextValue();
-            var cpuUsage = 0.0;//cpuCounter.NextValue();
+            //var cpuUsage = cpuCounter.NextValue();
+            var cpuUsage = 0;
             
             return new ProcessInfo
             {
                 ProcessName = process.ProcessName,
-                ProcessId = pid,
+                ProcessId = process.Id,
                 MainModuleName = mainModule.ModuleName,
                 MainModulePath = mainModule.FileName,
                 MainModuleDescription = mainModule.FileVersionInfo.FileDescription,
@@ -130,6 +169,8 @@ namespace InnoMetricsCollector
                 StartTime = process.StartTime,
                 TotalProcessorTime = process.TotalProcessorTime,
                 UserProcessorTime = process.UserProcessorTime,
+                
+                MeasurementTime = DateTime.Now,
                 
                 RamVirtualSize = (int)(process.VirtualMemorySize64 / 1024 / 1024), // B -> MiB
                 RamWorkingSetSize = (int)(process.WorkingSet64 / 1024 / 1024),
@@ -148,6 +189,7 @@ namespace InnoMetricsCollector
             public DateTime StartTime { get; set; }
             public TimeSpan TotalProcessorTime { get; set; }
             public TimeSpan UserProcessorTime { get; set; }
+            public DateTime MeasurementTime { get; set; }
             public int RamWorkingSetSize { get; set; }
             public int RamVirtualSize { get; set; }
             public double CpuUsage { get; set; }
