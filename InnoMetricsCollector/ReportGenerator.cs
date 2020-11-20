@@ -128,6 +128,13 @@ namespace InnoMetricsCollector
                     CapturedTime = measurementTime
                 });
 
+                myProcess.Measurements.Add(new ProcessMetrics
+                {
+                    MeasurementType = "7", // "GPU",
+                    Value = pi.GpuUsage.ToString(CultureInfo.InvariantCulture),
+                    CapturedTime = measurementTime
+                });
+
                 myReport.processes.Add(myProcess);
             }
 
