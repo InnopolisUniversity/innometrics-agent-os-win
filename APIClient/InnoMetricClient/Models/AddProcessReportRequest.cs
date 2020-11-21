@@ -2,21 +2,19 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class AddProcessReportRequest
     {
         /// <summary>
         /// Initializes a new instance of the AddProcessReportRequest class.
         /// </summary>
-        public AddProcessReportRequest() { }
+        public AddProcessReportRequest()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the AddProcessReportRequest class.
@@ -30,6 +28,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "processesReport")]
         public IList<ProcessReport> ProcessesReport { get; set; }
-
     }
 }

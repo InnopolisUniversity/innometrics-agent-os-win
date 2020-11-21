@@ -2,26 +2,24 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class UserResponse
     {
         /// <summary>
         /// Initializes a new instance of the UserResponse class.
         /// </summary>
-        public UserResponse() { }
+        public UserResponse()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the UserResponse class.
         /// </summary>
-        public UserResponse(string email = default(string), string isactive = default(string), string name = default(string), string surname = default(string))
+        public UserResponse(string email = default(string), string isactive = default(string),
+            string name = default(string), string surname = default(string))
         {
             Email = email;
             Isactive = isactive;
@@ -48,6 +46,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "surname")]
         public string Surname { get; set; }
-
     }
 }

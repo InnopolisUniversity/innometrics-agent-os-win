@@ -68,7 +68,8 @@ namespace InnoMetricsCollector.classes
 
                         Object[] data = GetProcessData(uint.Parse(processid.ToString()), shellWindow, LogicalProcessors);
 
-                        windows.Add(hWnd, data);
+                        if(!windows.ContainsKey(hWnd))
+                            windows.Add(hWnd, data);
                     }
                     catch (Exception ex)
                     {

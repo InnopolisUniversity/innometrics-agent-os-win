@@ -10,7 +10,7 @@ namespace InnoMetricsCollector
     class WindowsHookInput
     {
         public delegate IntPtr HookDelegate(
-           Int32 Code, IntPtr wParam, IntPtr lParam);
+            Int32 Code, IntPtr wParam, IntPtr lParam);
 
         [DllImport("User32.dll")]
         public static extern IntPtr CallNextHookEx(

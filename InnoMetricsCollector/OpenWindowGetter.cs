@@ -3,23 +3,289 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using InnoMetricsCollector.classes;
-using log4net.Appender;
+using log4net;
 using HWND = System.IntPtr;
 
 namespace InnoMetricsCollector
 {
-    class OpenWindowGetter
+    internal class OpenWindowGetter
     {
+        private static readonly ILog log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly int LogicalProcessors = Environment.ProcessorCount;
-        
+
+        private static List<LUID> GpuLuids;
+        //static LUID GpuLuid = new Adapter("\\\\?\\PCI#VEN_8086&DEV_0416&SUBSYS_397817AA&REV_06#3&11583659&0&10#{1ca05180-a699-450a-9a0c-de4fbe3ddd89}").Luid;
+
+        private static bool _isInitialized;
+
+        /// <summary>
+        ///     Fetches all video devices available.
+        /// </summary>
+        private static void Initialize()
+        {
+            GpuLuids = new List<LUID>();
+            var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController");
+            foreach (var entry in searcher.Get())
+            {
+                var gpuLuid = new Adapter("\\\\?\\" + entry["PNPDeviceID"].ToString().Replace("\\", "#") +
+                                          "#{1ca05180-a699-450a-9a0c-de4fbe3ddd89}").Luid;
+                GpuLuids.Add(gpuLuid);
+            }
+
+            _isInitialized = true;
+        }
+
+        private static IEnumerable<HWND> FindWindows()
+        {
+            var res = new List<HWND>();
+
+            EnumWindows(delegate(HWND wnd, HWND param)
+            {
+                if (IsWindowVisible(wnd))
+                    res.Add(wnd);
+                return true;
+            }, HWND.Zero);
+
+            return res;
+        }
+
+        private static void CheckNtStatus(NtStatus status)
+        {
+            if (status != NtStatus.Success) throw new Exception("Failed NtStatus");
+        }
+
+        private static unsafe TimeSpan GetGpuTime(IntPtr processHandle)
+        {
+            if (!_isInitialized) Initialize();
+
+            var sz = Environment.Is64BitOperatingSystem ? 808 : 800;
+            foreach (var adapter in GpuLuids)
+            {
+                var foo = stackalloc byte[sz];
+                *(int*) foo = 6;
+                *(LUID*) (foo + 4) = adapter;
+                *(IntPtr*) (foo + (Environment.Is64BitOperatingSystem ? 16 : 12)) = processHandle;
+                var s = D3DKMTQueryStatistics(foo);
+                if (s == NtStatus.Success)
+                    return new TimeSpan(*(long*) (foo + (Environment.Is64BitOperatingSystem ? 24 : 16)));
+                Console.WriteLine("HERE");
+            }
+
+            return TimeSpan.Zero;
+        }
+
+        public static IDictionary<HWND, WindowInfo> GetOpenedWindowsProcessesInfo()
+        {
+            // TODO: this needs redesign; it queries duplicate values from the same processes
+            var shellWindow = GetShellWindow();
+            var processes = FindWindows()
+                .Where(window => window != shellWindow)
+                .Select(w =>
+                {
+                    GetWindowThreadProcessId(w, out var pid);
+                    var wi = GetWindowInfoWithoutProcess(w);
+                    var p = Process.GetProcessById(pid);
+                    ProcessInfo pi;
+                    try
+                    {
+                        pi = GetProcessInfo(p);
+                    }
+                    catch (Exception e)
+                    {
+                        pi = null;
+                    }
+
+                    return new {w, wi, p, pi};
+                })
+                .Where(p => p.pi != null)
+                .ToArray();
+
+            Thread.Sleep(1000);
+
+            var now = DateTime.Now;
+            var cpuTimes = processes.Select(p => p.p.TotalProcessorTime);
+            var gpuTimes = processes.Select(p => GetGpuTime(p.p.Handle));
+
+
+            foreach (var (p, time) in processes.Zip(cpuTimes, (p, t) => (p, t)))
+            {
+                var dt = now - p.pi.MeasurementTime;
+                var dpt = time - p.pi.TotalProcessorTime;
+                p.pi.CpuUsage = dpt.TotalSeconds / dt.TotalSeconds * 100 / LogicalProcessors;
+            }
+
+            foreach (var (p, time) in processes.Zip(gpuTimes, (p, t) => (p, t)))
+            {
+                var dt = now - p.pi.MeasurementTime;
+                var dpt = time - p.pi.TotalGpuTime;
+                p.pi.GpuUsage = dpt.TotalSeconds / dt.TotalSeconds * 100 / LogicalProcessors;
+            }
+
+            foreach (var p in processes) p.wi.ProcessInfo = p.pi;
+
+            return processes
+                .ToDictionary(t => t.w, t => t.wi);
+        }
+
+        // What the battery stuff is even doing here?!
+        public static IDictionary<string, object> GetBatteryStatus()
+        {
+            var BatteryStatus = new Dictionary<string, object>();
+
+            var query = new ObjectQuery("Select * FROM Win32_Battery");
+            var searcher = new ManagementObjectSearcher(query);
+
+            var collection = searcher.Get();
+
+            foreach (var mo in collection)
+            foreach (var property in mo.Properties)
+                BatteryStatus.Add(property.Name, property.Value);
+            //Console.WriteLine("Property {0}: Value is {1}", property.Name, property.Value);
+
+            return BatteryStatus;
+        }
+
+        public static WindowInfo GetWindowInfo(HWND hWnd)
+        {
+            var res = GetWindowInfoWithoutProcess(hWnd);
+            GetWindowThreadProcessId(hWnd, out var pid);
+            res.ProcessInfo = GetProcessInfo(pid);
+            return res;
+        }
+
+        private static WindowInfo GetWindowInfoWithoutProcess(HWND hWnd)
+        {
+            var windowTitle = "";
+            var length = GetWindowTextLength(hWnd);
+            if (length != 0)
+            {
+                // TODO: fix race condition
+                var builder = new StringBuilder(length);
+                GetWindowText(hWnd, builder, length + 1);
+                windowTitle = builder.ToString();
+            }
+
+
+            return new WindowInfo
+            {
+                WindowTitle = windowTitle,
+                IsForeground = GetForegroundWindow() == hWnd
+            };
+        }
+
+        private static ProcessInfo GetProcessInfo(int pid)
+        {
+            return GetProcessInfo(Process.GetProcessById(pid));
+        }
+
+        private static ProcessInfo GetProcessInfo(Process process)
+        {
+            // Does not fill cpu usage information, as it is faster to do in parallel for many processes
+            var mainModule = process.MainModule;
+
+            // TODO: probably not a cheap operation
+            //var cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
+            //cpuCounter.NextValue();
+            //var cpuUsage = cpuCounter.NextValue();
+            var cpuUsage = 0;
+
+            return new ProcessInfo
+            {
+                ProcessName = process.ProcessName,
+                ProcessId = process.Id,
+                MainModuleName = mainModule.ModuleName,
+                MainModulePath = mainModule.FileName,
+                MainModuleDescription = mainModule.FileVersionInfo.FileDescription,
+
+                StartTime = process.StartTime,
+                TotalProcessorTime = process.TotalProcessorTime,
+                UserProcessorTime = process.UserProcessorTime,
+
+                TotalGpuTime = GetGpuTime(process.Handle),
+
+                MeasurementTime = DateTime.Now,
+
+                RamVirtualSize = (int) (process.VirtualMemorySize64 / 1024 / 1024), // B -> MiB
+                RamWorkingSetSize = (int) (process.WorkingSet64 / 1024 / 1024),
+
+                CpuUsage = cpuUsage
+            };
+        }
+
+        private class Adapter : IDisposable
+        {
+            private uint _handle;
+
+            public Adapter(string name)
+            {
+                var n = new D3DKMT_OPENADAPTERFROMDEVICENAME {pDeviceName = name};
+
+                CheckNtStatus(D3DKMTOpenAdapterFromDeviceName(ref n));
+
+                _handle = n.handle;
+                Luid = n.luid;
+            }
+
+            public LUID Luid { get; }
+
+            public void Dispose()
+            {
+                ReleaseUnmanagedResources();
+                GC.SuppressFinalize(this);
+            }
+
+            private void ReleaseUnmanagedResources()
+            {
+                if (_handle != 0)
+                {
+                    var close = new D3DKMT_CLOSEADAPTER {handle = _handle};
+                    _handle = 0;
+                    CheckNtStatus(D3DKMTCloseAdapter(ref close));
+                }
+            }
+
+            ~Adapter()
+            {
+                ReleaseUnmanagedResources();
+            }
+        }
+
+        public class ProcessInfo
+        {
+            public string ProcessName { get; set; }
+            public int ProcessId { get; set; }
+            public string MainModuleName { get; set; }
+            public string MainModulePath { get; set; }
+            public string MainModuleDescription { get; set; }
+            public DateTime StartTime { get; set; }
+            public TimeSpan TotalProcessorTime { get; set; }
+            public TimeSpan UserProcessorTime { get; set; }
+            public TimeSpan TotalGpuTime { get; set; }
+            public DateTime MeasurementTime { get; set; }
+            public int RamWorkingSetSize { get; set; }
+            public int RamVirtualSize { get; set; }
+            public double CpuUsage { get; set; }
+            public double GpuUsage { get; set; }
+        }
+
+        public class WindowInfo
+        {
+            public string WindowTitle { get; set; }
+            public bool IsForeground { get; set; }
+
+            public ProcessInfo ProcessInfo { get; set; }
+        }
+
         // TODO: move those into a separate class
+
         #region "Import USER32.dll"
+
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
         [DllImport("USER32.DLL")]
@@ -38,10 +304,10 @@ namespace InnoMetricsCollector
         private static extern IntPtr GetShellWindow();
 
         [DllImport("user32.dll", SetLastError = true)]
-        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
         [DllImport("user32.dll")]
-        static extern IntPtr GetForegroundWindow();
+        private static extern IntPtr GetForegroundWindow();
 
         public enum NtStatus : uint
         {
@@ -386,276 +652,35 @@ namespace InnoMetricsCollector
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        struct LUID {
-            public UInt32 LowPart;
-            public Int32 HighPart;
+        private struct LUID
+        {
+            public readonly uint LowPart;
+            public readonly int HighPart;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        struct D3DKMT_OPENADAPTERFROMDEVICENAME
+        private struct D3DKMT_OPENADAPTERFROMDEVICENAME
         {
             [MarshalAs(UnmanagedType.LPWStr)] public string pDeviceName;
-            public uint handle;
-            public LUID luid;
+            public readonly uint handle;
+            public readonly LUID luid;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        struct D3DKMT_CLOSEADAPTER
+        private struct D3DKMT_CLOSEADAPTER
         {
             public uint handle;
         }
 
         [DllImport("gdi32.dll")]
-        static extern NtStatus D3DKMTOpenAdapterFromDeviceName(ref D3DKMT_OPENADAPTERFROMDEVICENAME name);
+        private static extern NtStatus D3DKMTOpenAdapterFromDeviceName(ref D3DKMT_OPENADAPTERFROMDEVICENAME name);
 
         [DllImport("gdi32.dll")]
-        static extern NtStatus D3DKMTCloseAdapter(ref D3DKMT_CLOSEADAPTER adapter);
+        private static extern NtStatus D3DKMTCloseAdapter(ref D3DKMT_CLOSEADAPTER adapter);
 
         [DllImport("gdi32.dll")]
-        static extern unsafe NtStatus D3DKMTQueryStatistics(byte* aaa); 
-        
+        private static extern unsafe NtStatus D3DKMTQueryStatistics(byte* aaa);
+
         #endregion
-
-        static LUID GpuLuid = new Adapter("\\\\?\\PCI#VEN_15AD&DEV_0405&SUBSYS_040515AD&REV_00#3&61AAA01&0&78#{1ca05180-a699-450a-9a0c-de4fbe3ddd89}").Luid;
-        
-        private static IEnumerable<IntPtr> FindWindows()
-        {
-            var res = new List<IntPtr>();
-
-            EnumWindows(delegate(IntPtr wnd, IntPtr param)
-            {
-                if (IsWindowVisible(wnd))
-                    res.Add(wnd);
-                return true;
-            }, IntPtr.Zero);
-
-            return res;
-        }
-
-        private static void CheckNtStatus(NtStatus status)
-        {
-            if (status != NtStatus.Success)
-            {
-                throw new Exception("Failed NtStatus");
-            }
-        }
-        
-        class Adapter : IDisposable
-        {
-            public Adapter(string name)
-            {
-                var n = new D3DKMT_OPENADAPTERFROMDEVICENAME {pDeviceName = name};
-
-                CheckNtStatus(D3DKMTOpenAdapterFromDeviceName(ref n));
-
-                _handle = n.handle;
-                Luid = n.luid;
-            }
-
-            private uint _handle = 0;
-            
-            public LUID Luid { get; }
-
-            private void ReleaseUnmanagedResources()
-            {
-                if (_handle != 0)
-                {
-                    var close = new D3DKMT_CLOSEADAPTER() {handle = _handle};
-                    _handle = 0;
-                    CheckNtStatus(D3DKMTCloseAdapter(ref close));
-                }
-            }
-
-            public void Dispose()
-            {
-                ReleaseUnmanagedResources();
-                GC.SuppressFinalize(this);
-            }
-
-            ~Adapter()
-            {
-                ReleaseUnmanagedResources();
-            }
-        }
-        
-        private static unsafe TimeSpan GetGpuTime(LUID adapter, IntPtr processHandle)
-        {
-            var sz = Environment.Is64BitOperatingSystem ? 808 : 800;
-            var foo = stackalloc byte[sz];
-            *(int*) foo = 6;
-            *(LUID*) (foo + 4) = adapter;
-            *(IntPtr*) (foo + (Environment.Is64BitOperatingSystem ? 16 : 12)) = processHandle;
-            var s = D3DKMTQueryStatistics(foo);
-            if (s == NtStatus.Success)
-                return new TimeSpan(*(long*) (foo + (Environment.Is64BitOperatingSystem ? 24 : 16)));
-            return TimeSpan.Zero;
-        }
-        
-        public static IDictionary<HWND, WindowInfo> GetOpenedWindowsProcessesInfo()
-        {
-            // TODO: this needs redesign; it queries duplicate values from the same processes
-            var shellWindow = GetShellWindow();
-            var processes = FindWindows()
-                .Where(window => window != shellWindow)
-                .Select(w =>
-                {
-                    GetWindowThreadProcessId(w, out var pid);
-                    var wi = GetWindowInfoWithoutProcess(w);
-                    var p = Process.GetProcessById(pid);
-                    ProcessInfo pi;
-                    try
-                    {
-                        pi = GetProcessInfo(p);
-                    }
-                    catch (Exception e)
-                    {
-                        pi = null;
-                    }
-                    return new {w, wi, p, pi};
-                })
-                .Where(p => p.pi != null)
-                .ToArray();
-                
-            Thread.Sleep(1000);
-
-            var now = DateTime.Now;
-            var cpuTimes = processes.Select(p => p.p.TotalProcessorTime);
-            var gpuTimes = processes.Select(p => GetGpuTime(GpuLuid, p.p.Handle));
-
-            
-            foreach (var (p, time) in processes.Zip(cpuTimes, (p, t) => (p, t)))
-            {
-                var dt = now - p.pi.MeasurementTime;
-                var dpt = time - p.pi.TotalProcessorTime;
-                p.pi.CpuUsage = dpt.TotalSeconds / dt.TotalSeconds * 100 / LogicalProcessors;
-            }
-
-            foreach (var (p, time) in processes.Zip(gpuTimes, (p, t) => (p, t)))
-            {
-                var dt = now - p.pi.MeasurementTime;
-                var dpt = time - p.pi.TotalGpuTime;
-                p.pi.GpuUsage = dpt.TotalSeconds / dt.TotalSeconds * 100 / LogicalProcessors;
-            }
-
-            foreach (var p in processes)
-            {
-                p.wi.ProcessInfo = p.pi;
-            }
-
-            return processes
-                .ToDictionary(t => t.w, t => t.wi);
-        }
-
-        // What the battery stuff is even doing here?!
-        public static IDictionary<String, Object> GetBatteryStatus()
-        {
-            Dictionary<String, Object> BatteryStatus = new Dictionary<String, Object>();
-
-            ObjectQuery query = new ObjectQuery("Select * FROM Win32_Battery");
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-
-            ManagementObjectCollection collection = searcher.Get();
-
-            foreach (ManagementObject mo in collection)
-            {
-                foreach (PropertyData property in mo.Properties)
-                {
-                    BatteryStatus.Add(property.Name, property.Value);
-                    //Console.WriteLine("Property {0}: Value is {1}", property.Name, property.Value);
-                }
-            }
-
-            return BatteryStatus;
-        }
-        
-        public static WindowInfo GetWindowInfo(HWND hWnd)
-        {
-            var res = GetWindowInfoWithoutProcess(hWnd);
-            GetWindowThreadProcessId(hWnd, out var pid);
-            res.ProcessInfo = GetProcessInfo(pid);
-            return res;
-        }
-
-        private static WindowInfo GetWindowInfoWithoutProcess(HWND hWnd)
-        {
-            var windowTitle = "";
-            var length = GetWindowTextLength(hWnd);
-            if (length != 0)
-            {
-                // TODO: fix race condition
-                var builder = new StringBuilder(length);
-                GetWindowText(hWnd, builder, length + 1);
-                windowTitle = builder.ToString();
-            }
-
-            
-            return new WindowInfo
-            {
-                WindowTitle = windowTitle,
-                IsForeground = GetForegroundWindow() == hWnd,
-            };
-        }
-
-        private static ProcessInfo GetProcessInfo(int pid) => GetProcessInfo(Process.GetProcessById(pid));
-
-        private static ProcessInfo GetProcessInfo(Process process)
-        {
-            // Does not fill cpu usage information, as it is faster to do in parallel for many processes
-            var mainModule = process.MainModule;
-
-            // TODO: probably not a cheap operation
-            //var cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
-            //cpuCounter.NextValue();
-            //var cpuUsage = cpuCounter.NextValue();
-            var cpuUsage = 0;
-            
-            return new ProcessInfo
-            {
-                ProcessName = process.ProcessName,
-                ProcessId = process.Id,
-                MainModuleName = mainModule.ModuleName,
-                MainModulePath = mainModule.FileName,
-                MainModuleDescription = mainModule.FileVersionInfo.FileDescription,
-                
-                StartTime = process.StartTime,
-                TotalProcessorTime = process.TotalProcessorTime,
-                UserProcessorTime = process.UserProcessorTime,
-                
-                TotalGpuTime = GetGpuTime(GpuLuid, process.Handle),
-                
-                MeasurementTime = DateTime.Now,
-                
-                RamVirtualSize = (int)(process.VirtualMemorySize64 / 1024 / 1024), // B -> MiB
-                RamWorkingSetSize = (int)(process.WorkingSet64 / 1024 / 1024),
-                
-                CpuUsage = cpuUsage,
-            };
-        }
-
-        public class ProcessInfo
-        {
-            public string ProcessName { get; set; }
-            public int ProcessId { get; set; }
-            public string MainModuleName { get; set; }
-            public string MainModulePath { get; set; }
-            public string MainModuleDescription { get; set; }
-            public DateTime StartTime { get; set; }
-            public TimeSpan TotalProcessorTime { get; set; }
-            public TimeSpan UserProcessorTime { get; set; }
-            public TimeSpan TotalGpuTime { get; set; }
-            public DateTime MeasurementTime { get; set; }
-            public int RamWorkingSetSize { get; set; }
-            public int RamVirtualSize { get; set; }
-            public double CpuUsage { get; set; }
-            public double GpuUsage { get; set; }
-        }
-
-        public class WindowInfo
-        {
-            public string WindowTitle { get; set; }
-            public bool IsForeground { get; set; }
-            
-            public ProcessInfo ProcessInfo { get; set; }
-        }
     }
 }

@@ -8,7 +8,6 @@ namespace InnoMetricsCollector
 {
     public class KeyboardTracker : IDisposable
     {
-
         public event EventHandler<EventArgs> KeyBoardKeyPressed;
 
         private WindowsHookInput.HookDelegate _keyBoardDelegate;

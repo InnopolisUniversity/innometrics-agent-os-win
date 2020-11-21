@@ -3,8 +3,8 @@ using System.Configuration;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using InnoMetric;
-using InnoMetric.Models;
+using APIClient.InnoMetricClient;
+using APIClient.InnoMetricClient.Models;
 using log4net;
 
 namespace APIClient
@@ -18,7 +18,7 @@ namespace APIClient
         public static string GetLoginToken(string username, string password)
         {
             var endpoint = new Uri(StrUri);
-            var client = new InnoMetricClient(endpoint, new AnonymousCredential());
+            var client = new InnoMetricClient.InnoMetricClient(endpoint, new AnonymousCredential());
 
 
             var req = new AuthRequest
@@ -29,7 +29,7 @@ namespace APIClient
 
             dynamic result = client.LoginUsingPOST(req);
 
-            if (result != null) 
+            if (result != null)
                 return result.token.ToString();
 
             return "";
@@ -40,7 +40,7 @@ namespace APIClient
             try
             {
                 var endpoint = new Uri(StrUri);
-                var client = new InnoMetricClient(endpoint, new AnonymousCredential());
+                var client = new InnoMetricClient.InnoMetricClient(endpoint, new AnonymousCredential());
 
                 var task = Task.Run(async () => await client.AddReportUsingPOSTWithHttpMessagesAsync(token, report)
                     .ConfigureAwait(false));
@@ -62,7 +62,7 @@ namespace APIClient
             try
             {
                 var endpoint = new Uri(StrUri);
-                var client = new InnoMetricClient(endpoint, new AnonymousCredential());
+                var client = new InnoMetricClient.InnoMetricClient(endpoint, new AnonymousCredential());
 
                 var task = Task.Run(async () => await client
                     .AddProcessReportUsingPOSTWithHttpMessagesAsync(token, report)
@@ -83,7 +83,7 @@ namespace APIClient
         public static UserRequest CreateUser(string name, string surname, string email, string password, string token)
         {
             var endpoint = new Uri(StrUri);
-            var client = new InnoMetricClient(endpoint, new AnonymousCredential());
+            var client = new InnoMetricClient.InnoMetricClient(endpoint, new AnonymousCredential());
 
             var req = new UserRequest
             {

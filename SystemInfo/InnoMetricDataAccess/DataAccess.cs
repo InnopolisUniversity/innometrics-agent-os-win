@@ -1,5 +1,4 @@
-﻿using InnoMetric.Models;
-using InnoMetricsCollector;
+﻿using InnoMetricsCollector;
 using InnoMetricsCollector.classes;
 using log4net;
 using System;
@@ -12,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using InnoMetric.Models;
 
 namespace InnoMetricDataAccess
 {

@@ -76,18 +76,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceProcess" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InnoMetricsDataSync.cs">
@@ -121,14 +112,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\APIClient\APIClient.csproj">
-      <Project>{1aeaf2f2-b510-4268-afce-da1d75888136}</Project>
-      <Name>APIClient</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\InnoMetricDataAccess\InnoMetricDataAccess.csproj">
-      <Project>{bf563758-b345-4636-adef-5db5875475b4}</Project>
-      <Name>InnoMetricDataAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SystemInfo\APIClient\APIClient.csproj">
       <Project>{1aeaf2f2-b510-4268-afce-da1d75888136}</Project>
       <Name>APIClient</Name>
@@ -140,7 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="log4net">
-      <Version>2.0.8</Version>
+      <Version>2.0.12</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

@@ -2,26 +2,25 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class CumulativeReportResponse
     {
         /// <summary>
         /// Initializes a new instance of the CumulativeReportResponse class.
         /// </summary>
-        public CumulativeReportResponse() { }
+        public CumulativeReportResponse()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the CumulativeReportResponse class.
         /// </summary>
-        public CumulativeReportResponse(IList<CumulativeActivityReport> activityReports = default(IList<CumulativeActivityReport>))
+        public CumulativeReportResponse(
+            IList<CumulativeActivityReport> activityReports = default(IList<CumulativeActivityReport>))
         {
             ActivityReports = activityReports;
         }
@@ -30,6 +29,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "activityReports")]
         public IList<CumulativeActivityReport> ActivityReports { get; set; }
-
     }
 }

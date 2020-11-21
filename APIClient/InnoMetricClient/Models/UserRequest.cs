@@ -2,26 +2,26 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using System;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class UserRequest
     {
         /// <summary>
         /// Initializes a new instance of the UserRequest class.
         /// </summary>
-        public UserRequest() { }
+        public UserRequest()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the UserRequest class.
         /// </summary>
-        public UserRequest(DateTime? confirmedAt = default(DateTime?), string email = default(string), string isactive = default(string), string name = default(string), string password = default(string), string surname = default(string))
+        public UserRequest(DateTime? confirmedAt = default(DateTime?), string email = default(string),
+            string isactive = default(string), string name = default(string), string password = default(string),
+            string surname = default(string))
         {
             ConfirmedAt = confirmedAt;
             Email = email;
@@ -60,6 +60,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "surname")]
         public string Surname { get; set; }
-
     }
 }

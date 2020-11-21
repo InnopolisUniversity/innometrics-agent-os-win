@@ -2,26 +2,24 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class ActivitiesReportByUser
     {
         /// <summary>
         /// Initializes a new instance of the ActivitiesReportByUser class.
         /// </summary>
-        public ActivitiesReportByUser() { }
+        public ActivitiesReportByUser()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the ActivitiesReportByUser class.
         /// </summary>
-        public ActivitiesReportByUser(string activityDay = default(string), string email = default(string), string executableName = default(string), string timeUsed = default(string))
+        public ActivitiesReportByUser(string activityDay = default(string), string email = default(string),
+            string executableName = default(string), string timeUsed = default(string))
         {
             ActivityDay = activityDay;
             Email = email;
@@ -48,6 +46,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "time_used")]
         public string TimeUsed { get; set; }
-
     }
 }

@@ -2,21 +2,19 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class ProjectListResponse
     {
         /// <summary>
         /// Initializes a new instance of the ProjectListResponse class.
         /// </summary>
-        public ProjectListResponse() { }
+        public ProjectListResponse()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the ProjectListResponse class.
@@ -30,6 +28,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "projectList")]
         public IList<ProjectResponse> ProjectList { get; set; }
-
     }
 }

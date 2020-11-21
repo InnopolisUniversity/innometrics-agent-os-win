@@ -2,26 +2,29 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using System;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class ActivityReport
     {
         /// <summary>
         /// Initializes a new instance of the ActivityReport class.
         /// </summary>
-        public ActivityReport() { }
+        public ActivityReport()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the ActivityReport class.
         /// </summary>
-        public ActivityReport(int? activityID = default(int?), string activityType = default(string), string browserTitle = default(string), string browserUrl = default(string), DateTime? endTime = default(DateTime?), string executableName = default(string), bool? idleActivity = default(bool?), string ipAddress = default(string), string macAddress = default(string), string osversion = default(string), string pid = default(string), DateTime? startTime = default(DateTime?), string userID = default(string))
+        public ActivityReport(int? activityID = default(int?), string activityType = default(string),
+            string browserTitle = default(string), string browserUrl = default(string),
+            DateTime? endTime = default(DateTime?), string executableName = default(string),
+            bool? idleActivity = default(bool?), string ipAddress = default(string),
+            string macAddress = default(string), string osversion = default(string), string pid = default(string),
+            DateTime? startTime = default(DateTime?), string userID = default(string))
         {
             ActivityID = activityID;
             ActivityType = activityType;
@@ -102,6 +105,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "userID")]
         public string UserID { get; set; }
-
     }
 }

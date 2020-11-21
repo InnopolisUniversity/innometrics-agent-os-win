@@ -10,6 +10,7 @@ namespace DataCollectorUI
     static class Program
     {
         private static string appGuid = "82e37588-392a-4d6e-bb2a-7c33d96950f8";
+
         /// <summary>
         /// Punto de entrada principal para la aplicación.
         /// </summary>
@@ -20,7 +21,8 @@ namespace DataCollectorUI
             {
                 if (!mutex.WaitOne(0, false))
                 {
-                    MessageBox.Show("Instance already running", "InnoMetrics data collector", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Instance already running", "InnoMetrics data collector", MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                     return;
                 }
 

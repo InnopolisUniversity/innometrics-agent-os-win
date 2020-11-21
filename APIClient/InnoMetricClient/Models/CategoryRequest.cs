@@ -2,26 +2,24 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class CategoryRequest
     {
         /// <summary>
         /// Initializes a new instance of the CategoryRequest class.
         /// </summary>
-        public CategoryRequest() { }
+        public CategoryRequest()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the CategoryRequest class.
         /// </summary>
-        public CategoryRequest(int? categoryid = default(int?), string categoryname = default(string), string isactive = default(string))
+        public CategoryRequest(int? categoryid = default(int?), string categoryname = default(string),
+            string isactive = default(string))
         {
             Categoryid = categoryid;
             Categoryname = categoryname;
@@ -42,6 +40,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "isactive")]
         public string Isactive { get; set; }
-
     }
 }

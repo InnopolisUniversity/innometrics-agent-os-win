@@ -2,26 +2,27 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using System;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class CategoryResponse
     {
         /// <summary>
         /// Initializes a new instance of the CategoryResponse class.
         /// </summary>
-        public CategoryResponse() { }
+        public CategoryResponse()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the CategoryResponse class.
         /// </summary>
-        public CategoryResponse(int? categoryid = default(int?), string categoryname = default(string), string createdby = default(string), DateTime? creationdate = default(DateTime?), string isactive = default(string), DateTime? lastupdate = default(DateTime?), string updateby = default(string))
+        public CategoryResponse(int? categoryid = default(int?), string categoryname = default(string),
+            string createdby = default(string), DateTime? creationdate = default(DateTime?),
+            string isactive = default(string), DateTime? lastupdate = default(DateTime?),
+            string updateby = default(string))
         {
             Categoryid = categoryid;
             Categoryname = categoryname;
@@ -66,6 +67,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "updateby")]
         public string Updateby { get; set; }
-
     }
 }

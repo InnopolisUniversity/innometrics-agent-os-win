@@ -51,13 +51,13 @@ namespace DataCollectorUI
             }
             else
             {
-                MessageBox.Show("username and password are incorrect, please verify them", "InnoMetrics", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("username and password are incorrect, please verify them", "InnoMetrics",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void label1_Click(object sender, EventArgs e)
         {
-
         }
 
         private void frmLogin_Load(object sender, EventArgs e)
@@ -71,8 +71,9 @@ namespace DataCollectorUI
 
             if (_requestLogin)
             {
-                var result = MessageBox.Show("Do you really want to close InnoMetrics data collecctor?", "InnoMetrics", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
-                if(result == DialogResult.Yes)
+                var result = MessageBox.Show("Do you really want to close InnoMetrics data collecctor?", "InnoMetrics",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                if (result == DialogResult.Yes)
                 {
                     Environment.Exit(0);
                 }
@@ -85,7 +86,7 @@ namespace DataCollectorUI
 
         private void txtemail_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char)13)
+            if (e.KeyChar == (char) 13)
             {
                 txtpassword.Focus();
             }
@@ -93,7 +94,7 @@ namespace DataCollectorUI
 
         private void txtpassword_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char)13)
+            if (e.KeyChar == (char) 13)
             {
                 btnSignIn_Click(sender, e);
             }

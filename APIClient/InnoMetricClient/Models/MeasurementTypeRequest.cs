@@ -2,26 +2,24 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class MeasurementTypeRequest
     {
         /// <summary>
         /// Initializes a new instance of the MeasurementTypeRequest class.
         /// </summary>
-        public MeasurementTypeRequest() { }
+        public MeasurementTypeRequest()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the MeasurementTypeRequest class.
         /// </summary>
-        public MeasurementTypeRequest(string description = default(string), string label = default(string), string operation = default(string), double? scale = default(double?), double? weight = default(double?))
+        public MeasurementTypeRequest(string description = default(string), string label = default(string),
+            string operation = default(string), double? scale = default(double?), double? weight = default(double?))
         {
             Description = description;
             Label = label;
@@ -54,6 +52,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "weight")]
         public double? Weight { get; set; }
-
     }
 }

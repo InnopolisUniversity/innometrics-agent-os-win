@@ -61,13 +61,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\APIClient\APIClient.csproj">
+    <ProjectReference Include="..\..\APIClient\APIClient.csproj">
       <Project>{1aeaf2f2-b510-4268-afce-da1d75888136}</Project>
       <Name>APIClient</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\InnoMetricsCollector\InnoMetricsCollector.csproj">
-      <Project>{4dddd2cc-bfd0-40bb-a3e8-da4b62ad065d}</Project>
-      <Name>InnoMetricsCollector</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

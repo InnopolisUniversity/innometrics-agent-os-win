@@ -2,26 +2,25 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using System;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class MeasurementReport
     {
         /// <summary>
         /// Initializes a new instance of the MeasurementReport class.
         /// </summary>
-        public MeasurementReport() { }
+        public MeasurementReport()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the MeasurementReport class.
         /// </summary>
-        public MeasurementReport(string alternativeLabel = default(string), DateTime? capturedDate = default(DateTime?), string measurementTypeId = default(string), string value = default(string))
+        public MeasurementReport(string alternativeLabel = default(string), DateTime? capturedDate = default(DateTime?),
+            string measurementTypeId = default(string), string value = default(string))
         {
             AlternativeLabel = alternativeLabel;
             CapturedDate = capturedDate;
@@ -48,6 +47,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
-
     }
 }

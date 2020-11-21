@@ -31,10 +31,9 @@ namespace DataCollectorUI
 
         private void btnSesionControl_Click(object sender, EventArgs e)
         {
-            
             var frmLogin = new frmLogin(_requestLogin);
             frmLogin.ShowDialog();
-           frmLogin.Dispose();
+            frmLogin.Dispose();
             populateUserFrame();
             if (_requestLogin)
             {
@@ -74,7 +73,8 @@ namespace DataCollectorUI
             }
             */
 
-            MessageBox.Show("The configuration was saved", "InnoMetrics data collector", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("The configuration was saved", "InnoMetrics data collector", MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         private void frmSettings_Load(object sender, EventArgs e)
@@ -126,6 +126,5 @@ namespace DataCollectorUI
                 btnSesionControl.Text = "Log&in";
             }
         }
-
     }
 }

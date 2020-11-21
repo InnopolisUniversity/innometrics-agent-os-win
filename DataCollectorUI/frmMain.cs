@@ -1,8 +1,6 @@
 ﻿using APIClient;
 using InnoMetricDataAccess;
 using InnoMetricsCollector;
-using InnoMetricsCollector.classes;
-using InnoMetric.Models;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -11,21 +9,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 using System.Management;
 using System.Diagnostics;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-
-
+using InnoMetricsCollector.DTO;
 using HWND = System.IntPtr;
 
 namespace DataCollectorUI
 {
     public partial class frmMain : Form
     {
-
         ReportGenerator myCollector;
 
         CollectorProcessReport myLastReport;
@@ -43,14 +38,16 @@ namespace DataCollectorUI
 
         public static Dictionary<String, String> myConfig;
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private KeyboardTracker keyboard;
+
         private MouseTracker mouse;
+
         //LAST MOUSE AND KEYBOARD MOVEMENTS
         public DateTime last_mouse_signal;
         private DateTime last_keyboard_touch;
-
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////
@@ -64,11 +61,13 @@ namespace DataCollectorUI
 
         [DllImport("user32.dll")]
         static extern bool UnhookWinEvent(IntPtr hWinEventHook);
+
         [DllImport("user32.dll")]
         static extern IntPtr SetWinEventHook(uint eventMin,
             uint eventMax, IntPtr hmodWinEventProc,
             WinEventDelegate lpfnWinEventProc, uint idProcess,
             uint idThread, uint dwFlags);
+
         [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hWnd,
             StringBuilder lpString, int nMaxCount);
@@ -105,15 +104,17 @@ namespace DataCollectorUI
                 this.Visible = false;
                 this.WindowState = FormWindowState.Minimized;
                 this.Hide();
-                
+
                 UpdateConfig();
-                
+
                 if (myConfig.ContainsKey("TOKEN"))
                 {
                     if (String.IsNullOrEmpty(myConfig["TOKEN"]))
                     {
                         log.Error("Error in the service starting process, please check the user credentials...");
-                        ShowNotification("There is an error sending the data collected, please check the user credentials...", ToolTipIcon.Error);
+                        ShowNotification(
+                            "There is an error sending the data collected, please check the user credentials...",
+                            ToolTipIcon.Error);
 
                         var myForm = new frmSettings(true);
                         myForm.ShowDialog();
@@ -122,8 +123,9 @@ namespace DataCollectorUI
                         UpdateConfig();
                     }
                 }
-                
-                notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", "The data collector is running now...", ToolTipIcon.Info);
+
+                notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", "The data collector is running now...",
+                    ToolTipIcon.Info);
 
                 abortDataCollection = false;
                 abortDataSync = false;
@@ -151,21 +153,25 @@ namespace DataCollectorUI
                     EVENT_OBJECT_SELECTION, IntPtr.Zero,
                     tabEventProcDel, 0, 0, WINEVENT_OUTOFCONTEXT);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
                 MessageBox.Show(ex.ToString());
-
             }
         }
-        
+
         private void UpdateConfig()
         {
             var da = new DataAccess();
             myConfig = da.LoadInitialConfig();
 
-            COLLECTION_INTERVAL = (myConfig.ContainsKey("COLLECTION_INTERVAL") ? int.Parse(myConfig["COLLECTION_INTERVAL"].ToString()) : 1) * 60 * 1000;
-            SENDING_INTERVAL = (myConfig.ContainsKey("SENDING_INTERVAL") ? int.Parse(myConfig["SENDING_INTERVAL"].ToString()) : 5) * 60 * 1000;
+            COLLECTION_INTERVAL =
+                (myConfig.ContainsKey("COLLECTION_INTERVAL")
+                    ? int.Parse(myConfig["COLLECTION_INTERVAL"].ToString())
+                    : 1) * 60 * 1000;
+            SENDING_INTERVAL =
+                (myConfig.ContainsKey("SENDING_INTERVAL") ? int.Parse(myConfig["SENDING_INTERVAL"].ToString()) : 5) *
+                60 * 1000;
         }
 
         private void LoadData()
@@ -188,7 +194,6 @@ namespace DataCollectorUI
 
         private void LoadReport()
         {
-
             log.Info("Loading report...");
             DateTime dataCollectionTime;
             while (true)
@@ -205,32 +210,43 @@ namespace DataCollectorUI
                     {
                         foreach (var app in myReport.processes)
                         {
-                            log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " + app.ProcessID);
-                            var lastState = myLastReport.processes.Where(p => app.PID == p.PID && app.ProcessName == p.ProcessName).FirstOrDefault();
+                            log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " +
+                                     app.ProcessID);
+                            var lastState = myLastReport.processes
+                                .Where(p => app.PID == p.PID && app.ProcessName == p.ProcessName).FirstOrDefault();
                             if (lastState != null)
                             {
                                 app.ProcessID = lastState.ProcessID;
-                                var myLastMeasure = lastState.Measurements.FirstOrDefault(m => m.MeasurementType == "1"); //1 -> EstimatedChargeRemaining
-                                var myCurrentMeasure = app.Measurements.FirstOrDefault(m => m.MeasurementType == "1");//1 -> EstimatedChargeRemaining
+                                var myLastMeasure =
+                                    lastState.Measurements.FirstOrDefault(m =>
+                                        m.MeasurementType == "1"); //1 -> EstimatedChargeRemaining
+                                var myCurrentMeasure =
+                                    app.Measurements.FirstOrDefault(m =>
+                                        m.MeasurementType == "1"); //1 -> EstimatedChargeRemaining
 
                                 if (myCurrentMeasure != null && myCurrentMeasure.Value != "-1")
                                 {
                                     if (Double.Parse(myLastMeasure.Value) > Double.Parse(myCurrentMeasure.Value))
                                     {
-
-                                        var BatteryConsumption = app.Measurements.FirstOrDefault(m => m.MeasurementType == "6");// 6 - BatteryConsumption
+                                        var BatteryConsumption =
+                                            app.Measurements.FirstOrDefault(m =>
+                                                m.MeasurementType == "6"); // 6 - BatteryConsumption
 
 
                                         if (BatteryConsumption != null)
                                         {
-                                            BatteryConsumption.Value = (Double.Parse(myLastMeasure.Value) - Double.Parse(myCurrentMeasure.Value)).ToString();// (Double.Parse(BatteryConsumption.Value) + (Double.Parse(myLastMeasure.Value) - Double.Parse(myCurrentMeasure.Value))).ToString();
+                                            BatteryConsumption.Value =
+                                                (Double.Parse(myLastMeasure.Value) -
+                                                 Double.Parse(myCurrentMeasure.Value))
+                                                .ToString(); // (Double.Parse(BatteryConsumption.Value) + (Double.Parse(myLastMeasure.Value) - Double.Parse(myCurrentMeasure.Value))).ToString();
                                         }
                                         else
                                         {
                                             app.Measurements.Add(new ProcessMetrics
                                             {
                                                 MeasurementType = "6", // 6 - BatteryConsumption
-                                                Value = (Double.Parse(myLastMeasure.Value) - Double.Parse(myCurrentMeasure.Value)).ToString(),
+                                                Value = (Double.Parse(myLastMeasure.Value) -
+                                                         Double.Parse(myCurrentMeasure.Value)).ToString(),
                                                 CapturedTime = dataCollectionTime
                                             });
                                         }
@@ -268,14 +284,14 @@ namespace DataCollectorUI
                                 });
                             }
 
-                            log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " + app.ProcessID);
+                            log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " +
+                                     app.ProcessID);
                         }
-
 
 
                         var da = new DataAccess();
 
-                        foreach (var app in myReport.processes)//result)
+                        foreach (var app in myReport.processes) //result)
                         {
                             log.Info("Saving process data...");
                             da.SaveMyProcess(app);
@@ -306,7 +322,7 @@ namespace DataCollectorUI
                     log.Info($"{ex.Message}, {ex.StackTrace}, {ex.Source}");
                 }
 #if DEBUG
-                    Thread.Sleep(15000);
+                Thread.Sleep(15000);
 #else
                 Thread.Sleep(COLLECTION_INTERVAL);
 #endif
@@ -317,7 +333,6 @@ namespace DataCollectorUI
                     break;
                 }
             }
-
         }
 
 
@@ -340,7 +355,7 @@ namespace DataCollectorUI
             log.Debug(check.ThreadState.ToString());
             log.Debug(dataSync.ThreadState.ToString());
             log.Debug(activityTracking.ThreadState.ToString());
-            
+
 
             Application.Exit();
         }
@@ -407,11 +422,13 @@ namespace DataCollectorUI
                 Hide();
                 ShowInTaskbar = false;
                 Visible = false;
-                notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", "The data collector is running now...", ToolTipIcon.Info);
+                notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", "The data collector is running now...",
+                    ToolTipIcon.Info);
             }
-            notifyIcon1.Visible = true;
 
+            notifyIcon1.Visible = true;
         }
+
         public void ShowNotification(String message, ToolTipIcon icon)
         {
             notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", message, icon);
@@ -419,7 +436,6 @@ namespace DataCollectorUI
 
         private void SyncData()
         {
-
             log.Info("Initializing sync data method...");
             while (true)
             {
@@ -436,42 +452,46 @@ namespace DataCollectorUI
 
                             var records = da.ProcessReportGenerator(myConfig["USERNAME"]);
 
-                            log.Info("Submiting process request... sending " + records.ProcessesReport.Count + " records");
-                            var result = Client.SaveProcessReport(records, token);// myConfig["TOKEN"]);
+                            log.Info("Submiting process request... sending " + records.ProcessesReport.Count +
+                                     " records");
+                            var result = Client.SaveProcessReport(records, token); // myConfig["TOKEN"]);
                             log.Info("Updating activity status...");
-                            da.UpdateProcessStatus(DataAccess.ActivityStatus.Processing, result ? DataAccess.ActivityStatus.Accepted : DataAccess.ActivityStatus.Error);
+                            da.UpdateProcessStatus(DataAccess.ActivityStatus.Processing,
+                                result ? DataAccess.ActivityStatus.Accepted : DataAccess.ActivityStatus.Error);
                             da.CleanProcessDataHistory();
                             log.Info("Process finished...");
 
 
                             var Activityrecords = da.ReportGenerator(myConfig["USERNAME"]);
-                            log.Info("Submiting activity request... sending " + Activityrecords.Activities.Count + " records");
+                            log.Info("Submiting activity request... sending " + Activityrecords.Activities.Count +
+                                     " records");
                             result = Client.SaveReport(Activityrecords, token);
-                            da.UpdateActivityStatus(DataAccess.ActivityStatus.Processing, result ? DataAccess.ActivityStatus.Accepted : DataAccess.ActivityStatus.Error);
+                            da.UpdateActivityStatus(DataAccess.ActivityStatus.Processing,
+                                result ? DataAccess.ActivityStatus.Accepted : DataAccess.ActivityStatus.Error);
                             da.CleanDataHistory();
                         }
                         else
                         {
                             log.Error("Error in the service starting process, please check the user credentials...");
-                            ShowNotification("There is an error sending the data collected, please check the user credentials...", ToolTipIcon.Error);
+                            ShowNotification(
+                                "There is an error sending the data collected, please check the user credentials...",
+                                ToolTipIcon.Error);
 
                             var myForm = new frmSettings(true);
                             myForm.ShowDialog();
                             myForm.Dispose();
 
                             UpdateConfig();
-
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
-
                 }
 
 #if DEBUG
-                    Thread.Sleep(120000);
+                Thread.Sleep(120000);
 #else
                 Thread.Sleep(SENDING_INTERVAL);
 #endif
@@ -481,7 +501,6 @@ namespace DataCollectorUI
                     break;
                 }
             }
-
         }
 
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -506,7 +525,7 @@ namespace DataCollectorUI
                 if (eventType == EVENT_SYSTEM_FOREGROUND || eventType == EVENT_OBJECT_SELECTION)
                 {
                     var tmp = myCurrentActivity;
-                    
+
                     if (tmp != null)
                     {
                         log.Info("WinEventProc is being executed..., tracking app -> " + tmp.ExecutableName);
@@ -514,10 +533,11 @@ namespace DataCollectorUI
                         var da = new DataAccess();
                         tmp.EndTime = dataCollectionTime;
                         da.SaveMyActivity(tmp);
-                        log.Debug("End of app tracked -> " + tmp.ExecutableName + " - "+ tmp.StartTime.ToString("yyyy-MM-dd HH:mm:ss") + " to " + tmp.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                      
-                        
+                        log.Debug("End of app tracked -> " + tmp.ExecutableName + " - " +
+                                  tmp.StartTime.ToString("yyyy-MM-dd HH:mm:ss") + " to " +
+                                  tmp.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
                     }
+
                     myCurrentActivity = myCollector.GetCurrentActivity(hwnd, dataCollectionTime);
                     myCurrentActivity.StartTime = dataCollectionTime;
                 }
@@ -527,7 +547,6 @@ namespace DataCollectorUI
                 log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
                 Console.WriteLine(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
             }
-
         }
 
         void keyboard_KeyBoardKeyPressed(object sender, EventArgs e)
@@ -539,7 +558,6 @@ namespace DataCollectorUI
                 myCurrentActivity.IdleActivity = false;
                 logApp(myCurrentActivity, last_keyboard_touch, "Keyboard");
             }
-                
         }
 
         void mouse_MouseMoved(object sender, EventArgs e)
@@ -551,13 +569,14 @@ namespace DataCollectorUI
                 myCurrentActivity.IdleActivity = false;
                 logApp(myCurrentActivity, last_mouse_signal, "Mouse");
             }
-                
         }
 
 
         void logApp(CollectorActivity app, DateTime caputuredTime, String source)
         {
-            log.Info("Tracking apps for presence tracking, AppName:" +  app.AppName +"|ExecutableFile:" + app.ExecutableName + "|CaptureTime:" + caputuredTime.ToString("yyyy-MM-dd HH:mm:ss") + "|Source:" + source) ;
+            log.Info("Tracking apps for presence tracking, AppName:" + app.AppName + "|ExecutableFile:" +
+                     app.ExecutableName + "|CaptureTime:" + caputuredTime.ToString("yyyy-MM-dd HH:mm:ss") + "|Source:" +
+                     source);
         }
 
         //ON CURRENT WINDOW UPDATE ACTION
@@ -574,7 +593,7 @@ namespace DataCollectorUI
                     var isIdle = false;
 
                     var tmp = myCurrentActivity;
-                    if(tmp != null)
+                    if (tmp != null)
                     {
                         if (tmp == null)
                             isIdle = true;
@@ -583,7 +602,6 @@ namespace DataCollectorUI
 
                         if (totalminutes > 2 && !isIdle)
                         {
-
                             try
                             {
                                 var da = new DataAccess();
@@ -604,9 +622,9 @@ namespace DataCollectorUI
                         }
                     }
                 }
+
                 Thread.Sleep(1000);
             }
-            
         }
 
         public DateTime MaxDate(DateTime first, DateTime second)

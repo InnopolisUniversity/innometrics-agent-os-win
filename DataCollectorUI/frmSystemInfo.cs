@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using InnoMetricsCollector;
-using InnoMetricsCollector.classes;
 using InnoMetricDataAccess;
+using InnoMetricsCollector.DTO;
 using log4net;
 
 namespace DataCollectorUI
@@ -20,7 +20,9 @@ namespace DataCollectorUI
         public List<String> topIdleApp;
         public static DateTime idleTimeStart;
         public static Boolean isIdle;
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private static readonly ILog log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public FrmSystemInfo()
         {
@@ -38,8 +40,6 @@ namespace DataCollectorUI
             var myConfig = da.LoadInitialConfig();
             try
             {
-                
-
                 lblOS.Text = generator.GetOSVersion();
                 lblUserName.Text = generator.GetCurrentUser();
                 lblLogin.Text = myConfig["USERNAME"];
@@ -53,7 +53,7 @@ namespace DataCollectorUI
 
             //System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             //System.Diagnostics.FileVersionInfo fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
-            var version = "";// fileVersionInfo.ProductVersion;
+            var version = ""; // fileVersionInfo.ProductVersion;
 
             if (System.Diagnostics.Debugger.IsAttached)
                 version = "Debug Mode";
@@ -61,10 +61,14 @@ namespace DataCollectorUI
             {
                 try
                 {
-                    version = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Major.ToString() + "." +
-                    System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Minor.ToString() + "." +
-                    System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Build.ToString() + "." +
-                    System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Revision.ToString();
+                    version = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Major
+                                  .ToString() + "." +
+                              System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Minor
+                                  .ToString() + "." +
+                              System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Build
+                                  .ToString() + "." +
+                              System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion
+                                  .Revision.ToString();
                 }
                 catch (Exception ex)
                 {
@@ -73,18 +77,20 @@ namespace DataCollectorUI
             }
 
             this.Text = "InnoMetrics collector - " + version;
-
         }
 
         public void UpdateView()
         {
             topActivity = frmMain.myCurrentActivity;
-            if (topActivity != null) {
+            if (topActivity != null)
+            {
                 //isIdle = false;
                 //timerIdleCounter.Enabled = false;
                 pbActiveAppIcon.Image = Icon.ExtractAssociatedIcon(topActivity.mainAppPath).ToBitmap();
                 lblActiveAppName.Text = "App name: \t" + topActivity.ExecutableName;
-                lblActiveAppTime.Text = "Running time: \t" + new DateTime((DateTime.Now - topActivity.StartTime).Ticks).ToString("HH:mm:ss");// topActivity.StartTime.ToString();
+                lblActiveAppTime.Text = "Running time: \t" +
+                                        new DateTime((DateTime.Now - topActivity.StartTime).Ticks)
+                                            .ToString("HH:mm:ss"); // topActivity.StartTime.ToString();
             }
             /*else
             {
@@ -120,7 +126,6 @@ namespace DataCollectorUI
             }*/
 
             this.Refresh();
-            
         }
 
         private void UpdateTopIdleApps()
@@ -135,15 +140,14 @@ namespace DataCollectorUI
             {
                 try
                 {
-                    lblTopApp1.Text = topIdleApp[0];
-                    lblTopApp2.Text = topIdleApp[1];
-                    lblTopApp3.Text = topIdleApp[2];
+                    lblTopApp1.Text = (topIdleApp.Count != 0 ? topIdleApp[0] : "");
+                    lblTopApp2.Text = (topIdleApp.Count > 1 ? topIdleApp[1] : lblTopApp2.Text);
+                    lblTopApp3.Text = (topIdleApp.Count > 2 ? topIdleApp[2] : lblTopApp3.Text);
                 }
                 catch (Exception ex)
                 {
                     log.Error(ex.ToString());
                 }
-
             }
 
             this.Refresh();

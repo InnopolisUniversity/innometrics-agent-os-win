@@ -2,26 +2,26 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using System;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class Role
     {
         /// <summary>
         /// Initializes a new instance of the Role class.
         /// </summary>
-        public Role() { }
+        public Role()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the Role class.
         /// </summary>
-        public Role(string createdby = default(string), DateTime? creationdate = default(DateTime?), string description = default(string), string isactive = default(string), DateTime? lastupdate = default(DateTime?), string name = default(string), string updateby = default(string))
+        public Role(string createdby = default(string), DateTime? creationdate = default(DateTime?),
+            string description = default(string), string isactive = default(string),
+            DateTime? lastupdate = default(DateTime?), string name = default(string), string updateby = default(string))
         {
             Createdby = createdby;
             Creationdate = creationdate;
@@ -66,6 +66,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "updateby")]
         public string Updateby { get; set; }
-
     }
 }

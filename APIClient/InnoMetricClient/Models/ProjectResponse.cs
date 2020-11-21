@@ -2,26 +2,24 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class ProjectResponse
     {
         /// <summary>
         /// Initializes a new instance of the ProjectResponse class.
         /// </summary>
-        public ProjectResponse() { }
+        public ProjectResponse()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the ProjectResponse class.
         /// </summary>
-        public ProjectResponse(string isActive = default(string), string name = default(string), int? projectID = default(int?))
+        public ProjectResponse(string isActive = default(string), string name = default(string),
+            int? projectID = default(int?))
         {
             IsActive = isActive;
             Name = name;
@@ -42,6 +40,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "projectID")]
         public int? ProjectID { get; set; }
-
     }
 }

@@ -2,26 +2,29 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace InnoMetric.Models
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
+using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace APIClient.InnoMetricClient.Models
+{
     public partial class ProcessReport
     {
         /// <summary>
         /// Initializes a new instance of the ProcessReport class.
         /// </summary>
-        public ProcessReport() { }
+        public ProcessReport()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the ProcessReport class.
         /// </summary>
-        public ProcessReport(DateTime? collectedTime = default(DateTime?), string ipAddress = default(string), string macAddress = default(string), IList<MeasurementReport> measurementReportList = default(IList<MeasurementReport>), string osversion = default(string), string pid = default(string), string processName = default(string), string userID = default(string))
+        public ProcessReport(DateTime? collectedTime = default(DateTime?), string ipAddress = default(string),
+            string macAddress = default(string),
+            IList<MeasurementReport> measurementReportList = default(IList<MeasurementReport>),
+            string osversion = default(string), string pid = default(string), string processName = default(string),
+            string userID = default(string))
         {
             CollectedTime = collectedTime;
             IpAddress = ipAddress;
@@ -72,6 +75,5 @@ namespace InnoMetric.Models
         /// </summary>
         [JsonProperty(PropertyName = "userID")]
         public string UserID { get; set; }
-
     }
 }

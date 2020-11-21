@@ -6,14 +6,15 @@ using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
-using InnoMetricsCollector.classes;
+using InnoMetricsCollector.DTO;
 using Microsoft.VisualBasic;
 
 namespace InnoMetricsCollector
 {
     public class ReportGenerator
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public CollectorProcessReport GetCurrentProcessReport(DateTime measurementTime)
         {
@@ -49,7 +50,7 @@ namespace InnoMetricsCollector
 
                 var wi = w.Value;
                 var pi = w.Value.ProcessInfo;
-                
+
                 CollectorProcess myProcess = new CollectorProcess
                 {
                     ProcessName = pi.ProcessName,
@@ -78,7 +79,6 @@ namespace InnoMetricsCollector
                         MeasurementType = "1", // "EstimatedChargeRemaining",
                         Value = changingStatus == "2" ? "-1" : estimatedChargeRemaining.ToString(),
                         CapturedTime = measurementTime
-
                     });
 
                     myProcess.Measurements.Add(new ProcessMetrics
@@ -87,7 +87,6 @@ namespace InnoMetricsCollector
                         Value = batteryStatus["BatteryStatus"].ToString(),
                         CapturedTime = measurementTime
                     });
-
                 }
                 else
                 {
@@ -192,18 +191,17 @@ namespace InnoMetricsCollector
                         AppName = pi.MainModuleDescription,
                     };
                 }
-                   
+
 
                 //return myActivity;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Debug(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
                 //return null;
             }
+
             return myActivity;
-
-
         }
 
         public String GetIpAddress()
@@ -216,10 +214,12 @@ namespace InnoMetricsCollector
         public String GetMACAddress()
         {
             String firstMacAddress = NetworkInterface
-            .GetAllNetworkInterfaces()
-            .Where(nic => nic.OperationalStatus == OperationalStatus.Up && nic.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-            .Select(nic => nic.GetPhysicalAddress().ToString())
-            .FirstOrDefault();
+                .GetAllNetworkInterfaces()
+                .Where(nic =>
+                    nic.OperationalStatus == OperationalStatus.Up &&
+                    nic.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                .Select(nic => nic.GetPhysicalAddress().ToString())
+                .FirstOrDefault();
 
             var regex = "(.{2})(.{2})(.{2})(.{2})(.{2})(.{2})";
             var replace = "$1:$2:$3:$4:$5:$6";
@@ -231,11 +231,11 @@ namespace InnoMetricsCollector
 
         public String GetOSVersion()
         {
-            return (string)(from x in new ManagementObjectSearcher(
-                "SELECT Caption FROM Win32_OperatingSystem").Get().Cast<ManagementObject>()
-                            select x.GetPropertyValue("Caption")).FirstOrDefault();
+            return (string) (from x in new ManagementObjectSearcher(
+                    "SELECT Caption FROM Win32_OperatingSystem").Get().Cast<ManagementObject>()
+                select x.GetPropertyValue("Caption")).FirstOrDefault();
         }
-        
+
         public String GetCurrentUser()
         {
             return System.Environment.UserName;
