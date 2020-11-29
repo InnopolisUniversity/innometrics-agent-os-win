@@ -24,4 +24,6 @@ Innometrics system implementation for Windows OS.
 ## Have comments of feedback?
 Contact [Xavier Vasquez](https://github.com/xavzelada)
 
+[Here](https://drive.google.com/file/d/1ghOf4uXLN9Nl4MYenroQuLhQ3GPfZMZW/view?usp=sharing) you can read about PRIVACY NOTICE of Innometrics system.
+
 Copyright (c) 2020 Innopolis University - All rights reserved.
