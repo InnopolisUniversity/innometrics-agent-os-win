@@ -36,17 +36,24 @@ namespace InnoMetricsCollector.Profiler
 
         public float Pop(TCounterType type)
         {
-            if (!_counters.ContainsKey(type))
+            try
             {
-                if (_counters.Count > 0)
-                    // Can obtain pName from a neighboring counter
-                    _counters[type] = new PerformanceCounter(Category, CounterTypeToString(type),
-                        _counters.First().Value.InstanceName);
-                else
-                    throw new InvalidOperationException("Counter must be initialized");
-            }
+                if (!_counters.ContainsKey(type))
+                {
+                    if (_counters.Count > 0)
+                        // Can obtain pName from a neighboring counter
+                        _counters[type] = new PerformanceCounter(Category, CounterTypeToString(type),
+                            _counters.First().Value.InstanceName);
+                    else
+                        throw new InvalidOperationException("Counter must be initialized");
+                }
 
-            return _counters[type].NextValue();
+                return _counters[type].NextValue();
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
         }
     }
 }

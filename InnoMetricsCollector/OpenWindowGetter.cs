@@ -48,7 +48,13 @@ namespace InnoMetricsCollector
             foreach (var entry in searcher.Get())
                 if (entry.Properties["NetConnectionID"].Value != null)
                 {
-                    _perfNet.Initialize(entry.Properties["Description"].Value.ToString(),
+                    // Windows inconsistency.. again
+                    _perfNet.Initialize(entry.Properties["Description"].Value.ToString().
+                            Replace("\\", "_").
+                            Replace("/", "_").
+                            Replace(")", "]").
+                            Replace("(", "[").
+                            Replace("#", "_"),
                         NetworkInterfacePerfCounter.NetworkPerfType.BytesSent);
                     break;
                 }
