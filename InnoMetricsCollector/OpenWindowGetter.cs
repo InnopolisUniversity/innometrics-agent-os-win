@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using InnoMetricsCollector.Profiler;
 using log4net;
 using HWND = System.IntPtr;
 
@@ -23,7 +24,8 @@ namespace InnoMetricsCollector
         //static LUID GpuLuid = new Adapter("\\\\?\\PCI#VEN_8086&DEV_0416&SUBSYS_397817AA&REV_06#3&11583659&0&10#{1ca05180-a699-450a-9a0c-de4fbe3ddd89}").Luid;
 
         private static bool _isInitialized;
-
+        private static IOPerfCounter _perfIO;
+        private static NetworkInterfacePerfCounter _perfNet;
         /// <summary>
         ///     Fetches all video devices available.
         /// </summary>
@@ -38,6 +40,18 @@ namespace InnoMetricsCollector
                 GpuLuids.Add(gpuLuid);
             }
 
+            _perfIO = new IOPerfCounter();
+            _perfNet = new NetworkInterfacePerfCounter();
+
+            searcher = new ManagementObjectSearcher("Select * From Win32_NetworkAdapter");
+            foreach (var entry in searcher.Get())
+            {
+                if (entry.Properties["NetConnectionID"].Value != null)
+                {
+                    _perfNet.Initialize(entry.Properties["Description"].Value.ToString(), NetworkInterfacePerfCounter.NetworkPerfType.BytesSent);
+                    break;
+                }
+            }
             _isInitialized = true;
         }
 
@@ -62,7 +76,6 @@ namespace InnoMetricsCollector
 
         private static unsafe TimeSpan GetGpuTime(IntPtr processHandle)
         {
-            if (!_isInitialized) Initialize();
 
             var sz = Environment.Is64BitOperatingSystem ? 808 : 800;
             foreach (var adapter in GpuLuids)
@@ -186,6 +199,9 @@ namespace InnoMetricsCollector
 
         private static ProcessInfo GetProcessInfo(Process process)
         {
+            if (!_isInitialized) Initialize();
+
+
             // Does not fill cpu usage information, as it is faster to do in parallel for many processes
             var mainModule = process.MainModule;
 
@@ -195,6 +211,7 @@ namespace InnoMetricsCollector
             //var cpuUsage = cpuCounter.NextValue();
             var cpuUsage = 0;
 
+            _perfIO.Initialize(process, IOPerfCounter.IOPerfType.DataRate);
             return new ProcessInfo
             {
                 ProcessName = process.ProcessName,
@@ -214,7 +231,9 @@ namespace InnoMetricsCollector
                 RamVirtualSize = (int) (process.VirtualMemorySize64 / 1024 / 1024), // B -> MiB
                 RamWorkingSetSize = (int) (process.WorkingSet64 / 1024 / 1024),
 
-                CpuUsage = cpuUsage
+                CpuUsage = cpuUsage,
+                IOUsage = (double) _perfIO.Pop(IOPerfCounter.IOPerfType.DataRate),
+                NetworkUsage = (double) _perfNet.Pop(NetworkInterfacePerfCounter.NetworkPerfType.BytesSent)
             };
         }
 
@@ -272,6 +291,9 @@ namespace InnoMetricsCollector
             public int RamVirtualSize { get; set; }
             public double CpuUsage { get; set; }
             public double GpuUsage { get; set; }
+
+            public double IOUsage { get; set; }
+            public double NetworkUsage { get; set; }
         }
 
         public class WindowInfo
