@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ServiceProcess;
 
 namespace InnoMetricsDataSync
 {
-    static class Program
+    internal static class Program
     {
         /// <summary>
-        /// Punto de entrada principal para la aplicación.
+        ///     Punto de entrada principal para la aplicación.
         /// </summary>
-        static void Main()
+        private static void Main()
         {
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]

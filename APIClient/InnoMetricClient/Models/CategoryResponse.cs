@@ -7,22 +7,22 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class CategoryResponse
+    public class CategoryResponse
     {
         /// <summary>
-        /// Initializes a new instance of the CategoryResponse class.
+        ///     Initializes a new instance of the CategoryResponse class.
         /// </summary>
         public CategoryResponse()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CategoryResponse class.
+        ///     Initializes a new instance of the CategoryResponse class.
         /// </summary>
-        public CategoryResponse(int? categoryid = default(int?), string categoryname = default(string),
-            string createdby = default(string), DateTime? creationdate = default(DateTime?),
-            string isactive = default(string), DateTime? lastupdate = default(DateTime?),
-            string updateby = default(string))
+        public CategoryResponse(int? categoryid = default, string categoryname = default,
+            string createdby = default, DateTime? creationdate = default,
+            string isactive = default, DateTime? lastupdate = default,
+            string updateby = default)
         {
             Categoryid = categoryid;
             Categoryname = categoryname;

@@ -7,20 +7,20 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class MeasurementReport
+    public class MeasurementReport
     {
         /// <summary>
-        /// Initializes a new instance of the MeasurementReport class.
+        ///     Initializes a new instance of the MeasurementReport class.
         /// </summary>
         public MeasurementReport()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the MeasurementReport class.
+        ///     Initializes a new instance of the MeasurementReport class.
         /// </summary>
-        public MeasurementReport(string alternativeLabel = default(string), DateTime? capturedDate = default(DateTime?),
-            string measurementTypeId = default(string), string value = default(string))
+        public MeasurementReport(string alternativeLabel = default, DateTime? capturedDate = default,
+            string measurementTypeId = default, string value = default)
         {
             AlternativeLabel = alternativeLabel;
             CapturedDate = capturedDate;

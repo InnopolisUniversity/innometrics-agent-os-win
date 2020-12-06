@@ -6,20 +6,20 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class ProjectResponse
+    public class ProjectResponse
     {
         /// <summary>
-        /// Initializes a new instance of the ProjectResponse class.
+        ///     Initializes a new instance of the ProjectResponse class.
         /// </summary>
         public ProjectResponse()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the ProjectResponse class.
+        ///     Initializes a new instance of the ProjectResponse class.
         /// </summary>
-        public ProjectResponse(string isActive = default(string), string name = default(string),
-            int? projectID = default(int?))
+        public ProjectResponse(string isActive = default, string name = default,
+            int? projectID = default)
         {
             IsActive = isActive;
             Name = name;

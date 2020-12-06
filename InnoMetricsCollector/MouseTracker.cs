@@ -4,13 +4,12 @@ namespace InnoMetricsCollector
 {
     public class MouseTracker : IDisposable
     {
-        public event EventHandler<EventArgs> MouseMoved;
-
-        private WindowsHookInput.HookDelegate mouseDelegate;
-        private IntPtr mouseHandle;
-        private const Int32 WH_MOUSE_LL = 14;
+        private const int WH_MOUSE_LL = 14;
 
         private bool disposed;
+
+        private readonly WindowsHookInput.HookDelegate mouseDelegate;
+        private readonly IntPtr mouseHandle;
 
         public MouseTracker()
         {
@@ -18,7 +17,14 @@ namespace InnoMetricsCollector
             mouseHandle = WindowsHookInput.SetWindowsHookEx(WH_MOUSE_LL, mouseDelegate, IntPtr.Zero, 0);
         }
 
-        private IntPtr MouseHookDelegate(Int32 Code, IntPtr wParam, IntPtr lParam)
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        public event EventHandler<EventArgs> MouseMoved;
+
+        private IntPtr MouseHookDelegate(int Code, IntPtr wParam, IntPtr lParam)
         {
             if (Code < 0)
                 return WindowsHookInput.CallNextHookEx(mouseHandle, Code, wParam, lParam);
@@ -27,11 +33,6 @@ namespace InnoMetricsCollector
                 MouseMoved(this, new EventArgs());
 
             return WindowsHookInput.CallNextHookEx(mouseHandle, Code, wParam, lParam);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
         }
 
         protected virtual void Dispose(bool disposing)

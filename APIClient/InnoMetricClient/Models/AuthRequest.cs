@@ -6,20 +6,20 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class AuthRequest
+    public class AuthRequest
     {
         /// <summary>
-        /// Initializes a new instance of the AuthRequest class.
+        ///     Initializes a new instance of the AuthRequest class.
         /// </summary>
         public AuthRequest()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the AuthRequest class.
+        ///     Initializes a new instance of the AuthRequest class.
         /// </summary>
-        public AuthRequest(string email = default(string), string password = default(string),
-            string projectID = default(string))
+        public AuthRequest(string email = default, string password = default,
+            string projectID = default)
         {
             Email = email;
             Password = password;

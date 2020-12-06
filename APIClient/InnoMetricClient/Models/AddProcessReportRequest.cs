@@ -7,19 +7,19 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class AddProcessReportRequest
+    public class AddProcessReportRequest
     {
         /// <summary>
-        /// Initializes a new instance of the AddProcessReportRequest class.
+        ///     Initializes a new instance of the AddProcessReportRequest class.
         /// </summary>
         public AddProcessReportRequest()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the AddProcessReportRequest class.
+        ///     Initializes a new instance of the AddProcessReportRequest class.
         /// </summary>
-        public AddProcessReportRequest(IList<ProcessReport> processesReport = default(IList<ProcessReport>))
+        public AddProcessReportRequest(IList<ProcessReport> processesReport = default)
         {
             ProcessesReport = processesReport;
         }

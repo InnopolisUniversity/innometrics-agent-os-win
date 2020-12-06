@@ -1,35 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using InnoMetricsCollector.DTO;
-using Microsoft.VisualBasic;
+using log4net;
 
 namespace InnoMetricsCollector
 {
     public class ReportGenerator
     {
-        private static readonly log4net.ILog log =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public CollectorProcessReport GetCurrentProcessReport(DateTime measurementTime)
         {
             log.Info("Generation process report...");
-            CollectorProcessReport myReport = new CollectorProcessReport();
+            var myReport = new CollectorProcessReport();
 
             var currentWindows = OpenWindowGetter.GetOpenedWindowsProcessesInfo();
-            IDictionary<String, Object> batteryStatus = OpenWindowGetter.GetBatteryStatus();
+            var batteryStatus = OpenWindowGetter.GetBatteryStatus();
 
             // get IP address of host computer
             // Retrive the Name of HOST  
             var myIp = GetIpAddress();
 
             // get mac address of host machine
-            String firstMacAddress = GetMACAddress();
+            var firstMacAddress = GetMACAddress();
 
             foreach (var w in currentWindows)
             {
@@ -48,10 +48,14 @@ namespace InnoMetricsCollector
                 // 12 Executable path
                 // 13 File name description
 
+                //Khaled:
+                // 14 IO Rate
+                // 15 NetworkUsage
+
                 var wi = w.Value;
                 var pi = w.Value.ProcessInfo;
 
-                CollectorProcess myProcess = new CollectorProcess
+                var myProcess = new CollectorProcess
                 {
                     ProcessName = pi.ProcessName,
                     ProcessType = "OS",
@@ -69,7 +73,7 @@ namespace InnoMetricsCollector
 
                 if (batteryStatus != null && batteryStatus.Count > 0)
                 {
-                    string changingStatus = batteryStatus["BatteryStatus"].ToString();
+                    var changingStatus = batteryStatus["BatteryStatus"].ToString();
                     var estimatedChargeRemaining = float.Parse(batteryStatus["EstimatedChargeRemaining"].ToString());
 
                     estimatedChargeRemaining = estimatedChargeRemaining > 100.0 ? 100 : estimatedChargeRemaining;
@@ -134,6 +138,19 @@ namespace InnoMetricsCollector
                     CapturedTime = measurementTime
                 });
 
+                myProcess.Measurements.Add(new ProcessMetrics
+                {
+                    MeasurementType = "14", // "IO",
+                    Value = pi.IOUsage.ToString(CultureInfo.InvariantCulture),
+                    CapturedTime = measurementTime
+                });
+
+                myProcess.Measurements.Add(new ProcessMetrics
+                {
+                    MeasurementType = "15", // "NetworkUsage",
+                    Value = pi.NetworkUsage.ToString(CultureInfo.InvariantCulture),
+                    CapturedTime = measurementTime
+                });
                 myReport.processes.Add(myProcess);
             }
 
@@ -151,8 +168,8 @@ namespace InnoMetricsCollector
                 var wi = OpenWindowGetter.GetWindowInfo(hWnd);
                 var pi = wi.ProcessInfo;
 
-                String myIP = GetIpAddress();
-                String firstMacAddress = GetMACAddress();
+                var myIP = GetIpAddress();
+                var firstMacAddress = GetMACAddress();
 
                 // 0 Process name
                 // 1 Process ID
@@ -171,7 +188,6 @@ namespace InnoMetricsCollector
 
                 //CollectorActivity 
                 if (wi != null)
-                {
                     myActivity = new CollectorActivity
                     {
                         ActivityID = -1,
@@ -188,9 +204,8 @@ namespace InnoMetricsCollector
                         Description = wi.WindowTitle,
                         Status = "0",
                         mainAppPath = pi.MainModulePath,
-                        AppName = pi.MainModuleDescription,
+                        AppName = pi.MainModuleDescription
                     };
-                }
 
 
                 //return myActivity;
@@ -204,16 +219,16 @@ namespace InnoMetricsCollector
             return myActivity;
         }
 
-        public String GetIpAddress()
+        public string GetIpAddress()
         {
-            string hostName = Dns.GetHostName(); // Retrive the Name of HOST  
-            string myIP = Dns.GetHostByName(hostName).AddressList[0].ToString();
+            var hostName = Dns.GetHostName(); // Retrive the Name of HOST  
+            var myIP = Dns.GetHostByName(hostName).AddressList[0].ToString();
             return myIP;
         }
 
-        public String GetMACAddress()
+        public string GetMACAddress()
         {
-            String firstMacAddress = NetworkInterface
+            var firstMacAddress = NetworkInterface
                 .GetAllNetworkInterfaces()
                 .Where(nic =>
                     nic.OperationalStatus == OperationalStatus.Up &&
@@ -229,16 +244,16 @@ namespace InnoMetricsCollector
             return newformat;
         }
 
-        public String GetOSVersion()
+        public string GetOSVersion()
         {
             return (string) (from x in new ManagementObjectSearcher(
                     "SELECT Caption FROM Win32_OperatingSystem").Get().Cast<ManagementObject>()
                 select x.GetPropertyValue("Caption")).FirstOrDefault();
         }
 
-        public String GetCurrentUser()
+        public string GetCurrentUser()
         {
-            return System.Environment.UserName;
+            return Environment.UserName;
         }
     }
 }

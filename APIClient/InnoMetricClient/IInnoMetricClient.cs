@@ -13,548 +13,548 @@ using Newtonsoft.Json;
 namespace APIClient.InnoMetricClient
 {
     /// <summary>
-    /// Service description
+    ///     Service description
     /// </summary>
-    public partial interface IInnoMetricClient : IDisposable
+    public interface IInnoMetricClient : IDisposable
     {
         /// <summary>
-        /// The base URI of the service.
+        ///     The base URI of the service.
         /// </summary>
         Uri BaseUri { get; set; }
 
         /// <summary>
-        /// Gets or sets json serialization settings.
+        ///     Gets or sets json serialization settings.
         /// </summary>
         JsonSerializerSettings SerializationSettings { get; }
 
         /// <summary>
-        /// Gets or sets json deserialization settings.
+        ///     Gets or sets json deserialization settings.
         /// </summary>
         JsonSerializerSettings DeserializationSettings { get; }
 
         /// <summary>
-        /// Subscription credentials which uniquely identify client
-        /// subscription.
+        ///     Subscription credentials which uniquely identify client
+        ///     subscription.
         /// </summary>
         ServiceClientCredentials Credentials { get; }
 
 
         /// <summary>
-        /// addAppCategory
+        ///     addAppCategory
         /// </summary>
         /// <param name='appCategoryRequest'>
-        /// appCategoryRequest
+        ///     appCategoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<AppCategoryResponse>> AddAppCategoryUsingPOSTWithHttpMessagesAsync(
-            AppCategoryRequest appCategoryRequest, string token = default(string),
+            AppCategoryRequest appCategoryRequest, string token = default,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// UpdateAppCategory
+        ///     UpdateAppCategory
         /// </summary>
         /// <param name='appCategoryRequest'>
-        /// appCategoryRequest
+        ///     appCategoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<AppCategoryResponse>> UpdateAppCategoryUsingPUTWithHttpMessagesAsync(
-            AppCategoryRequest appCategoryRequest, string token = default(string),
+            AppCategoryRequest appCategoryRequest, string token = default,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// getAppCategoryById
+        ///     getAppCategoryById
         /// </summary>
         /// <param name='appId'>
-        /// AppId
+        ///     AppId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<AppCategoryResponse>> GetAppCategoryByIdUsingGETWithHttpMessagesAsync(int appId,
-            string token = default(string), Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            string token = default, Dictionary<string, List<string>> customHeaders = null,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// addCategory
+        ///     addCategory
         /// </summary>
         /// <param name='categoryRequest'>
-        /// categoryRequest
+        ///     categoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<CategoryResponse>> AddCategoryUsingPOSTWithHttpMessagesAsync(
-            CategoryRequest categoryRequest, string token = default(string),
+            CategoryRequest categoryRequest, string token = default,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// UpdateCategory
+        ///     UpdateCategory
         /// </summary>
         /// <param name='categoryRequest'>
-        /// categoryRequest
+        ///     categoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<CategoryResponse>> UpdateCategoryUsingPUTWithHttpMessagesAsync(
-            CategoryRequest categoryRequest, string token = default(string),
+            CategoryRequest categoryRequest, string token = default,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// getCategoryById
+        ///     getCategoryById
         /// </summary>
         /// <param name='categoryId'>
-        /// CategoryId
+        ///     CategoryId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<CategoryResponse>> GetCategoryByIdUsingGETWithHttpMessagesAsync(int categoryId,
-            string token = default(string), Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            string token = default, Dictionary<string, List<string>> customHeaders = null,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// CreateMeasurementType
+        ///     CreateMeasurementType
         /// </summary>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='measurementType'>
-        /// measurementType
+        ///     measurementType
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<MeasurementTypeResponse>> CreateMeasurementTypeUsingPOSTWithHttpMessagesAsync(
             string token, MeasurementTypeRequest measurementType, Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// getActiveProjects
+        ///     getActiveProjects
         /// </summary>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<ProjectListResponse>> GetActiveProjectsUsingGETWithHttpMessagesAsync(
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// CreateProject
+        ///     CreateProject
         /// </summary>
         /// <param name='project'>
-        /// project
+        ///     project
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<ProjectResponse>> CreateProjectUsingPOSTWithHttpMessagesAsync(ProjectRequest project,
-            string token = default(string), Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            string token = default, Dictionary<string, List<string>> customHeaders = null,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// updateProject
+        ///     updateProject
         /// </summary>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='project'>
-        /// project
+        ///     project
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<ProjectResponse>> UpdateProjectUsingPUTWithHttpMessagesAsync(string token,
             ProjectRequest project, Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// ListAllRoles
+        ///     ListAllRoles
         /// </summary>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<IList<Role>>> ListAllRolesUsingGETWithHttpMessagesAsync(string token,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// CreateRole
+        ///     CreateRole
         /// </summary>
         /// <param name='roleDescription'>
-        /// RoleDescription
+        ///     RoleDescription
         /// </param>
         /// <param name='roleId'>
-        /// RoleId
+        ///     RoleId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<Role>> CreateRoleUsingPOSTWithHttpMessagesAsync(string roleDescription,
             string roleId, string token, Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// UpdateRole
+        ///     UpdateRole
         /// </summary>
         /// <param name='roleDescription'>
-        /// RoleDescription
+        ///     RoleDescription
         /// </param>
         /// <param name='roleId'>
-        /// RoleId
+        ///     RoleId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<Role>> UpdateRoleUsingPUTWithHttpMessagesAsync(string roleDescription, string roleId,
             string token, Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// GetRoleById
+        ///     GetRoleById
         /// </summary>
         /// <param name='roleId'>
-        /// RoleId
+        ///     RoleId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<Role>> GetRoleByIdUsingGETWithHttpMessagesAsync(string roleId, string token,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// CreateUser
+        ///     CreateUser
         /// </summary>
         /// <param name='user'>
-        /// user
+        ///     user
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<UserRequest>> CreateUserUsingPOSTWithHttpMessagesAsync(UserRequest user,
-            string token = default(string), Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            string token = default, Dictionary<string, List<string>> customHeaders = null,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// UpdateUserStatus
+        ///     UpdateUserStatus
         /// </summary>
         /// <param name='isActive'>
-        /// IsActive
+        ///     IsActive
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='userId'>
-        /// UserId
+        ///     UserId
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<bool?>> UpdateUserStatusUsingPUTWithHttpMessagesAsync(bool isActive, string token,
             string userId, Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// getActiveUsers
+        ///     getActiveUsers
         /// </summary>
         /// <param name='projectId'>
-        /// ProjectId
+        ///     ProjectId
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<UserListResponse>> GetActiveUsersUsingGETWithHttpMessagesAsync(
-            string projectId = default(string), Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            string projectId = default, Dictionary<string, List<string>> customHeaders = null,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// InviteUserProject
+        ///     InviteUserProject
         /// </summary>
         /// <param name='manager'>
-        /// Manager
+        ///     Manager
         /// </param>
         /// <param name='projectName'>
-        /// ProjectName
+        ///     ProjectName
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='userEmail'>
-        /// UserEmail
+        ///     UserEmail
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<bool?>> InviteUserProjectUsingPOSTWithHttpMessagesAsync(bool manager,
             string projectName, string token, string userEmail, Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// getReportActivities
+        ///     getReportActivities
         /// </summary>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='maxDate'>
-        /// max_Date
+        ///     max_Date
         /// </param>
         /// <param name='minDate'>
-        /// min_Date
+        ///     min_Date
         /// </param>
         /// <param name='projectID'>
-        /// projectID
+        ///     projectID
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<ActivitiesReportByUserResponse>> GetReportActivitiesUsingGETWithHttpMessagesAsync(
-            string email = default(string), DateTime? maxDate = default(DateTime?),
-            DateTime? minDate = default(DateTime?), string projectID = default(string),
+            string email = default, DateTime? maxDate = default,
+            DateTime? minDate = default, string projectID = default,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// getCumulativeReport
+        ///     getCumulativeReport
         /// </summary>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='maxDate'>
-        /// max_Date
+        ///     max_Date
         /// </param>
         /// <param name='minDate'>
-        /// min_Date
+        ///     min_Date
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<CumulativeReportResponse>> GetCumulativeReportUsingGETWithHttpMessagesAsync(
-            string email = default(string), DateTime? maxDate = default(DateTime?),
-            DateTime? minDate = default(DateTime?), Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            string email = default, DateTime? maxDate = default,
+            DateTime? minDate = default, Dictionary<string, List<string>> customHeaders = null,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// getTimeReport
+        ///     getTimeReport
         /// </summary>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='maxDate'>
-        /// max_Date
+        ///     max_Date
         /// </param>
         /// <param name='minDate'>
-        /// min_Date
+        ///     min_Date
         /// </param>
         /// <param name='projectID'>
-        /// projectID
+        ///     projectID
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<TimeReportResponse>> GetTimeReportUsingGETWithHttpMessagesAsync(
-            string email = default(string), DateTime? maxDate = default(DateTime?),
-            DateTime? minDate = default(DateTime?), string projectID = default(string),
+            string email = default, DateTime? maxDate = default,
+            DateTime? minDate = default, string projectID = default,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// getActivities
+        ///     getActivities
         /// </summary>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<Report>> GetActivitiesUsingGETWithHttpMessagesAsync(string token, string email,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// addReport
+        ///     addReport
         /// </summary>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='report'>
-        /// report
+        ///     report
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<object>> AddReportUsingPOSTWithHttpMessagesAsync(string token, Report report,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// deleteActivity
+        ///     deleteActivity
         /// </summary>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='activityId'>
-        /// activity_id
+        ///     activity_id
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<object>> DeleteActivityUsingDELETEWithHttpMessagesAsync(string token, int activityId,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// addProcessReport
+        ///     addProcessReport
         /// </summary>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='report'>
-        /// report
+        ///     report
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<object>> AddProcessReportUsingPOSTWithHttpMessagesAsync(string token,
             AddProcessReportRequest report, Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// login
+        ///     login
         /// </summary>
         /// <param name='authenticationRequest'>
-        /// authenticationRequest
+        ///     authenticationRequest
         /// </param>
         /// <param name='customHeaders'>
-        /// The headers that will be added to request.
+        ///     The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         Task<HttpOperationResponse<object>> LoginUsingPOSTWithHttpMessagesAsync(AuthRequest authenticationRequest,
             Dictionary<string, List<string>> customHeaders = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
     }
 }

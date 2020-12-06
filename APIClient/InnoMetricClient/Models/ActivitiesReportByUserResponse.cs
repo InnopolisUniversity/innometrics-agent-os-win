@@ -7,22 +7,22 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class ActivitiesReportByUserResponse
+    public class ActivitiesReportByUserResponse
     {
         /// <summary>
-        /// Initializes a new instance of the ActivitiesReportByUserResponse
-        /// class.
+        ///     Initializes a new instance of the ActivitiesReportByUserResponse
+        ///     class.
         /// </summary>
         public ActivitiesReportByUserResponse()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the ActivitiesReportByUserResponse
-        /// class.
+        ///     Initializes a new instance of the ActivitiesReportByUserResponse
+        ///     class.
         /// </summary>
         public ActivitiesReportByUserResponse(
-            IList<ActivitiesReportByUser> report = default(IList<ActivitiesReportByUser>))
+            IList<ActivitiesReportByUser> report = default)
         {
             Report = report;
         }

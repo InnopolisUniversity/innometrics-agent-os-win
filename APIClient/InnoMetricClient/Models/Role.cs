@@ -7,21 +7,21 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class Role
+    public class Role
     {
         /// <summary>
-        /// Initializes a new instance of the Role class.
+        ///     Initializes a new instance of the Role class.
         /// </summary>
         public Role()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the Role class.
+        ///     Initializes a new instance of the Role class.
         /// </summary>
-        public Role(string createdby = default(string), DateTime? creationdate = default(DateTime?),
-            string description = default(string), string isactive = default(string),
-            DateTime? lastupdate = default(DateTime?), string name = default(string), string updateby = default(string))
+        public Role(string createdby = default, DateTime? creationdate = default,
+            string description = default, string isactive = default,
+            DateTime? lastupdate = default, string name = default, string updateby = default)
         {
             Createdby = createdby;
             Creationdate = creationdate;

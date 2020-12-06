@@ -1,21 +1,15 @@
-﻿using InnoMetricDataAccess;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using InnoMetricDataAccess;
+using Microsoft.Win32;
 
 namespace DataCollectorUI
 {
     public partial class frmSettings : Form
     {
-        Boolean _requestLogin;
-        public static Dictionary<String, String> myConfig;
+        public static Dictionary<string, string> myConfig;
+        private readonly bool _requestLogin;
 
         public frmSettings()
         {
@@ -23,7 +17,7 @@ namespace DataCollectorUI
             _requestLogin = false;
         }
 
-        public frmSettings(Boolean requestLogIn)
+        public frmSettings(bool requestLogIn)
         {
             InitializeComponent();
             _requestLogin = requestLogIn;
@@ -38,7 +32,7 @@ namespace DataCollectorUI
             if (_requestLogin)
             {
                 button1_Click(sender, e);
-                this.Close();
+                Close();
             }
         }
 
@@ -89,15 +83,11 @@ namespace DataCollectorUI
 
                 populateUserFrame();
 
-                if (myConfig["COLLECTION_INTERVAL"] != String.Empty)
-                {
-                    nudCollectionInterval.Value = Decimal.Parse(myConfig["COLLECTION_INTERVAL"]);
-                }
+                if (myConfig["COLLECTION_INTERVAL"] != string.Empty)
+                    nudCollectionInterval.Value = decimal.Parse(myConfig["COLLECTION_INTERVAL"]);
 
-                if (myConfig["SENDING_INTERVAL"] != String.Empty)
-                {
-                    nudSendingInterval.Value = Decimal.Parse(myConfig["SENDING_INTERVAL"]);
-                }
+                if (myConfig["SENDING_INTERVAL"] != string.Empty)
+                    nudSendingInterval.Value = decimal.Parse(myConfig["SENDING_INTERVAL"]);
 
                 chkStart.Checked = myConfig["STARTONLOGIN"] == "Y";
                 chkUpdate.Checked = myConfig["CHKUPDATE"] == "Y";
@@ -111,7 +101,7 @@ namespace DataCollectorUI
 
         private void populateUserFrame()
         {
-            if (myConfig["USERNAME"] != String.Empty)
+            if (myConfig["USERNAME"] != string.Empty)
             {
                 lblUserName.Text = "User name: " + myConfig["USERNAME"];
                 lblUserStatus.Text = "Status: " + "Logged";

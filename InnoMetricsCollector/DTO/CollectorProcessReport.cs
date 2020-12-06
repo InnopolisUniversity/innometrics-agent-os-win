@@ -4,11 +4,11 @@ namespace InnoMetricsCollector.DTO
 {
     public class CollectorProcessReport
     {
-        public List<CollectorProcess> processes { get; set; }
-
         public CollectorProcessReport()
         {
             processes = new List<CollectorProcess>();
         }
+
+        public List<CollectorProcess> processes { get; set; }
     }
 }

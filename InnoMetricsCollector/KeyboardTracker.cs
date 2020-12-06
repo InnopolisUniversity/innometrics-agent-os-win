@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InnoMetricsCollector
 {
     public class KeyboardTracker : IDisposable
     {
-        public event EventHandler<EventArgs> KeyBoardKeyPressed;
+        private const int WH_KEYBOARD_LL = 13;
 
-        private WindowsHookInput.HookDelegate _keyBoardDelegate;
-        private IntPtr keyBoardHandle;
-        private const Int32 WH_KEYBOARD_LL = 13;
+        private readonly WindowsHookInput.HookDelegate _keyBoardDelegate;
         private bool disposed;
+        private readonly IntPtr keyBoardHandle;
 
         public KeyboardTracker()
         {
@@ -22,14 +17,19 @@ namespace InnoMetricsCollector
                 WH_KEYBOARD_LL, _keyBoardDelegate, IntPtr.Zero, 0);
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        public event EventHandler<EventArgs> KeyBoardKeyPressed;
+
         private IntPtr KeyboardHookDelegate(
-            Int32 Code, IntPtr wParam, IntPtr lParam)
+            int Code, IntPtr wParam, IntPtr lParam)
         {
             if (Code < 0)
-            {
                 return WindowsHookInput.CallNextHookEx(
                     keyBoardHandle, Code, wParam, lParam);
-            }
 
             if (KeyBoardKeyPressed != null)
                 KeyBoardKeyPressed(this, new EventArgs());
@@ -38,20 +38,13 @@ namespace InnoMetricsCollector
                 keyBoardHandle, Code, wParam, lParam);
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
             {
                 if (keyBoardHandle != IntPtr.Zero)
-                {
                     WindowsHookInput.UnhookWindowsHookEx(
                         keyBoardHandle);
-                }
 
                 disposed = true;
             }

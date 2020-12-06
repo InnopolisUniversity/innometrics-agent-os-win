@@ -7,24 +7,24 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class ActivityReport
+    public class ActivityReport
     {
         /// <summary>
-        /// Initializes a new instance of the ActivityReport class.
+        ///     Initializes a new instance of the ActivityReport class.
         /// </summary>
         public ActivityReport()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the ActivityReport class.
+        ///     Initializes a new instance of the ActivityReport class.
         /// </summary>
-        public ActivityReport(int? activityID = default(int?), string activityType = default(string),
-            string browserTitle = default(string), string browserUrl = default(string),
-            DateTime? endTime = default(DateTime?), string executableName = default(string),
-            bool? idleActivity = default(bool?), string ipAddress = default(string),
-            string macAddress = default(string), string osversion = default(string), string pid = default(string),
-            DateTime? startTime = default(DateTime?), string userID = default(string))
+        public ActivityReport(int? activityID = default, string activityType = default,
+            string browserTitle = default, string browserUrl = default,
+            DateTime? endTime = default, string executableName = default,
+            bool? idleActivity = default, string ipAddress = default,
+            string macAddress = default, string osversion = default, string pid = default,
+            DateTime? startTime = default, string userID = default)
         {
             ActivityID = activityID;
             ActivityType = activityType;

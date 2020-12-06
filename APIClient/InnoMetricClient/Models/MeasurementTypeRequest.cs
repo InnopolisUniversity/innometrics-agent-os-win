@@ -6,20 +6,20 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class MeasurementTypeRequest
+    public class MeasurementTypeRequest
     {
         /// <summary>
-        /// Initializes a new instance of the MeasurementTypeRequest class.
+        ///     Initializes a new instance of the MeasurementTypeRequest class.
         /// </summary>
         public MeasurementTypeRequest()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the MeasurementTypeRequest class.
+        ///     Initializes a new instance of the MeasurementTypeRequest class.
         /// </summary>
-        public MeasurementTypeRequest(string description = default(string), string label = default(string),
-            string operation = default(string), double? scale = default(double?), double? weight = default(double?))
+        public MeasurementTypeRequest(string description = default, string label = default,
+            string operation = default, double? scale = default, double? weight = default)
         {
             Description = description;
             Label = label;

@@ -1,20 +1,22 @@
-﻿using APIClient;
-using InnoMetric.Models;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.ServiceProcess;
 using System.Timers;
+using APIClient;
+using InnoMetric.Models;
+using log4net;
 
 namespace InnoMetricsDataSync
 {
     public partial class InnoMetricsDataSync : ServiceBase
     {
-        Timer timer = new Timer();
-        public static Dictionary<String, String> myConfig;
+        public static Dictionary<string, string> myConfig;
 
         private static readonly ILog log =
-            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private readonly Timer timer = new Timer();
 
         public InnoMetricsDataSync()
         {
@@ -27,8 +29,8 @@ namespace InnoMetricsDataSync
             {
                 log.Info("Starting service...");
                 myConfig = null; //loadInitialConfig();
-                timer.Elapsed += new ElapsedEventHandler(OnElapsedTime);
-                timer.Interval = (5 * 60 * 1000); //number in milisecinds (minutes * seconds * miliseconds)
+                timer.Elapsed += OnElapsedTime;
+                timer.Interval = 5 * 60 * 1000; //number in milisecinds (minutes * seconds * miliseconds)
                 timer.Enabled = true;
 
                 log.Info("Loading the main window");
@@ -76,7 +78,7 @@ namespace InnoMetricsDataSync
                 {
                     Report records = null; //reportGenerator();
                     log.Info("Submiting request...");
-                    bool result = Client.SaveReport(records, myConfig["TOKEN"]);
+                    var result = Client.SaveReport(records, myConfig["TOKEN"]);
                     log.Info("Updating activity status...");
                     //updateActivityStatus(ActivityStatus.Processing, result ? ActivityStatus.Accepted : ActivityStatus.Error);
                     log.Info("Process finished...");

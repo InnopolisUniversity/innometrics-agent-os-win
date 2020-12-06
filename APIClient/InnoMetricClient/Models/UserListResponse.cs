@@ -7,19 +7,19 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class UserListResponse
+    public class UserListResponse
     {
         /// <summary>
-        /// Initializes a new instance of the UserListResponse class.
+        ///     Initializes a new instance of the UserListResponse class.
         /// </summary>
         public UserListResponse()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the UserListResponse class.
+        ///     Initializes a new instance of the UserListResponse class.
         /// </summary>
-        public UserListResponse(IList<UserResponse> userList = default(IList<UserResponse>))
+        public UserListResponse(IList<UserResponse> userList = default)
         {
             UserList = userList;
         }

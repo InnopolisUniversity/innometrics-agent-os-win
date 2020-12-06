@@ -6,20 +6,20 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class CategoryRequest
+    public class CategoryRequest
     {
         /// <summary>
-        /// Initializes a new instance of the CategoryRequest class.
+        ///     Initializes a new instance of the CategoryRequest class.
         /// </summary>
         public CategoryRequest()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CategoryRequest class.
+        ///     Initializes a new instance of the CategoryRequest class.
         /// </summary>
-        public CategoryRequest(int? categoryid = default(int?), string categoryname = default(string),
-            string isactive = default(string))
+        public CategoryRequest(int? categoryid = default, string categoryname = default,
+            string isactive = default)
         {
             Categoryid = categoryid;
             Categoryname = categoryname;

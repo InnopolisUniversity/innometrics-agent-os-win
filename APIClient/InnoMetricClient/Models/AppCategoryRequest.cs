@@ -6,20 +6,20 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class AppCategoryRequest
+    public class AppCategoryRequest
     {
         /// <summary>
-        /// Initializes a new instance of the AppCategoryRequest class.
+        ///     Initializes a new instance of the AppCategoryRequest class.
         /// </summary>
         public AppCategoryRequest()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the AppCategoryRequest class.
+        ///     Initializes a new instance of the AppCategoryRequest class.
         /// </summary>
-        public AppCategoryRequest(int? appid = default(int?), string appname = default(string),
-            int? categoryid = default(int?), string isactive = default(string))
+        public AppCategoryRequest(int? appid = default, string appname = default,
+            int? categoryid = default, string isactive = default)
         {
             Appid = appid;
             Appname = appname;

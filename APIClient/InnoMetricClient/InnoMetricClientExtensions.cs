@@ -11,24 +11,24 @@ using APIClient.InnoMetricClient.Models;
 namespace APIClient.InnoMetricClient
 {
     /// <summary>
-    /// Extension methods for InnoMetricClient.
+    ///     Extension methods for InnoMetricClient.
     /// </summary>
-    public static partial class InnoMetricClientExtensions
+    public static class InnoMetricClientExtensions
     {
         /// <summary>
-        /// addAppCategory
+        ///     addAppCategory
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='appCategoryRequest'>
-        /// appCategoryRequest
+        ///     appCategoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static AppCategoryResponse AddAppCategoryUsingPOST(this IInnoMetricClient operations,
-            AppCategoryRequest appCategoryRequest, string token = default(string))
+            AppCategoryRequest appCategoryRequest, string token = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).AddAppCategoryUsingPOSTAsync(appCategoryRequest, token),
@@ -37,23 +37,23 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// addAppCategory
+        ///     addAppCategory
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='appCategoryRequest'>
-        /// appCategoryRequest
+        ///     appCategoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<AppCategoryResponse> AddAppCategoryUsingPOSTAsync(this IInnoMetricClient operations,
-            AppCategoryRequest appCategoryRequest, string token = default(string),
-            CancellationToken cancellationToken = default(CancellationToken))
+            AppCategoryRequest appCategoryRequest, string token = default,
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .AddAppCategoryUsingPOSTWithHttpMessagesAsync(appCategoryRequest, token, null, cancellationToken)
@@ -64,19 +64,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// UpdateAppCategory
+        ///     UpdateAppCategory
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='appCategoryRequest'>
-        /// appCategoryRequest
+        ///     appCategoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static AppCategoryResponse UpdateAppCategoryUsingPUT(this IInnoMetricClient operations,
-            AppCategoryRequest appCategoryRequest, string token = default(string))
+            AppCategoryRequest appCategoryRequest, string token = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).UpdateAppCategoryUsingPUTAsync(appCategoryRequest, token),
@@ -85,23 +85,23 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// UpdateAppCategory
+        ///     UpdateAppCategory
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='appCategoryRequest'>
-        /// appCategoryRequest
+        ///     appCategoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<AppCategoryResponse> UpdateAppCategoryUsingPUTAsync(this IInnoMetricClient operations,
-            AppCategoryRequest appCategoryRequest, string token = default(string),
-            CancellationToken cancellationToken = default(CancellationToken))
+            AppCategoryRequest appCategoryRequest, string token = default,
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .UpdateAppCategoryUsingPUTWithHttpMessagesAsync(appCategoryRequest, token, null, cancellationToken)
@@ -112,19 +112,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getAppCategoryById
+        ///     getAppCategoryById
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='appId'>
-        /// AppId
+        ///     AppId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static AppCategoryResponse GetAppCategoryByIdUsingGET(this IInnoMetricClient operations, int appId,
-            string token = default(string))
+            string token = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).GetAppCategoryByIdUsingGETAsync(appId, token), operations,
@@ -133,22 +133,22 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getAppCategoryById
+        ///     getAppCategoryById
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='appId'>
-        /// AppId
+        ///     AppId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<AppCategoryResponse> GetAppCategoryByIdUsingGETAsync(this IInnoMetricClient operations,
-            int appId, string token = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            int appId, string token = default, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .GetAppCategoryByIdUsingGETWithHttpMessagesAsync(appId, token, null, cancellationToken)
@@ -159,19 +159,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// addCategory
+        ///     addCategory
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='categoryRequest'>
-        /// categoryRequest
+        ///     categoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static CategoryResponse AddCategoryUsingPOST(this IInnoMetricClient operations,
-            CategoryRequest categoryRequest, string token = default(string))
+            CategoryRequest categoryRequest, string token = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).AddCategoryUsingPOSTAsync(categoryRequest, token), operations,
@@ -180,23 +180,23 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// addCategory
+        ///     addCategory
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='categoryRequest'>
-        /// categoryRequest
+        ///     categoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<CategoryResponse> AddCategoryUsingPOSTAsync(this IInnoMetricClient operations,
-            CategoryRequest categoryRequest, string token = default(string),
-            CancellationToken cancellationToken = default(CancellationToken))
+            CategoryRequest categoryRequest, string token = default,
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .AddCategoryUsingPOSTWithHttpMessagesAsync(categoryRequest, token, null, cancellationToken)
@@ -207,19 +207,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// UpdateCategory
+        ///     UpdateCategory
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='categoryRequest'>
-        /// categoryRequest
+        ///     categoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static CategoryResponse UpdateCategoryUsingPUT(this IInnoMetricClient operations,
-            CategoryRequest categoryRequest, string token = default(string))
+            CategoryRequest categoryRequest, string token = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).UpdateCategoryUsingPUTAsync(categoryRequest, token), operations,
@@ -228,23 +228,23 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// UpdateCategory
+        ///     UpdateCategory
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='categoryRequest'>
-        /// categoryRequest
+        ///     categoryRequest
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<CategoryResponse> UpdateCategoryUsingPUTAsync(this IInnoMetricClient operations,
-            CategoryRequest categoryRequest, string token = default(string),
-            CancellationToken cancellationToken = default(CancellationToken))
+            CategoryRequest categoryRequest, string token = default,
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .UpdateCategoryUsingPUTWithHttpMessagesAsync(categoryRequest, token, null, cancellationToken)
@@ -255,19 +255,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getCategoryById
+        ///     getCategoryById
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='categoryId'>
-        /// CategoryId
+        ///     CategoryId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static CategoryResponse GetCategoryByIdUsingGET(this IInnoMetricClient operations, int categoryId,
-            string token = default(string))
+            string token = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).GetCategoryByIdUsingGETAsync(categoryId, token), operations,
@@ -276,23 +276,23 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getCategoryById
+        ///     getCategoryById
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='categoryId'>
-        /// CategoryId
+        ///     CategoryId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<CategoryResponse> GetCategoryByIdUsingGETAsync(this IInnoMetricClient operations,
-            int categoryId, string token = default(string),
-            CancellationToken cancellationToken = default(CancellationToken))
+            int categoryId, string token = default,
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .GetCategoryByIdUsingGETWithHttpMessagesAsync(categoryId, token, null, cancellationToken)
@@ -303,16 +303,16 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// CreateMeasurementType
+        ///     CreateMeasurementType
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='measurementType'>
-        /// measurementType
+        ///     measurementType
         /// </param>
         public static MeasurementTypeResponse CreateMeasurementTypeUsingPOST(this IInnoMetricClient operations,
             string token, MeasurementTypeRequest measurementType)
@@ -324,23 +324,23 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// CreateMeasurementType
+        ///     CreateMeasurementType
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='measurementType'>
-        /// measurementType
+        ///     measurementType
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<MeasurementTypeResponse> CreateMeasurementTypeUsingPOSTAsync(
             this IInnoMetricClient operations, string token, MeasurementTypeRequest measurementType,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .CreateMeasurementTypeUsingPOSTWithHttpMessagesAsync(token, measurementType, null, cancellationToken)
@@ -351,10 +351,10 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getActiveProjects
+        ///     getActiveProjects
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         public static ProjectListResponse GetActiveProjectsUsingGET(this IInnoMetricClient operations)
         {
@@ -365,16 +365,16 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getActiveProjects
+        ///     getActiveProjects
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<ProjectListResponse> GetActiveProjectsUsingGETAsync(this IInnoMetricClient operations,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .GetActiveProjectsUsingGETWithHttpMessagesAsync(null, cancellationToken).ConfigureAwait(false))
@@ -384,19 +384,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// CreateProject
+        ///     CreateProject
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='project'>
-        /// project
+        ///     project
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static ProjectResponse CreateProjectUsingPOST(this IInnoMetricClient operations, ProjectRequest project,
-            string token = default(string))
+            string token = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).CreateProjectUsingPOSTAsync(project, token), operations,
@@ -405,23 +405,23 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// CreateProject
+        ///     CreateProject
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='project'>
-        /// project
+        ///     project
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<ProjectResponse> CreateProjectUsingPOSTAsync(this IInnoMetricClient operations,
-            ProjectRequest project, string token = default(string),
-            CancellationToken cancellationToken = default(CancellationToken))
+            ProjectRequest project, string token = default,
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .CreateProjectUsingPOSTWithHttpMessagesAsync(project, token, null, cancellationToken)
@@ -432,16 +432,16 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// updateProject
+        ///     updateProject
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='project'>
-        /// project
+        ///     project
         /// </param>
         public static ProjectResponse UpdateProjectUsingPUT(this IInnoMetricClient operations, string token,
             ProjectRequest project)
@@ -453,22 +453,22 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// updateProject
+        ///     updateProject
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='project'>
-        /// project
+        ///     project
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<ProjectResponse> UpdateProjectUsingPUTAsync(this IInnoMetricClient operations,
-            string token, ProjectRequest project, CancellationToken cancellationToken = default(CancellationToken))
+            string token, ProjectRequest project, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .UpdateProjectUsingPUTWithHttpMessagesAsync(token, project, null, cancellationToken)
@@ -479,13 +479,13 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// ListAllRoles
+        ///     ListAllRoles
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static IList<Role> ListAllRolesUsingGET(this IInnoMetricClient operations, string token)
         {
@@ -496,19 +496,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// ListAllRoles
+        ///     ListAllRoles
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<IList<Role>> ListAllRolesUsingGETAsync(this IInnoMetricClient operations, string token,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .ListAllRolesUsingGETWithHttpMessagesAsync(token, null, cancellationToken).ConfigureAwait(false))
@@ -518,19 +518,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// CreateRole
+        ///     CreateRole
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='roleDescription'>
-        /// RoleDescription
+        ///     RoleDescription
         /// </param>
         /// <param name='roleId'>
-        /// RoleId
+        ///     RoleId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static Role CreateRoleUsingPOST(this IInnoMetricClient operations, string roleDescription, string roleId,
             string token)
@@ -542,26 +542,26 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// CreateRole
+        ///     CreateRole
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='roleDescription'>
-        /// RoleDescription
+        ///     RoleDescription
         /// </param>
         /// <param name='roleId'>
-        /// RoleId
+        ///     RoleId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<Role> CreateRoleUsingPOSTAsync(this IInnoMetricClient operations,
             string roleDescription, string roleId, string token,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .CreateRoleUsingPOSTWithHttpMessagesAsync(roleDescription, roleId, token, null, cancellationToken)
@@ -572,19 +572,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// UpdateRole
+        ///     UpdateRole
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='roleDescription'>
-        /// RoleDescription
+        ///     RoleDescription
         /// </param>
         /// <param name='roleId'>
-        /// RoleId
+        ///     RoleId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static Role UpdateRoleUsingPUT(this IInnoMetricClient operations, string roleDescription, string roleId,
             string token)
@@ -596,26 +596,26 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// UpdateRole
+        ///     UpdateRole
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='roleDescription'>
-        /// RoleDescription
+        ///     RoleDescription
         /// </param>
         /// <param name='roleId'>
-        /// RoleId
+        ///     RoleId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<Role> UpdateRoleUsingPUTAsync(this IInnoMetricClient operations,
             string roleDescription, string roleId, string token,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .UpdateRoleUsingPUTWithHttpMessagesAsync(roleDescription, roleId, token, null, cancellationToken)
@@ -626,16 +626,16 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// GetRoleById
+        ///     GetRoleById
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='roleId'>
-        /// RoleId
+        ///     RoleId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static Role GetRoleByIdUsingGET(this IInnoMetricClient operations, string roleId, string token)
         {
@@ -646,22 +646,22 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// GetRoleById
+        ///     GetRoleById
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='roleId'>
-        /// RoleId
+        ///     RoleId
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<Role> GetRoleByIdUsingGETAsync(this IInnoMetricClient operations, string roleId,
-            string token, CancellationToken cancellationToken = default(CancellationToken))
+            string token, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .GetRoleByIdUsingGETWithHttpMessagesAsync(roleId, token, null, cancellationToken).ConfigureAwait(false))
@@ -671,19 +671,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// CreateUser
+        ///     CreateUser
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='user'>
-        /// user
+        ///     user
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         public static UserRequest CreateUserUsingPOST(this IInnoMetricClient operations, UserRequest user,
-            string token = default(string))
+            string token = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).CreateUserUsingPOSTAsync(user, token), operations,
@@ -692,23 +692,23 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// CreateUser
+        ///     CreateUser
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='user'>
-        /// user
+        ///     user
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<UserRequest> CreateUserUsingPOSTAsync(this IInnoMetricClient operations,
-            UserRequest user, string token = default(string),
-            CancellationToken cancellationToken = default(CancellationToken))
+            UserRequest user, string token = default,
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .CreateUserUsingPOSTWithHttpMessagesAsync(user, token, null, cancellationToken).ConfigureAwait(false))
@@ -718,19 +718,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// UpdateUserStatus
+        ///     UpdateUserStatus
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='isActive'>
-        /// IsActive
+        ///     IsActive
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='userId'>
-        /// UserId
+        ///     UserId
         /// </param>
         public static bool? UpdateUserStatusUsingPUT(this IInnoMetricClient operations, bool isActive, string token,
             string userId)
@@ -742,25 +742,25 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// UpdateUserStatus
+        ///     UpdateUserStatus
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='isActive'>
-        /// IsActive
+        ///     IsActive
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='userId'>
-        /// UserId
+        ///     UserId
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<bool?> UpdateUserStatusUsingPUTAsync(this IInnoMetricClient operations, bool isActive,
-            string token, string userId, CancellationToken cancellationToken = default(CancellationToken))
+            string token, string userId, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .UpdateUserStatusUsingPUTWithHttpMessagesAsync(isActive, token, userId, null, cancellationToken)
@@ -771,16 +771,16 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getActiveUsers
+        ///     getActiveUsers
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='projectId'>
-        /// ProjectId
+        ///     ProjectId
         /// </param>
         public static UserListResponse GetActiveUsersUsingGET(this IInnoMetricClient operations,
-            string projectId = default(string))
+            string projectId = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).GetActiveUsersUsingGETAsync(projectId), operations,
@@ -789,19 +789,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getActiveUsers
+        ///     getActiveUsers
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='projectId'>
-        /// ProjectId
+        ///     ProjectId
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<UserListResponse> GetActiveUsersUsingGETAsync(this IInnoMetricClient operations,
-            string projectId = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            string projectId = default, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .GetActiveUsersUsingGETWithHttpMessagesAsync(projectId, null, cancellationToken).ConfigureAwait(false))
@@ -811,22 +811,22 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// InviteUserProject
+        ///     InviteUserProject
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='manager'>
-        /// Manager
+        ///     Manager
         /// </param>
         /// <param name='projectName'>
-        /// ProjectName
+        ///     ProjectName
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='userEmail'>
-        /// UserEmail
+        ///     UserEmail
         /// </param>
         public static bool? InviteUserProjectUsingPOST(this IInnoMetricClient operations, bool manager,
             string projectName, string token, string userEmail)
@@ -839,29 +839,29 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// InviteUserProject
+        ///     InviteUserProject
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='manager'>
-        /// Manager
+        ///     Manager
         /// </param>
         /// <param name='projectName'>
-        /// ProjectName
+        ///     ProjectName
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='userEmail'>
-        /// UserEmail
+        ///     UserEmail
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<bool?> InviteUserProjectUsingPOSTAsync(this IInnoMetricClient operations, bool manager,
             string projectName, string token, string userEmail,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .InviteUserProjectUsingPOSTWithHttpMessagesAsync(manager, projectName, token, userEmail, null,
@@ -872,26 +872,26 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getReportActivities
+        ///     getReportActivities
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='maxDate'>
-        /// max_Date
+        ///     max_Date
         /// </param>
         /// <param name='minDate'>
-        /// min_Date
+        ///     min_Date
         /// </param>
         /// <param name='projectID'>
-        /// projectID
+        ///     projectID
         /// </param>
         public static ActivitiesReportByUserResponse GetReportActivitiesUsingGET(this IInnoMetricClient operations,
-            string email = default(string), DateTime? maxDate = default(DateTime?),
-            DateTime? minDate = default(DateTime?), string projectID = default(string))
+            string email = default, DateTime? maxDate = default,
+            DateTime? minDate = default, string projectID = default)
         {
             return Task.Factory
                 .StartNew(
@@ -901,30 +901,30 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getReportActivities
+        ///     getReportActivities
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='maxDate'>
-        /// max_Date
+        ///     max_Date
         /// </param>
         /// <param name='minDate'>
-        /// min_Date
+        ///     min_Date
         /// </param>
         /// <param name='projectID'>
-        /// projectID
+        ///     projectID
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<ActivitiesReportByUserResponse> GetReportActivitiesUsingGETAsync(
-            this IInnoMetricClient operations, string email = default(string), DateTime? maxDate = default(DateTime?),
-            DateTime? minDate = default(DateTime?), string projectID = default(string),
-            CancellationToken cancellationToken = default(CancellationToken))
+            this IInnoMetricClient operations, string email = default, DateTime? maxDate = default,
+            DateTime? minDate = default, string projectID = default,
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .GetReportActivitiesUsingGETWithHttpMessagesAsync(email, maxDate, minDate, projectID, null,
@@ -935,23 +935,23 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getCumulativeReport
+        ///     getCumulativeReport
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='maxDate'>
-        /// max_Date
+        ///     max_Date
         /// </param>
         /// <param name='minDate'>
-        /// min_Date
+        ///     min_Date
         /// </param>
         public static CumulativeReportResponse GetCumulativeReportUsingGET(this IInnoMetricClient operations,
-            string email = default(string), DateTime? maxDate = default(DateTime?),
-            DateTime? minDate = default(DateTime?))
+            string email = default, DateTime? maxDate = default,
+            DateTime? minDate = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).GetCumulativeReportUsingGETAsync(email, maxDate, minDate),
@@ -960,26 +960,26 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getCumulativeReport
+        ///     getCumulativeReport
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='maxDate'>
-        /// max_Date
+        ///     max_Date
         /// </param>
         /// <param name='minDate'>
-        /// min_Date
+        ///     min_Date
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<CumulativeReportResponse> GetCumulativeReportUsingGETAsync(
-            this IInnoMetricClient operations, string email = default(string), DateTime? maxDate = default(DateTime?),
-            DateTime? minDate = default(DateTime?), CancellationToken cancellationToken = default(CancellationToken))
+            this IInnoMetricClient operations, string email = default, DateTime? maxDate = default,
+            DateTime? minDate = default, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .GetCumulativeReportUsingGETWithHttpMessagesAsync(email, maxDate, minDate, null, cancellationToken)
@@ -990,26 +990,26 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getTimeReport
+        ///     getTimeReport
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='maxDate'>
-        /// max_Date
+        ///     max_Date
         /// </param>
         /// <param name='minDate'>
-        /// min_Date
+        ///     min_Date
         /// </param>
         /// <param name='projectID'>
-        /// projectID
+        ///     projectID
         /// </param>
         public static TimeReportResponse GetTimeReportUsingGET(this IInnoMetricClient operations,
-            string email = default(string), DateTime? maxDate = default(DateTime?),
-            DateTime? minDate = default(DateTime?), string projectID = default(string))
+            string email = default, DateTime? maxDate = default,
+            DateTime? minDate = default, string projectID = default)
         {
             return Task.Factory
                 .StartNew(s => ((IInnoMetricClient) s).GetTimeReportUsingGETAsync(email, maxDate, minDate, projectID),
@@ -1018,30 +1018,30 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getTimeReport
+        ///     getTimeReport
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='maxDate'>
-        /// max_Date
+        ///     max_Date
         /// </param>
         /// <param name='minDate'>
-        /// min_Date
+        ///     min_Date
         /// </param>
         /// <param name='projectID'>
-        /// projectID
+        ///     projectID
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<TimeReportResponse> GetTimeReportUsingGETAsync(this IInnoMetricClient operations,
-            string email = default(string), DateTime? maxDate = default(DateTime?),
-            DateTime? minDate = default(DateTime?), string projectID = default(string),
-            CancellationToken cancellationToken = default(CancellationToken))
+            string email = default, DateTime? maxDate = default,
+            DateTime? minDate = default, string projectID = default,
+            CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .GetTimeReportUsingGETWithHttpMessagesAsync(email, maxDate, minDate, projectID, null, cancellationToken)
@@ -1052,16 +1052,16 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getActivities
+        ///     getActivities
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         public static Report GetActivitiesUsingGET(this IInnoMetricClient operations, string token, string email)
         {
@@ -1072,22 +1072,22 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// getActivities
+        ///     getActivities
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='email'>
-        /// email
+        ///     email
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<Report> GetActivitiesUsingGETAsync(this IInnoMetricClient operations, string token,
-            string email, CancellationToken cancellationToken = default(CancellationToken))
+            string email, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .GetActivitiesUsingGETWithHttpMessagesAsync(token, email, null, cancellationToken)
@@ -1098,16 +1098,16 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// addReport
+        ///     addReport
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='report'>
-        /// report
+        ///     report
         /// </param>
         public static object AddReportUsingPOST(this IInnoMetricClient operations, string token, Report report)
         {
@@ -1118,22 +1118,22 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// addReport
+        ///     addReport
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='report'>
-        /// report
+        ///     report
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<object> AddReportUsingPOSTAsync(this IInnoMetricClient operations, string token,
-            Report report, CancellationToken cancellationToken = default(CancellationToken))
+            Report report, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .AddReportUsingPOSTWithHttpMessagesAsync(token, report, null, cancellationToken).ConfigureAwait(false))
@@ -1143,16 +1143,16 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// deleteActivity
+        ///     deleteActivity
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='activityId'>
-        /// activity_id
+        ///     activity_id
         /// </param>
         public static object DeleteActivityUsingDELETE(this IInnoMetricClient operations, string token, int activityId)
         {
@@ -1163,22 +1163,22 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// deleteActivity
+        ///     deleteActivity
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='activityId'>
-        /// activity_id
+        ///     activity_id
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<object> DeleteActivityUsingDELETEAsync(this IInnoMetricClient operations, string token,
-            int activityId, CancellationToken cancellationToken = default(CancellationToken))
+            int activityId, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .DeleteActivityUsingDELETEWithHttpMessagesAsync(token, activityId, null, cancellationToken)
@@ -1189,16 +1189,16 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// addProcessReport
+        ///     addProcessReport
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='report'>
-        /// report
+        ///     report
         /// </param>
         public static object AddProcessReportUsingPOST(this IInnoMetricClient operations, string token,
             AddProcessReportRequest report)
@@ -1210,22 +1210,22 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// addProcessReport
+        ///     addProcessReport
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='token'>
-        /// Token
+        ///     Token
         /// </param>
         /// <param name='report'>
-        /// report
+        ///     report
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<object> AddProcessReportUsingPOSTAsync(this IInnoMetricClient operations, string token,
-            AddProcessReportRequest report, CancellationToken cancellationToken = default(CancellationToken))
+            AddProcessReportRequest report, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .AddProcessReportUsingPOSTWithHttpMessagesAsync(token, report, null, cancellationToken)
@@ -1236,13 +1236,13 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// login
+        ///     login
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='authenticationRequest'>
-        /// authenticationRequest
+        ///     authenticationRequest
         /// </param>
         public static object LoginUsingPOST(this IInnoMetricClient operations, AuthRequest authenticationRequest)
         {
@@ -1253,19 +1253,19 @@ namespace APIClient.InnoMetricClient
         }
 
         /// <summary>
-        /// login
+        ///     login
         /// </summary>
         /// <param name='operations'>
-        /// The operations group for this extension method.
+        ///     The operations group for this extension method.
         /// </param>
         /// <param name='authenticationRequest'>
-        /// authenticationRequest
+        ///     authenticationRequest
         /// </param>
         /// <param name='cancellationToken'>
-        /// The cancellation token.
+        ///     The cancellation token.
         /// </param>
         public static async Task<object> LoginUsingPOSTAsync(this IInnoMetricClient operations,
-            AuthRequest authenticationRequest, CancellationToken cancellationToken = default(CancellationToken))
+            AuthRequest authenticationRequest, CancellationToken cancellationToken = default)
         {
             using (var _result = await operations
                 .LoginUsingPOSTWithHttpMessagesAsync(authenticationRequest, null, cancellationToken)

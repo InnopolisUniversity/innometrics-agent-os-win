@@ -1,7 +1,6 @@
-﻿using log4net.Config;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using log4net.Config;
 
 // La información general de un ensamblado se controla mediante el siguiente 
 // conjunto de atributos. Cambie estos valores de atributo para modificar la información
@@ -14,7 +13,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: log4net.Config.Repository("DataCollectorUI")]
+[assembly: Repository("DataCollectorUI")]
 [assembly: XmlConfigurator(Watch = true)]
 
 // Si establece ComVisible en false, los tipos de este ensamblado no estarán visibles 

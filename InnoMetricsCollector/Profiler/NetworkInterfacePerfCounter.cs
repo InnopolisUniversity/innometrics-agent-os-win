@@ -1,25 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InnoMetricsCollector.Profiler
 {
     public class NetworkInterfacePerfCounter : AbstractPerfCounter<NetworkInterfacePerfCounter.NetworkPerfType>
     {
-        private static readonly string NetworkInterfaceCategory = "Network Interface";
-
-        public NetworkInterfacePerfCounter() : base(NetworkInterfaceCategory)
-        {
-        }
-
-        public new void Initialize(string networkInterface, params NetworkPerfType[] preferredTypes)
-        {
-            base.Initialize(networkInterface, preferredTypes);
-        }
-
         public enum NetworkPerfType
         {
             BytesReceived,
@@ -29,6 +13,17 @@ namespace InnoMetricsCollector.Profiler
             PacketsReceived,
             PacketsSent,
             TotalPackets
+        }
+
+        private static readonly string NetworkInterfaceCategory = "Network Interface";
+
+        public NetworkInterfacePerfCounter() : base(NetworkInterfaceCategory)
+        {
+        }
+
+        public new void Initialize(string networkInterface, params NetworkPerfType[] preferredTypes)
+        {
+            base.Initialize(networkInterface, preferredTypes);
         }
 
         protected override string CounterTypeToString(NetworkPerfType type)

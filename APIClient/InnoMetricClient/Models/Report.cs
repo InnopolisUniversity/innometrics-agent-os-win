@@ -7,19 +7,19 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class Report
+    public class Report
     {
         /// <summary>
-        /// Initializes a new instance of the Report class.
+        ///     Initializes a new instance of the Report class.
         /// </summary>
         public Report()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the Report class.
+        ///     Initializes a new instance of the Report class.
         /// </summary>
-        public Report(IList<ActivityReport> activities = default(IList<ActivityReport>))
+        public Report(IList<ActivityReport> activities = default)
         {
             Activities = activities;
         }

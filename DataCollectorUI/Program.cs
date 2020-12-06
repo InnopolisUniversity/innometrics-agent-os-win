@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DataCollectorUI
 {
-    static class Program
+    internal static class Program
     {
-        private static string appGuid = "82e37588-392a-4d6e-bb2a-7c33d96950f8";
+        private static readonly string appGuid = "82e37588-392a-4d6e-bb2a-7c33d96950f8";
 
         /// <summary>
-        /// Punto de entrada principal para la aplicación.
+        ///     Punto de entrada principal para la aplicación.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             using (var mutex = new Mutex(false, "Global\\" + appGuid))
             {

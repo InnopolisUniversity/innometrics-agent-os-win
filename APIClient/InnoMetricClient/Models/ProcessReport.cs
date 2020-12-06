@@ -8,23 +8,23 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class ProcessReport
+    public class ProcessReport
     {
         /// <summary>
-        /// Initializes a new instance of the ProcessReport class.
+        ///     Initializes a new instance of the ProcessReport class.
         /// </summary>
         public ProcessReport()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the ProcessReport class.
+        ///     Initializes a new instance of the ProcessReport class.
         /// </summary>
-        public ProcessReport(DateTime? collectedTime = default(DateTime?), string ipAddress = default(string),
-            string macAddress = default(string),
-            IList<MeasurementReport> measurementReportList = default(IList<MeasurementReport>),
-            string osversion = default(string), string pid = default(string), string processName = default(string),
-            string userID = default(string))
+        public ProcessReport(DateTime? collectedTime = default, string ipAddress = default,
+            string macAddress = default,
+            IList<MeasurementReport> measurementReportList = default,
+            string osversion = default, string pid = default, string processName = default,
+            string userID = default)
         {
             CollectedTime = collectedTime;
             IpAddress = ipAddress;

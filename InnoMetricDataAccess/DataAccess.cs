@@ -1,30 +1,29 @@
-﻿using InnoMetricsCollector;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
 using APIClient.InnoMetricClient.Models;
+using InnoMetricsCollector;
 using InnoMetricsCollector.DTO;
+using log4net;
 
 namespace InnoMetricDataAccess
 {
     public class DataAccess
     {
         private static readonly ILog log =
-            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         //const string regKeyFolders = @"HKEY_USERS\<SID>\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders";
         //const string regValueAppData = @"AppData";
-        const String dbDirectory = @"C:\TMP\InnoMetrics\db\";
+        private const string dbDirectory = @"C:\TMP\InnoMetrics\db\";
 
 #if DEBUG
-        const Int16 LIMIT_QUERY = 10;
+        private const short LIMIT_QUERY = 10;
 #else
         const Int16 LIMIT_QUERY = 500;
 #endif
@@ -35,21 +34,21 @@ namespace InnoMetricDataAccess
             Processing = 1,
             Accepted = 2,
             Error = -1
-        };
+        }
 
         public void CheckDB()
         {
             var sourceFile = AppDomain.CurrentDomain.BaseDirectory + @"CollectorDB.db";
             var destinationFile = dbDirectory + @"CollectorDB.db";
 
-            if (!System.IO.File.Exists(destinationFile))
+            if (!File.Exists(destinationFile))
             {
                 try
                 {
-                    var exists = System.IO.Directory.Exists(dbDirectory);
+                    var exists = Directory.Exists(dbDirectory);
 
                     if (!exists)
-                        System.IO.Directory.CreateDirectory(dbDirectory);
+                        Directory.CreateDirectory(dbDirectory);
 
                     File.Copy(sourceFile, destinationFile, true);
                 }
@@ -63,8 +62,7 @@ namespace InnoMetricDataAccess
                 var myConfig = LoadInitialConfig();
                 var myVersion = ConfigurationManager.AppSettings["db_version"];
                 //MessageBox.Show("myVersion -> " + myVersion + ". current version: " + myConfig["VERSION"].ToString());
-                if (myVersion.ToString() != myConfig["VERSION"].ToString())
-                {
+                if (myVersion != myConfig["VERSION"])
                     try
                     {
                         //File.Delete(destinationFile);
@@ -74,7 +72,6 @@ namespace InnoMetricDataAccess
                     {
                         MessageBox.Show(iox.ToString());
                     }
-                }
             }
         }
 
@@ -94,10 +91,7 @@ namespace InnoMetricDataAccess
                 var da = new SQLiteDataAdapter("select LABEL, VALUE from configs", cnn);
                 da.Fill(ds);
 
-                foreach (DataRow r in ds.Tables[0].Rows)
-                {
-                    myConfig.Add(r[0].ToString(), r[1].ToString());
-                }
+                foreach (DataRow r in ds.Tables[0].Rows) myConfig.Add(r[0].ToString(), r[1].ToString());
 
                 cnn.Close();
             }
@@ -164,16 +158,13 @@ namespace InnoMetricDataAccess
                     cmd.Parameters.AddWithValue("@MacAddress", activity.MacAddress);
                     cmd.Parameters.AddWithValue("@Description", activity.Description);
                     cmd.Parameters.AddWithValue("@PID", activity.ProcessId);
-                    cmd.Parameters.AddWithValue("@Status", (activity.IdleActivity ? "I" : "A"));
+                    cmd.Parameters.AddWithValue("@Status", activity.IdleActivity ? "I" : "A");
                     cmd.Parameters.AddWithValue("@serverStatus", ActivityStatus.Collected);
 
                     cmd.ExecuteNonQuery();
 
 
-                    foreach (var m in activity.Measurements)
-                    {
-                        SaveMyMeasurement(m, cnn, activity.ActivityID.ToString());
-                    }
+                    foreach (var m in activity.Measurements) SaveMyMeasurement(m, cnn, activity.ActivityID.ToString());
                 }
                 catch (Exception e)
                 {
@@ -224,10 +215,7 @@ namespace InnoMetricDataAccess
 
             var myId = "";
 
-            foreach (DataRow r in ds.Tables[0].Rows)
-            {
-                myId = r[0].ToString();
-            }
+            foreach (DataRow r in ds.Tables[0].Rows) myId = r[0].ToString();
 
             return int.Parse(myId);
         }
@@ -246,10 +234,7 @@ namespace InnoMetricDataAccess
 
             var myId = "";
 
-            foreach (DataRow r in ds.Tables[0].Rows)
-            {
-                myId = r[0].ToString();
-            }
+            foreach (DataRow r in ds.Tables[0].Rows) myId = r[0].ToString();
 
             return int.Parse(myId);
         }
@@ -279,10 +264,7 @@ namespace InnoMetricDataAccess
 
             myId = "";
 
-            foreach (DataRow r in ds.Tables[0].Rows)
-            {
-                myId = r[0].ToString();
-            }
+            foreach (DataRow r in ds.Tables[0].Rows) myId = r[0].ToString();
 
 
             return ds.Tables[0].Rows.Count > 0;
@@ -386,7 +368,7 @@ namespace InnoMetricDataAccess
         }
 
 
-        public List<String> LoadProcessHistory()
+        public List<string> LoadProcessHistory()
         {
             var myHistory = new List<string>();
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
@@ -399,19 +381,13 @@ namespace InnoMetricDataAccess
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
                     var activity = "";
-                    foreach (var c in r.ItemArray)
-                    {
-                        activity += c.ToString() + "; ";
-                    }
+                    foreach (var c in r.ItemArray) activity += c + "; ";
 
                     activity += "  Metrics -> {";
 
                     var metrics = LoadMetricsHistory(activity.Split(';')[0]);
 
-                    foreach (var m in metrics)
-                    {
-                        activity += m + " - ";
-                    }
+                    foreach (var m in metrics) activity += m + " - ";
 
                     activity += "}";
                     myHistory.Add(activity);
@@ -421,7 +397,7 @@ namespace InnoMetricDataAccess
             return myHistory;
         }
 
-        public List<String> LoadMetricsHistory(String ActivityId)
+        public List<string> LoadMetricsHistory(string ActivityId)
         {
             var myHistory = new List<string>();
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
@@ -437,10 +413,7 @@ namespace InnoMetricDataAccess
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
                     var metric = "{";
-                    foreach (var c in r.ItemArray)
-                    {
-                        metric += c.ToString() + "; ";
-                    }
+                    foreach (var c in r.ItemArray) metric += c + "; ";
 
                     metric += "}";
 
@@ -451,7 +424,7 @@ namespace InnoMetricDataAccess
             return myHistory;
         }
 
-        public Report ReportGenerator(String account)
+        public Report ReportGenerator(string account)
         {
             var myReport = new Report
             {
@@ -515,7 +488,7 @@ namespace InnoMetricDataAccess
         }
 
 
-        private ActivityReport LoadReportMetrics(String ActivityId, ActivityReport myActivity)
+        private ActivityReport LoadReportMetrics(string ActivityId, ActivityReport myActivity)
         {
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -544,7 +517,7 @@ namespace InnoMetricDataAccess
             return myActivity;
         }
 
-        public void UpdateActivityStatus(ActivityStatus oldStatus, ActivityStatus newStatus, Boolean setLimit = false)
+        public void UpdateActivityStatus(ActivityStatus oldStatus, ActivityStatus newStatus, bool setLimit = false)
         {
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -557,12 +530,10 @@ namespace InnoMetricDataAccess
                 };
 
                 if (setLimit)
-                {
                     cmd.CommandText += @" and activityId in (SELECT activityId
                                                                FROM CollectorData
                                                               ORDER BY StartTime ASC
                                                               LIMIT " + LIMIT_QUERY + ")";
-                }
 
                 cmd.Prepare();
                 cmd.Parameters.Clear();
@@ -572,7 +543,7 @@ namespace InnoMetricDataAccess
             }
         }
 
-        public AddProcessReportRequest ProcessReportGenerator(String account)
+        public AddProcessReportRequest ProcessReportGenerator(string account)
         {
             var myReport = new AddProcessReportRequest
             {
@@ -626,7 +597,7 @@ namespace InnoMetricDataAccess
             return myReport;
         }
 
-        private ProcessReport LoadProcessReportMetrics(String ProcessId, ProcessReport myProcess)
+        private ProcessReport LoadProcessReportMetrics(string ProcessId, ProcessReport myProcess)
         {
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -647,7 +618,7 @@ namespace InnoMetricDataAccess
                         MeasurementTypeId = r.ItemArray[0].ToString(),
                         Value = r.ItemArray[1].ToString(),
                         AlternativeLabel = "",
-                        CapturedDate = DateTime.Parse(r.ItemArray[2].ToString()),
+                        CapturedDate = DateTime.Parse(r.ItemArray[2].ToString())
                     };
 
                     myProcess.MeasurementReportList.Add(metric);
@@ -657,7 +628,7 @@ namespace InnoMetricDataAccess
             return myProcess;
         }
 
-        public void UpdateProcessStatus(ActivityStatus oldStatus, ActivityStatus newStatus, Boolean setLimit = false)
+        public void UpdateProcessStatus(ActivityStatus oldStatus, ActivityStatus newStatus, bool setLimit = false)
         {
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -669,12 +640,10 @@ namespace InnoMetricDataAccess
                                      where ServerStatus = @oldStatus"
                 };
                 if (setLimit)
-                {
                     cmd.CommandText += @" and processID in (SELECT processID
                                                               FROM CollectorProcessData
                                                              ORDER BY CollectedTime ASC
                                                              LIMIT " + LIMIT_QUERY + ")";
-                }
 
                 cmd.Prepare();
                 cmd.Parameters.Clear();
@@ -745,9 +714,9 @@ namespace InnoMetricDataAccess
         }
 
 
-        public List<String> LoadGetTopIdleApps()
+        public List<string> LoadGetTopIdleApps()
         {
-            var TopApps = new List<String>();
+            var TopApps = new List<string>();
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 log.Debug(cnn.ConnectionString);
@@ -763,10 +732,7 @@ namespace InnoMetricDataAccess
                 var cmd = new SQLiteCommandBuilder(da);
                 da.Fill(ds);
 
-                foreach (DataRow r in ds.Tables[0].Rows)
-                {
-                    TopApps.Add(r[0].ToString());
-                }
+                foreach (DataRow r in ds.Tables[0].Rows) TopApps.Add(r[0].ToString());
             }
 
             return TopApps;

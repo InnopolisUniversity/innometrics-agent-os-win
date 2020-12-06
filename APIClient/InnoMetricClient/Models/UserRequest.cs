@@ -7,21 +7,21 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class UserRequest
+    public class UserRequest
     {
         /// <summary>
-        /// Initializes a new instance of the UserRequest class.
+        ///     Initializes a new instance of the UserRequest class.
         /// </summary>
         public UserRequest()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the UserRequest class.
+        ///     Initializes a new instance of the UserRequest class.
         /// </summary>
-        public UserRequest(DateTime? confirmedAt = default(DateTime?), string email = default(string),
-            string isactive = default(string), string name = default(string), string password = default(string),
-            string surname = default(string))
+        public UserRequest(DateTime? confirmedAt = default, string email = default,
+            string isactive = default, string name = default, string password = default,
+            string surname = default)
         {
             ConfirmedAt = confirmedAt;
             Email = email;

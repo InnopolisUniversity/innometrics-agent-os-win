@@ -6,20 +6,20 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class TimeReportByUser
+    public class TimeReportByUser
     {
         /// <summary>
-        /// Initializes a new instance of the TimeReportByUser class.
+        ///     Initializes a new instance of the TimeReportByUser class.
         /// </summary>
         public TimeReportByUser()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the TimeReportByUser class.
+        ///     Initializes a new instance of the TimeReportByUser class.
         /// </summary>
-        public TimeReportByUser(string activityDay = default(string), string email = default(string),
-            string timeUsed = default(string))
+        public TimeReportByUser(string activityDay = default, string email = default,
+            string timeUsed = default)
         {
             ActivityDay = activityDay;
             Email = email;

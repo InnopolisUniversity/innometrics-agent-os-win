@@ -7,23 +7,23 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class MeasurementTypeResponse
+    public class MeasurementTypeResponse
     {
         /// <summary>
-        /// Initializes a new instance of the MeasurementTypeResponse class.
+        ///     Initializes a new instance of the MeasurementTypeResponse class.
         /// </summary>
         public MeasurementTypeResponse()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the MeasurementTypeResponse class.
+        ///     Initializes a new instance of the MeasurementTypeResponse class.
         /// </summary>
-        public MeasurementTypeResponse(string createdby = default(string), DateTime? creationdate = default(DateTime?),
-            string description = default(string), string isactive = default(string), string label = default(string),
-            DateTime? lastupdate = default(DateTime?), int? measurementtypeid = default(int?),
-            string operation = default(string), double? scale = default(double?), string updateby = default(string),
-            double? weight = default(double?))
+        public MeasurementTypeResponse(string createdby = default, DateTime? creationdate = default,
+            string description = default, string isactive = default, string label = default,
+            DateTime? lastupdate = default, int? measurementtypeid = default,
+            string operation = default, double? scale = default, string updateby = default,
+            double? weight = default)
         {
             Createdby = createdby;
             Creationdate = creationdate;

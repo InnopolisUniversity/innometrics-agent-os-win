@@ -7,19 +7,19 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class ProjectListResponse
+    public class ProjectListResponse
     {
         /// <summary>
-        /// Initializes a new instance of the ProjectListResponse class.
+        ///     Initializes a new instance of the ProjectListResponse class.
         /// </summary>
         public ProjectListResponse()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the ProjectListResponse class.
+        ///     Initializes a new instance of the ProjectListResponse class.
         /// </summary>
-        public ProjectListResponse(IList<ProjectResponse> projectList = default(IList<ProjectResponse>))
+        public ProjectListResponse(IList<ProjectResponse> projectList = default)
         {
             ProjectList = projectList;
         }

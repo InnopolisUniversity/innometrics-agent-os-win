@@ -6,21 +6,21 @@ using Newtonsoft.Json;
 
 namespace APIClient.InnoMetricClient.Models
 {
-    public partial class CumulativeActivityReport
+    public class CumulativeActivityReport
     {
         /// <summary>
-        /// Initializes a new instance of the CumulativeActivityReport class.
+        ///     Initializes a new instance of the CumulativeActivityReport class.
         /// </summary>
         public CumulativeActivityReport()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CumulativeActivityReport class.
+        ///     Initializes a new instance of the CumulativeActivityReport class.
         /// </summary>
-        public CumulativeActivityReport(string capturedDate = default(string), string dailySum = default(string),
-            string email = default(string), string executableName = default(string),
-            string monthlySum = default(string), string usedTime = default(string), string yearlySum = default(string))
+        public CumulativeActivityReport(string capturedDate = default, string dailySum = default,
+            string email = default, string executableName = default,
+            string monthlySum = default, string usedTime = default, string yearlySum = default)
         {
             CapturedDate = capturedDate;
             DailySum = dailySum;

@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InnoMetricsCollector.Profiler
 {
     public class IOPerfCounter : AbstractPerfCounter<IOPerfCounter.IOPerfType>
     {
-        private static readonly string ProcessCategory = "Process";
-
-        public IOPerfCounter() : base(ProcessCategory)
-        {
-        }
-
         public enum IOPerfType
         {
             BytesRead,
@@ -23,6 +13,12 @@ namespace InnoMetricsCollector.Profiler
             WriteOperations,
             DataOperations,
             DataRate
+        }
+
+        private static readonly string ProcessCategory = "Process";
+
+        public IOPerfCounter() : base(ProcessCategory)
+        {
         }
 
         public void Initialize(Process process, params IOPerfType[] preferredTypes)

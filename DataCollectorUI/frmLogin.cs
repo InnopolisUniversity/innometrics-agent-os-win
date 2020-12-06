@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using APIClient;
-using InnoMetricDataAccess;
 
 namespace DataCollectorUI
 {
     public partial class frmLogin : Form
     {
-        bool _requestLogin;
+        private bool _requestLogin;
 
 
         public frmLogin()
@@ -38,7 +30,7 @@ namespace DataCollectorUI
             var token = Client.GetLoginToken(email, password);
 
 
-            if (!String.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(token))
             {
                 frmSettings.myConfig["TOKEN"] = token;
                 frmSettings.myConfig["USERNAME"] = email;
@@ -47,7 +39,7 @@ namespace DataCollectorUI
                 //frmMain newForm = new frmMain();
                 //newForm.sendToServer(secret_token);
                 _requestLogin = false;
-                this.Close();
+                Close();
             }
             else
             {
@@ -74,30 +66,20 @@ namespace DataCollectorUI
                 var result = MessageBox.Show("Do you really want to close InnoMetrics data collecctor?", "InnoMetrics",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                 if (result == DialogResult.Yes)
-                {
                     Environment.Exit(0);
-                }
                 else
-                {
                     e.Cancel = true;
-                }
             }
         }
 
         private void txtemail_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char) 13)
-            {
-                txtpassword.Focus();
-            }
+            if (e.KeyChar == (char) 13) txtpassword.Focus();
         }
 
         private void txtpassword_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char) 13)
-            {
-                btnSignIn_Click(sender, e);
-            }
+            if (e.KeyChar == (char) 13) btnSignIn_Click(sender, e);
         }
     }
 }

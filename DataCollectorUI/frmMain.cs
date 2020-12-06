@@ -1,83 +1,60 @@
-﻿using APIClient;
-using InnoMetricDataAccess;
-using InnoMetricsCollector;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Management;
-using System.Diagnostics;
-using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Windows.Forms;
+using APIClient;
+using InnoMetricDataAccess;
+using InnoMetricsCollector;
 using InnoMetricsCollector.DTO;
+using log4net;
 using HWND = System.IntPtr;
 
 namespace DataCollectorUI
 {
     public partial class frmMain : Form
     {
-        ReportGenerator myCollector;
-
-        CollectorProcessReport myLastReport;
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        private const uint WINEVENT_OUTOFCONTEXT = 0;
+        private const uint EVENT_SYSTEM_FOREGROUND = 3;
+        private const uint EVENT_OBJECT_SELECTION = 32774;
         public static CollectorActivity myCurrentActivity;
-        Thread check;
-        Thread dataSync;
-        Thread activityTracking;
-        FrmSystemInfo mySystemInfoForm;
 
-        private int COLLECTION_INTERVAL;
-        private int SENDING_INTERVAL;
-
-        bool abortDataCollection;
-        bool abortDataSync;
-
-        public static Dictionary<String, String> myConfig;
+        public static Dictionary<string, string> myConfig;
 
         private static readonly ILog log =
-            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private KeyboardTracker keyboard;
+        private bool abortDataCollection;
+        private bool abortDataSync;
+        private Thread activityTracking;
+        private Thread check;
 
-        private MouseTracker mouse;
+        private int COLLECTION_INTERVAL;
+        private Thread dataSync;
+
+        private readonly KeyboardTracker keyboard;
+        private DateTime last_keyboard_touch;
 
         //LAST MOUSE AND KEYBOARD MOVEMENTS
         public DateTime last_mouse_signal;
-        private DateTime last_keyboard_touch;
 
+        private IntPtr m_hhook;
 
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        const uint WINEVENT_OUTOFCONTEXT = 0;
-        const uint EVENT_SYSTEM_FOREGROUND = 3;
-        const uint EVENT_OBJECT_SELECTION = 32774;
+        private readonly MouseTracker mouse;
+        private ReportGenerator myCollector;
 
-        delegate void WinEventDelegate(IntPtr hWinEventHook,
-            uint eventType, IntPtr hwnd, int idObject,
-            int idChild, uint dwEventThread, uint dwmsEventTime);
+        private CollectorProcessReport myLastReport;
+        private FrmSystemInfo mySystemInfoForm;
+        private int SENDING_INTERVAL;
 
-        [DllImport("user32.dll")]
-        static extern bool UnhookWinEvent(IntPtr hWinEventHook);
-
-        [DllImport("user32.dll")]
-        static extern IntPtr SetWinEventHook(uint eventMin,
-            uint eventMax, IntPtr hmodWinEventProc,
-            WinEventDelegate lpfnWinEventProc, uint idProcess,
-            uint idThread, uint dwFlags);
-
-        [DllImport("user32.dll")]
-        static extern int GetWindowText(IntPtr hWnd,
-            StringBuilder lpString, int nMaxCount);
-
-        IntPtr m_hhook;
-
-        IntPtr tab_hhook;
+        private IntPtr tab_hhook;
+        private WinEventDelegate tabEventProcDel;
 
         private WinEventDelegate winEventProcDel;
-        private WinEventDelegate tabEventProcDel;
 
         public frmMain()
         {
@@ -90,6 +67,19 @@ namespace DataCollectorUI
             mouse.MouseMoved += mouse_MouseMoved;
         }
 
+        [DllImport("user32.dll")]
+        private static extern bool UnhookWinEvent(IntPtr hWinEventHook);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetWinEventHook(uint eventMin,
+            uint eventMax, IntPtr hmodWinEventProc,
+            WinEventDelegate lpfnWinEventProc, uint idProcess,
+            uint idThread, uint dwFlags);
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowText(IntPtr hWnd,
+            StringBuilder lpString, int nMaxCount);
+
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
@@ -100,16 +90,15 @@ namespace DataCollectorUI
 
                 log.Info("Loading app...");
 
-                this.ShowInTaskbar = false;
-                this.Visible = false;
-                this.WindowState = FormWindowState.Minimized;
-                this.Hide();
+                ShowInTaskbar = false;
+                Visible = false;
+                WindowState = FormWindowState.Minimized;
+                Hide();
 
                 UpdateConfig();
 
                 if (myConfig.ContainsKey("TOKEN"))
-                {
-                    if (String.IsNullOrEmpty(myConfig["TOKEN"]))
+                    if (string.IsNullOrEmpty(myConfig["TOKEN"]))
                     {
                         log.Error("Error in the service starting process, please check the user credentials...");
                         ShowNotification(
@@ -122,7 +111,6 @@ namespace DataCollectorUI
 
                         UpdateConfig();
                     }
-                }
 
                 notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", "The data collector is running now...",
                     ToolTipIcon.Info);
@@ -143,8 +131,8 @@ namespace DataCollectorUI
                 mySystemInfoForm = new FrmSystemInfo();
                 myCurrentActivity = null;
 
-                winEventProcDel = new WinEventDelegate(WinEventProc);
-                tabEventProcDel = new WinEventDelegate(WinEventProc);
+                winEventProcDel = WinEventProc;
+                tabEventProcDel = WinEventProc;
                 m_hhook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND,
                     EVENT_SYSTEM_FOREGROUND, IntPtr.Zero,
                     winEventProcDel, 0, 0, WINEVENT_OUTOFCONTEXT);
@@ -167,10 +155,10 @@ namespace DataCollectorUI
 
             COLLECTION_INTERVAL =
                 (myConfig.ContainsKey("COLLECTION_INTERVAL")
-                    ? int.Parse(myConfig["COLLECTION_INTERVAL"].ToString())
+                    ? int.Parse(myConfig["COLLECTION_INTERVAL"])
                     : 1) * 60 * 1000;
             SENDING_INTERVAL =
-                (myConfig.ContainsKey("SENDING_INTERVAL") ? int.Parse(myConfig["SENDING_INTERVAL"].ToString()) : 5) *
+                (myConfig.ContainsKey("SENDING_INTERVAL") ? int.Parse(myConfig["SENDING_INTERVAL"]) : 5) *
                 60 * 1000;
         }
 
@@ -181,10 +169,7 @@ namespace DataCollectorUI
             richTextBox1.Text = "";
             var records = da.LoadProcessHistory();
 
-            foreach (var r in records)
-            {
-                richTextBox1.Text += r + "\n";
-            }
+            foreach (var r in records) richTextBox1.Text += r + "\n";
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -226,7 +211,7 @@ namespace DataCollectorUI
 
                                 if (myCurrentMeasure != null && myCurrentMeasure.Value != "-1")
                                 {
-                                    if (Double.Parse(myLastMeasure.Value) > Double.Parse(myCurrentMeasure.Value))
+                                    if (double.Parse(myLastMeasure.Value) > double.Parse(myCurrentMeasure.Value))
                                     {
                                         var BatteryConsumption =
                                             app.Measurements.FirstOrDefault(m =>
@@ -234,22 +219,18 @@ namespace DataCollectorUI
 
 
                                         if (BatteryConsumption != null)
-                                        {
                                             BatteryConsumption.Value =
-                                                (Double.Parse(myLastMeasure.Value) -
-                                                 Double.Parse(myCurrentMeasure.Value))
+                                                (double.Parse(myLastMeasure.Value) -
+                                                 double.Parse(myCurrentMeasure.Value))
                                                 .ToString(); // (Double.Parse(BatteryConsumption.Value) + (Double.Parse(myLastMeasure.Value) - Double.Parse(myCurrentMeasure.Value))).ToString();
-                                        }
                                         else
-                                        {
                                             app.Measurements.Add(new ProcessMetrics
                                             {
                                                 MeasurementType = "6", // 6 - BatteryConsumption
-                                                Value = (Double.Parse(myLastMeasure.Value) -
-                                                         Double.Parse(myCurrentMeasure.Value)).ToString(),
+                                                Value = (double.Parse(myLastMeasure.Value) -
+                                                         double.Parse(myCurrentMeasure.Value)).ToString(),
                                                 CapturedTime = dataCollectionTime
                                             });
-                                        }
                                     }
                                     else
                                     {
@@ -343,13 +324,13 @@ namespace DataCollectorUI
 
             AbortThreads();
 
-            if (check.ThreadState == System.Threading.ThreadState.Running)
+            if (check.ThreadState == ThreadState.Running)
                 check.Abort();
 
-            if (dataSync.ThreadState == System.Threading.ThreadState.Running)
+            if (dataSync.ThreadState == ThreadState.Running)
                 dataSync.Abort();
 
-            if (activityTracking.ThreadState == System.Threading.ThreadState.Running)
+            if (activityTracking.ThreadState == ThreadState.Running)
                 activityTracking.Abort();
 
             log.Debug(check.ThreadState.ToString());
@@ -412,12 +393,12 @@ namespace DataCollectorUI
                 e.Cancel = true;
             }*/
             e.Cancel = true;
-            this.WindowState = FormWindowState.Minimized;
+            WindowState = FormWindowState.Minimized;
         }
 
         private void FrmMain_Resize(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
+            if (WindowState == FormWindowState.Minimized)
             {
                 Hide();
                 ShowInTaskbar = false;
@@ -429,7 +410,7 @@ namespace DataCollectorUI
             notifyIcon1.Visible = true;
         }
 
-        public void ShowNotification(String message, ToolTipIcon icon)
+        public void ShowNotification(string message, ToolTipIcon icon)
         {
             notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", message, icon);
         }
@@ -444,7 +425,7 @@ namespace DataCollectorUI
                     log.Info("syncData is being executed...");
                     if (myConfig.ContainsKey("TOKEN"))
                     {
-                        if (!String.IsNullOrEmpty(myConfig["TOKEN"]))
+                        if (!string.IsNullOrEmpty(myConfig["TOKEN"]))
                         {
                             var da = new DataAccess();
 
@@ -515,7 +496,7 @@ namespace DataCollectorUI
             }
         }
 
-        void WinEventProc(IntPtr hWinEventHook, uint eventType,
+        private void WinEventProc(IntPtr hWinEventHook, uint eventType,
             IntPtr hwnd, int idObject, int idChild,
             uint dwEventThread, uint dwmsEventTime)
         {
@@ -549,7 +530,7 @@ namespace DataCollectorUI
             }
         }
 
-        void keyboard_KeyBoardKeyPressed(object sender, EventArgs e)
+        private void keyboard_KeyBoardKeyPressed(object sender, EventArgs e)
         {
             last_keyboard_touch = DateTime.Now;
             FrmSystemInfo.idleTimeStart = last_keyboard_touch;
@@ -560,7 +541,7 @@ namespace DataCollectorUI
             }
         }
 
-        void mouse_MouseMoved(object sender, EventArgs e)
+        private void mouse_MouseMoved(object sender, EventArgs e)
         {
             last_mouse_signal = DateTime.Now;
             FrmSystemInfo.idleTimeStart = last_mouse_signal;
@@ -572,7 +553,7 @@ namespace DataCollectorUI
         }
 
 
-        void logApp(CollectorActivity app, DateTime caputuredTime, String source)
+        private void logApp(CollectorActivity app, DateTime caputuredTime, string source)
         {
             log.Info("Tracking apps for presence tracking, AppName:" + app.AppName + "|ExecutableFile:" +
                      app.ExecutableName + "|CaptureTime:" + caputuredTime.ToString("yyyy-MM-dd HH:mm:ss") + "|Source:" +
@@ -581,7 +562,7 @@ namespace DataCollectorUI
 
         //ON CURRENT WINDOW UPDATE ACTION
         //INITIALIZE LAST_KEYBOARD_TOUCH TO ZERO(NULL)
-        void simulation_method()
+        private void simulation_method()
         {
             while (true)
             {
@@ -601,7 +582,6 @@ namespace DataCollectorUI
                             isIdle = tmp.IdleActivity;
 
                         if (totalminutes > 2 && !isIdle)
-                        {
                             try
                             {
                                 var da = new DataAccess();
@@ -619,7 +599,6 @@ namespace DataCollectorUI
                                 myCurrentActivity.IdleActivity = true;
                                 myCurrentActivity.EndTime = new DateTime();
                             }
-                        }
                     }
                 }
 
@@ -630,7 +609,11 @@ namespace DataCollectorUI
         public DateTime MaxDate(DateTime first, DateTime second)
         {
             if (first > second) return first;
-            else return second;
+            return second;
         }
+
+        private delegate void WinEventDelegate(IntPtr hWinEventHook,
+            uint eventType, IntPtr hwnd, int idObject,
+            int idChild, uint dwEventThread, uint dwmsEventTime);
     }
 }

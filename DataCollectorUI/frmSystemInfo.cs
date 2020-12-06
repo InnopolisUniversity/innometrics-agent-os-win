@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Deployment.Application;
+using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
-using InnoMetricsCollector;
 using InnoMetricDataAccess;
+using InnoMetricsCollector;
 using InnoMetricsCollector.DTO;
 using log4net;
 
@@ -16,13 +14,14 @@ namespace DataCollectorUI
 {
     public partial class FrmSystemInfo : Form
     {
-        public CollectorActivity topActivity;
-        public List<String> topIdleApp;
         public static DateTime idleTimeStart;
-        public static Boolean isIdle;
+        public static bool isIdle;
 
         private static readonly ILog log =
-            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public CollectorActivity topActivity;
+        public List<string> topIdleApp;
 
         public FrmSystemInfo()
         {
@@ -55,28 +54,23 @@ namespace DataCollectorUI
             //System.Diagnostics.FileVersionInfo fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
             var version = ""; // fileVersionInfo.ProductVersion;
 
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
                 version = "Debug Mode";
             else
-            {
                 try
                 {
-                    version = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Major
-                                  .ToString() + "." +
-                              System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Minor
-                                  .ToString() + "." +
-                              System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.Build
-                                  .ToString() + "." +
-                              System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion
-                                  .Revision.ToString();
+                    version = ApplicationDeployment.CurrentDeployment.CurrentVersion.Major + "." +
+                              ApplicationDeployment.CurrentDeployment.CurrentVersion.Minor + "." +
+                              ApplicationDeployment.CurrentDeployment.CurrentVersion.Build + "." +
+                              ApplicationDeployment.CurrentDeployment.CurrentVersion
+                                  .Revision;
                 }
                 catch (Exception ex)
                 {
                     log.Error(ex.ToString());
                 }
-            }
 
-            this.Text = "InnoMetrics collector - " + version;
+            Text = "InnoMetrics collector - " + version;
         }
 
         public void UpdateView()
@@ -125,7 +119,7 @@ namespace DataCollectorUI
                 
             }*/
 
-            this.Refresh();
+            Refresh();
         }
 
         private void UpdateTopIdleApps()
@@ -137,20 +131,18 @@ namespace DataCollectorUI
             var da = new DataAccess();
             var topIdleApp = da.LoadGetTopIdleApps();
             if (topIdleApp != null)
-            {
                 try
                 {
-                    lblTopApp1.Text = (topIdleApp.Count != 0 ? topIdleApp[0] : "");
-                    lblTopApp2.Text = (topIdleApp.Count > 1 ? topIdleApp[1] : lblTopApp2.Text);
-                    lblTopApp3.Text = (topIdleApp.Count > 2 ? topIdleApp[2] : lblTopApp3.Text);
+                    lblTopApp1.Text = topIdleApp.Count != 0 ? topIdleApp[0] : "";
+                    lblTopApp2.Text = topIdleApp.Count > 1 ? topIdleApp[1] : lblTopApp2.Text;
+                    lblTopApp3.Text = topIdleApp.Count > 2 ? topIdleApp[2] : lblTopApp3.Text;
                 }
                 catch (Exception ex)
                 {
                     log.Error(ex.ToString());
                 }
-            }
 
-            this.Refresh();
+            Refresh();
         }
 
         private void Timer1_Tick(object sender, EventArgs e)
