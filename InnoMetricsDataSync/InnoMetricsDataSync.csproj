@@ -112,16 +112,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SystemInfo\APIClient\APIClient.csproj">
-      <Project>{1aeaf2f2-b510-4268-afce-da1d75888136}</Project>
-      <Name>APIClient</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SystemInfo\InnoMetricDataAccess\InnoMetricDataAccess.csproj">
-      <Project>{bf563758-b345-4636-adef-5db5875475b4}</Project>
-      <Name>InnoMetricDataAccess</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="log4net">
       <Version>2.0.12</Version>
     </PackageReference>
@@ -140,6 +130,16 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\APIClient\APIClient.csproj">
+      <Project>{1aeaf2f2-b510-4268-afce-da1d75888136}</Project>
+      <Name>APIClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InnoMetricDataAccess\InnoMetricDataAccess.csproj">
+      <Project>{bf563758-b345-4636-adef-5db5875475b4}</Project>
+      <Name>InnoMetricDataAccess</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

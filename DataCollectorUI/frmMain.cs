@@ -59,12 +59,13 @@ namespace DataCollectorUI
         public frmMain()
         {
             InitializeComponent();
-
+            /*
             keyboard = new KeyboardTracker();
             keyboard.KeyBoardKeyPressed += keyboard_KeyBoardKeyPressed;
 
             mouse = new MouseTracker();
             mouse.MouseMoved += mouse_MouseMoved;
+            */
         }
 
         [DllImport("user32.dll")]
@@ -520,7 +521,9 @@ namespace DataCollectorUI
                     }
 
                     myCurrentActivity = myCollector.GetCurrentActivity(hwnd, dataCollectionTime);
-                    myCurrentActivity.StartTime = dataCollectionTime;
+                    
+                    if(myCurrentActivity != null)
+                        myCurrentActivity.StartTime = dataCollectionTime;
                 }
             }
             catch (Exception ex)
