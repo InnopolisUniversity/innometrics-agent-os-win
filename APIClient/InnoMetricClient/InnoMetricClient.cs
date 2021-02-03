@@ -3660,7 +3660,7 @@ namespace APIClient.InnoMetricClient
                     new Iso8601TimeSpanConverter()
                 }
             };
-            CustomInitialize();
+            //CustomInitialize();
         }
     }
 }

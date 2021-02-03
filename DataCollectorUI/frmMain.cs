@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using APIClient;
 using InnoMetricDataAccess;
@@ -120,7 +121,8 @@ namespace DataCollectorUI
                 abortDataSync = false;
                 myCollector = new ReportGenerator();
 
-                check = new Thread(LoadReport);
+                //check = new Thread(LoadReport);
+                check = new Thread(processReportHandler);
                 check.Start();
 
                 dataSync = new Thread(SyncData);
@@ -178,6 +180,141 @@ namespace DataCollectorUI
             LoadData();
         }
 
+        private async void processReportHandler() {
+            log.Info("Loading report...");
+            
+            List<Task> TasksList = new List<Task>();
+            while (true)
+            {
+                var reportTask = Task.Run(async () => await ProcessReport());
+                
+#if DEBUG
+                Thread.Sleep(15000);
+#else
+                Thread.Sleep(COLLECTION_INTERVAL);
+#endif
+
+                if (abortDataCollection)
+                {
+                    log.Info("stopping thread DataCollection");
+                    break;
+                }
+            }
+        }
+
+        private async Task <Boolean> ProcessReport()
+        {
+            try
+            {
+                DateTime dataCollectionTime;
+                //myCollector = new ReportGenerator();
+                log.Info("loadReport is being executed...");
+                dataCollectionTime = DateTime.Now;
+                var myReport = myCollector.GetCurrentProcessReport(dataCollectionTime);
+                log.Info("Currect active process -> " + myReport.processes.Count);
+                //activeApp = null;
+                if (myLastReport != null)
+                {
+                    foreach (var app in myReport.processes)
+                    {
+                        log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " +
+                                 app.ProcessID);
+                        var lastState = myLastReport.processes
+                            .Where(p => app.PID == p.PID && app.ProcessName == p.ProcessName).FirstOrDefault();
+                        if (lastState != null)
+                        {
+                            app.ProcessID = lastState.ProcessID;
+                            var myLastMeasure =
+                                lastState.Measurements.FirstOrDefault(m =>
+                                    m.MeasurementType == "1"); //1 -> EstimatedChargeRemaining
+                            var myCurrentMeasure =
+                                app.Measurements.FirstOrDefault(m =>
+                                    m.MeasurementType == "1"); //1 -> EstimatedChargeRemaining
+
+                            if (myCurrentMeasure != null && myCurrentMeasure.Value != "-1")
+                            {
+                                if (double.Parse(myLastMeasure.Value) > double.Parse(myCurrentMeasure.Value))
+                                {
+                                    var BatteryConsumption =
+                                        app.Measurements.FirstOrDefault(m =>
+                                            m.MeasurementType == "6"); // 6 - BatteryConsumption
+
+
+                                    if (BatteryConsumption != null)
+                                        BatteryConsumption.Value =
+                                            (double.Parse(myLastMeasure.Value) -
+                                             double.Parse(myCurrentMeasure.Value))
+                                            .ToString(); // (Double.Parse(BatteryConsumption.Value) + (Double.Parse(myLastMeasure.Value) - Double.Parse(myCurrentMeasure.Value))).ToString();
+                                    else
+                                        app.Measurements.Add(new ProcessMetrics
+                                        {
+                                            MeasurementType = "6", // 6 - BatteryConsumption
+                                            Value = (double.Parse(myLastMeasure.Value) -
+                                                     double.Parse(myCurrentMeasure.Value)).ToString(),
+                                            CapturedTime = dataCollectionTime
+                                        });
+                                }
+                                else
+                                {
+                                    // no battery consumption
+                                    app.Measurements.Add(new ProcessMetrics
+                                    {
+                                        MeasurementType = "6", // 6 - BatteryConsumption
+                                        Value = "0",
+                                        CapturedTime = dataCollectionTime
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                // no battery consumption
+                                app.Measurements.Add(new ProcessMetrics
+                                {
+                                    MeasurementType = "6", // 6 - BatteryConsumption
+                                    Value = "0",
+                                    CapturedTime = dataCollectionTime
+                                });
+                            }
+                        }
+                        else
+                        {
+                            // no battery consumption
+                            app.Measurements.Add(new ProcessMetrics
+                            {
+                                MeasurementType = "6", // 6 - BatteryConsumption
+                                Value = "0",
+                                CapturedTime = dataCollectionTime
+                            });
+                        }
+
+                        log.Info("App -> " + app.ProcessName + ", " + app.Description + ", " + app.PID + ", " +
+                                 app.ProcessID);
+                    }
+
+
+                    var da = new DataAccess();
+
+                    foreach (var app in myReport.processes) //result)
+                    {
+                        log.Info("Saving process data...");
+                        da.SaveMyProcess(app);
+                    }
+                }
+
+                myLastReport = myReport;
+            }
+            catch (Exception ex)
+            {
+                log.Info($"{ex.Message}, {ex.StackTrace}, {ex.Source}");
+                return false;
+            }
+            return true;
+        }
+
+
+
+        #region OLD_PROCESS
+        /*
         private void LoadReport()
         {
             log.Info("Loading report...");
@@ -282,22 +419,6 @@ namespace DataCollectorUI
 
                     myLastReport = myReport;
 
-                    /*
-                    mySystemInfoForm.topActivity = null;
-                    mySystemInfoForm.topIdleApp = new List<CollectorActivity>();
-                    int counter = 1;
-
-                    var idleApps = myLastReport.activities.OrderByDescending(a => a.StartTime);
-
-                    foreach (var app in myLastReport.activities)
-                    {
-                        if (!app.IdleActivity) mySystemInfoForm.topActivity = app;
-                        if (counter <= 3) mySystemInfoForm.topIdleApp.Add(app);
-                        counter++;
-                    }
-                    */
-
-                    //mySystemInfoForm.updateView();
                 }
                 catch (Exception ex)
                 {
@@ -316,6 +437,8 @@ namespace DataCollectorUI
                 }
             }
         }
+        */
+        #endregion
 
 
         private void ToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -376,23 +499,6 @@ namespace DataCollectorUI
 
         private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            /*log.Info("form closing...");
-            if (MessageBox.Show("Do you want to quit InnoMetrics Collector?", "InnoMetrics data collector", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-
-                AbortThreads();
-                if (check.ThreadState == System.Threading.ThreadState.Running)
-                    check.Abort();
-
-                if (dataSync.ThreadState == System.Threading.ThreadState.Running)
-                    dataSync.Abort();
-
-                Application.Exit();
-            }
-            else
-            {
-                e.Cancel = true;
-            }*/
             e.Cancel = true;
             WindowState = FormWindowState.Minimized;
         }
@@ -436,6 +542,7 @@ namespace DataCollectorUI
 
                             log.Info("Submiting process request... sending " + records.ProcessesReport.Count +
                                      " records");
+                            
                             var result = Client.SaveProcessReport(records, token); // myConfig["TOKEN"]);
                             log.Info("Updating activity status...");
                             da.UpdateProcessStatus(DataAccess.ActivityStatus.Processing,
@@ -590,6 +697,7 @@ namespace DataCollectorUI
                                 var da = new DataAccess();
                                 tmp.EndTime = maximum_date;
                                 log.Info(tmp.AppName + " became IDLE....");
+                                //notifyIcon1.ShowBalloonTip(1000, "InnoMetrics data collector", tmp.AppName + " has become IDLE", ToolTipIcon.Warning);
                                 da.SaveMyActivity(tmp);
                             }
                             catch (Exception ex)
@@ -598,6 +706,7 @@ namespace DataCollectorUI
                             }
                             finally
                             {
+                                
                                 myCurrentActivity.StartTime = present;
                                 myCurrentActivity.IdleActivity = true;
                                 myCurrentActivity.EndTime = new DateTime();
@@ -618,5 +727,10 @@ namespace DataCollectorUI
         private delegate void WinEventDelegate(IntPtr hWinEventHook,
             uint eventType, IntPtr hwnd, int idObject,
             int idChild, uint dwEventThread, uint dwmsEventTime);
+
+        private void cmenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
     }
 }

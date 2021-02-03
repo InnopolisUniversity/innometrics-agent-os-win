@@ -93,7 +93,7 @@ namespace InnoMetricsCollector
                 var s = D3DKMTQueryStatistics(foo);
                 if (s == NtStatus.Success)
                     return new TimeSpan(*(long*) (foo + (Environment.Is64BitOperatingSystem ? 24 : 16)));
-                Console.WriteLine("HERE");
+                //Console.WriteLine("HERE");
             }
 
             return TimeSpan.Zero;
@@ -218,6 +218,9 @@ namespace InnoMetricsCollector
             var cpuUsage = 0;
 
             _perfIO.Initialize(process, IOPerfCounter.IOPerfType.DataRate);
+
+            Console.WriteLine(_perfIO.Category);
+            //double testb = _perfNet.Pop(NetworkInterfacePerfCounter.NetworkPerfType.BytesSent);
             return new ProcessInfo
             {
                 ProcessName = process.ProcessName,

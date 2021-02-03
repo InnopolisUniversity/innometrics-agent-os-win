@@ -106,9 +106,11 @@
   <ItemGroup>
     <EmbeddedResource Include="InnoMetricsDataSync.resx">
       <DependentUpon>InnoMetricsDataSync.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ProjectInstaller.resx">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -4,7 +4,7 @@ using System.Reflection;
 using System.ServiceProcess;
 using System.Timers;
 using APIClient;
-using InnoMetric.Models;
+//using InnoMetric.Models;
 using log4net;
 
 namespace InnoMetricsDataSync
@@ -41,7 +41,7 @@ namespace InnoMetricsDataSync
                 {
                     log.Info("There is a user registered");
                     log.Info("try to login automatically with username and password");
-                    myConfig["TOKEN"] = Client.getLoginToken(myConfig["USERNAME"], myConfig["PASSWORD"]);
+                    myConfig["TOKEN"] = Client.GetLoginToken(myConfig["USERNAME"], myConfig["PASSWORD"]);
                     log.Debug("token -> " + myConfig["TOKEN"]);
                 }
                 else
@@ -76,7 +76,7 @@ namespace InnoMetricsDataSync
             {
                 if (myConfig["TOKEN"] != null)
                 {
-                    Report records = null; //reportGenerator();
+                    APIClient.InnoMetricClient.Models.Report records = null; //reportGenerator();
                     log.Info("Submiting request...");
                     var result = Client.SaveReport(records, myConfig["TOKEN"]);
                     log.Info("Updating activity status...");

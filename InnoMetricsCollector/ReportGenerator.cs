@@ -6,6 +6,8 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using InnoMetricsCollector.Battery;
 using InnoMetricsCollector.DTO;
 using log4net;
 
@@ -13,6 +15,7 @@ namespace InnoMetricsCollector
 {
     public class ReportGenerator
     {
+        
         private static readonly ILog log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -22,7 +25,9 @@ namespace InnoMetricsCollector
             var myReport = new CollectorProcessReport();
 
             var currentWindows = OpenWindowGetter.GetOpenedWindowsProcessesInfo();
-            var batteryStatus = OpenWindowGetter.GetBatteryStatus();
+            //var batteryStatus = OpenWindowGetter.GetBatteryStatus();
+            PowerStatus pwr = SystemInformation.PowerStatus;
+            BatteryInformation batteryInfo = BatteryInfo.GetBatteryInformation();
 
             // get IP address of host computer
             // Retrive the Name of HOST  
@@ -71,44 +76,24 @@ namespace InnoMetricsCollector
                     collectedTime = measurementTime
                 };
 
-                if (batteryStatus != null && batteryStatus.Count > 0)
+                float estimatedChargeRemaining = (float)batteryInfo.CurrentCapacity / (float)batteryInfo.FullChargeCapacity;
+
+                estimatedChargeRemaining = estimatedChargeRemaining > 100.0 ? 100 : estimatedChargeRemaining;
+
+                myProcess.Measurements.Add(new ProcessMetrics
                 {
-                    var changingStatus = batteryStatus["BatteryStatus"].ToString();
-                    var estimatedChargeRemaining = float.Parse(batteryStatus["EstimatedChargeRemaining"].ToString());
+                    MeasurementType = "1", // "EstimatedChargeRemaining",
+                    Value = (pwr.BatteryChargeStatus == BatteryChargeStatus.Unknown || pwr.BatteryChargeStatus == BatteryChargeStatus.NoSystemBattery) ? "-1" : estimatedChargeRemaining.ToString(),
+                    CapturedTime = measurementTime
+                });
 
-                    estimatedChargeRemaining = estimatedChargeRemaining > 100.0 ? 100 : estimatedChargeRemaining;
-
-                    myProcess.Measurements.Add(new ProcessMetrics
-                    {
-                        MeasurementType = "1", // "EstimatedChargeRemaining",
-                        Value = changingStatus == "2" ? "-1" : estimatedChargeRemaining.ToString(),
-                        CapturedTime = measurementTime
-                    });
-
-                    myProcess.Measurements.Add(new ProcessMetrics
-                    {
-                        MeasurementType = "2", // "BatteryStatus",
-                        Value = batteryStatus["BatteryStatus"].ToString(),
-                        CapturedTime = measurementTime
-                    });
-                }
-                else
+                myProcess.Measurements.Add(new ProcessMetrics
                 {
-                    // Default values for desktop computers
-                    myProcess.Measurements.Add(new ProcessMetrics
-                    {
-                        MeasurementType = "1", // "EstimatedChargeRemaining",
-                        Value = "-1",
-                        CapturedTime = measurementTime
-                    });
+                    MeasurementType = "2", // "BatteryStatus",
+                    Value = pwr.BatteryChargeStatus.ToString(),
+                    CapturedTime = measurementTime
+                });
 
-                    myProcess.Measurements.Add(new ProcessMetrics
-                    {
-                        MeasurementType = "2", // "BatteryStatus",
-                        Value = "-1",
-                        CapturedTime = measurementTime
-                    });
-                }
 
                 myProcess.Measurements.Add(new ProcessMetrics
                 {
@@ -140,22 +125,46 @@ namespace InnoMetricsCollector
 
                 myProcess.Measurements.Add(new ProcessMetrics
                 {
-                    MeasurementType = "14", // "IO",
+                    MeasurementType = "9", // "IO",
                     Value = pi.IOUsage.ToString(CultureInfo.InvariantCulture),
                     CapturedTime = measurementTime
                 });
 
                 myProcess.Measurements.Add(new ProcessMetrics
                 {
-                    MeasurementType = "15", // "NetworkUsage",
+                    MeasurementType = "10", // "NetworkUsage",
                     Value = pi.NetworkUsage.ToString(CultureInfo.InvariantCulture),
                     CapturedTime = measurementTime
                 });
+
+
+                myProcess.Measurements.Add(new ProcessMetrics
+                {
+                    MeasurementType = "11", // "currentCapacityBattery",
+                    Value = batteryInfo.CurrentCapacity.ToString(CultureInfo.InvariantCulture),
+                    CapturedTime = measurementTime
+                });
+
+                myProcess.Measurements.Add(new ProcessMetrics
+                {
+                    MeasurementType = "12", // "fullCapacityBattery",
+                    Value = batteryInfo.FullChargeCapacity.ToString(CultureInfo.InvariantCulture),
+                    CapturedTime = measurementTime
+                });
+
+                myProcess.Measurements.Add(new ProcessMetrics
+                {
+                    MeasurementType = "13", // "designMaxCapacityBattery",
+                    Value = batteryInfo.DesignedMaxCapacity.ToString(CultureInfo.InvariantCulture),
+                    CapturedTime = measurementTime
+                });
+
                 myReport.processes.Add(myProcess);
             }
 
 
             return myReport;
+
         }
 
 

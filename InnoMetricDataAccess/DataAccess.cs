@@ -132,6 +132,8 @@ namespace InnoMetricDataAccess
 
         public void SaveMyActivity(CollectorActivity activity)
         {
+            if (activity.StartTime > activity.EndTime) return;
+
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 try
@@ -169,8 +171,6 @@ namespace InnoMetricDataAccess
                 catch (Exception e)
                 {
                     log.Error(e.Message);
-                    //Console.WriteLine(e.Message);
-                    //MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -197,8 +197,6 @@ namespace InnoMetricDataAccess
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e.Message);
-                // MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 log.Error(e.Message);
             }
         }
@@ -326,9 +324,7 @@ namespace InnoMetricDataAccess
                 }
                 catch (Exception e)
                 {
-                    //Console.WriteLine(e.Message);
                     log.Error(e.Message);
-                    //MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 return process;
@@ -361,8 +357,6 @@ namespace InnoMetricDataAccess
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e.Message);
-                //MessageBox.Show(e.Message + ", " + e.StackTrace + ", " + e.Source, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 log.Error(e.Message);
             }
         }

@@ -47,7 +47,7 @@ namespace InnoMetricsCollector.Profiler
                     else
                         throw new InvalidOperationException("Counter must be initialized");
                 }
-
+                _counters[type].NextValue();
                 return _counters[type].NextValue();
             }
             catch (Exception ex)
