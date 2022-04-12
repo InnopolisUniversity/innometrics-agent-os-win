@@ -68,8 +68,8 @@ namespace InnoMetricsCollector
 
             EnumWindows(delegate(HWND wnd, HWND param)
             {
-                if (IsWindowVisible(wnd))
-                    res.Add(wnd);
+                //if (IsWindowVisible(wnd)) 
+                res.Add(wnd);
                 return true;
             }, HWND.Zero);
 
@@ -102,6 +102,7 @@ namespace InnoMetricsCollector
         public static IDictionary<HWND, WindowInfo> GetOpenedWindowsProcessesInfo()
         {
             // TODO: this needs redesign; it queries duplicate values from the same processes
+            
             var shellWindow = GetShellWindow();
             var processes = FindWindows()
                 .Where(window => window != shellWindow)
@@ -126,7 +127,7 @@ namespace InnoMetricsCollector
                 .ToArray();
 
             Thread.Sleep(1000);
-
+            
             var now = DateTime.Now;
             var cpuTimes = processes.Select(p => p.p.TotalProcessorTime);
             var gpuTimes = processes.Select(p => GetGpuTime(p.p.Handle));

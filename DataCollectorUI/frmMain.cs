@@ -189,9 +189,10 @@ namespace DataCollectorUI
                 var reportTask = Task.Run(async () => await ProcessReport());
                 
 #if DEBUG
-                Thread.Sleep(15000);
+                Thread.Sleep(300000);
 #else
                 Thread.Sleep(COLLECTION_INTERVAL);
+                //Thread.Sleep(15000);
 #endif
 
                 if (abortDataCollection)
@@ -542,7 +543,7 @@ namespace DataCollectorUI
 
                             log.Info("Submiting process request... sending " + records.ProcessesReport.Count +
                                      " records");
-                            
+
                             var result = Client.SaveProcessReport(records, token); // myConfig["TOKEN"]);
                             log.Info("Updating activity status...");
                             da.UpdateProcessStatus(DataAccess.ActivityStatus.Processing,
@@ -577,12 +578,20 @@ namespace DataCollectorUI
                 catch (Exception ex)
                 {
                     log.Info(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                    Console.WriteLine(ex.Message + ", " + ex.StackTrace + ", " + ex.Source);
+                    var da = new DataAccess();
+                    da.UpdateProcessStatus(DataAccess.ActivityStatus.Processing, DataAccess.ActivityStatus.Error);
+                    da.UpdateActivityStatus(DataAccess.ActivityStatus.Processing, DataAccess.ActivityStatus.Error);
+                    da.CleanDataHistory(DataAccess.ActivityStatus.Error);
+                    da.CleanProcessDataHistory(DataAccess.ActivityStatus.Error);
+
                 }
 
 #if DEBUG
                 Thread.Sleep(120000);
 #else
-                Thread.Sleep(SENDING_INTERVAL);
+                //Thread.Sleep(SENDING_INTERVAL);
+                Thread.Sleep(90000);
 #endif
                 if (abortDataSync)
                 {

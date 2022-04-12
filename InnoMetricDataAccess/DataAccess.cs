@@ -25,7 +25,7 @@ namespace InnoMetricDataAccess
 #if DEBUG
         private const short LIMIT_QUERY = 10;
 #else
-        const Int16 LIMIT_QUERY = 500;
+        const Int16 LIMIT_QUERY = 999;
 #endif
 
         public enum ActivityStatus
@@ -427,8 +427,19 @@ namespace InnoMetricDataAccess
 
             var generator = new ReportGenerator();
             var OSVERION = generator.GetOSVersion();
-            UpdateActivityStatus(ActivityStatus.Collected,
-                ActivityStatus.Processing); //Updating server Status from 0 -> new to 1 -> Processing
+
+            using (var cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var da = new SQLiteDataAdapter("SELECT count(*) from CollectorData where ServerStatus = '1'", cnn);
+                var dt = new DataTable();
+
+                da.Fill(dt);
+                int record = Convert.ToInt16(dt.Rows[0][0]);
+                if (record == 0)
+                    UpdateActivityStatus(ActivityStatus.Collected, ActivityStatus.Processing); //Updating server Status from 0 -> new to 1 -> Processing
+            }
+
+            
 
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -545,8 +556,19 @@ namespace InnoMetricDataAccess
             };
             var generator = new ReportGenerator();
             var OSVERSION = generator.GetOSVersion();
-            UpdateProcessStatus(ActivityStatus.Collected, ActivityStatus.Processing,
-                true); //Updating server Status from 0 -> new to 1 -> Processing
+            using (var cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var da = new SQLiteDataAdapter("SELECT count(*) from CollectorProcessData where ServerStatus = '1'", cnn);
+                var ds = new DataSet();
+                var cmd = new SQLiteCommandBuilder(da);
+                da.Fill(ds);
+
+                int record = Convert.ToInt16(ds.Tables[0].Rows[0][0]);
+                if(record == 0)
+                    UpdateProcessStatus(ActivityStatus.Collected, ActivityStatus.Processing, true); //Updating server Status from 0 -> new to 1 -> Processing        
+            }
+
+            
 
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -566,7 +588,7 @@ namespace InnoMetricDataAccess
                                                                 where ServerStatus = '1'", cnn);
                 var cmd = new SQLiteCommandBuilder(da);
                 da.Fill(ds);
-
+                Console.WriteLine("rows ->" + ds.Tables[0].Rows.Count);
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
                     var ProcessId = r.ItemArray[0].ToString();
@@ -636,19 +658,24 @@ namespace InnoMetricDataAccess
                 if (setLimit)
                     cmd.CommandText += @" and processID in (SELECT processID
                                                               FROM CollectorProcessData
+                                                             WHERE ServerStatus = @oldStatus1
                                                              ORDER BY CollectedTime ASC
                                                              LIMIT " + LIMIT_QUERY + ")";
 
                 cmd.Prepare();
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@oldStatus", oldStatus);
+                cmd.Parameters.AddWithValue("@oldStatus1", oldStatus);
                 cmd.Parameters.AddWithValue("@newStatus", newStatus);
                 cmd.ExecuteNonQuery();
             }
         }
 
-
         public void CleanDataHistory()
+        {
+            this.CleanDataHistory(ActivityStatus.Accepted);
+        }
+            public void CleanDataHistory(ActivityStatus activityStatus)
         {
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -664,7 +691,7 @@ namespace InnoMetricDataAccess
                 };
                 cmd.Prepare();
                 cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@Status", ActivityStatus.Accepted);
+                cmd.Parameters.AddWithValue("@Status", activityStatus);
                 cmd.ExecuteNonQuery();
 
                 //cmd = new SQLiteCommand(cnn);
@@ -672,13 +699,18 @@ namespace InnoMetricDataAccess
                                      where ServerStatus = @Status";
                 cmd.Prepare();
                 cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@Status", ActivityStatus.Accepted);
+                cmd.Parameters.AddWithValue("@Status", activityStatus);
                 cmd.ExecuteNonQuery();
             }
         }
 
 
         public void CleanProcessDataHistory()
+        {
+            this.CleanProcessDataHistory(ActivityStatus.Accepted);
+        }
+
+        public void CleanProcessDataHistory(ActivityStatus activityStatus)
         {
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
@@ -694,7 +726,7 @@ namespace InnoMetricDataAccess
                 };
                 cmd.Prepare();
                 cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@Status", ActivityStatus.Accepted);
+                cmd.Parameters.AddWithValue("@Status", activityStatus);
                 cmd.ExecuteNonQuery();
 
                 //cmd = new SQLiteCommand(cnn);
@@ -702,7 +734,7 @@ namespace InnoMetricDataAccess
                                      where ServerStatus = @Status";
                 cmd.Prepare();
                 cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@Status", ActivityStatus.Accepted);
+                cmd.Parameters.AddWithValue("@Status", activityStatus);
                 cmd.ExecuteNonQuery();
             }
         }
